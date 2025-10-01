@@ -194,7 +194,7 @@ function sketch(p) {
         
         // Initialize main text buffer
         mainTextBuffer = p.createGraphics(p.width, p.height);
-        mainTextBuffer.background(CONFIG.colors.background, 0); // Transparent background
+        mainTextBuffer.clear(); // Transparent background
         
         // Start intro sequence
         phaseStartTime = p.millis();
@@ -788,7 +788,7 @@ function sketch(p) {
         
         // Recreate main text buffer with new dimensions
         mainTextBuffer = p.createGraphics(p.width, p.height);
-        mainTextBuffer.background(CONFIG.colors.background, 0); // Transparent background
+        mainTextBuffer.clear(); // Transparent background
         
         // Update frame rate
         if (isMobile) {
