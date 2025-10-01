@@ -290,11 +290,6 @@ function sketch(p) {
         // Draw character grid (background can write anywhere)
         drawCharGrid();
         
-        // Clear and draw ASCII art buffer
-        asciiArtBuffer.clear();
-        drawAsciiArt();
-        p.image(asciiArtBuffer, 0, 0);
-        
         // Clear main text buffer
         mainTextBuffer.clear();
         
@@ -312,6 +307,11 @@ function sketch(p) {
         
         // Draw main text buffer on top
         p.image(mainTextBuffer, 0, 0);
+        
+        // Draw ASCII art buffer on top of everything
+        asciiArtBuffer.clear();
+        drawAsciiArt();
+        p.image(asciiArtBuffer, 0, 0);
         
         // Draw cursor
         drawCursor();
@@ -578,17 +578,41 @@ function sketch(p) {
     // Color transitions removed - text types directly as red/gold
     
     function drawAsciiArt() {
-        // Debug: Always show something to test if buffer is working
+        if (asciiArtPhase === 0) return; // Not started
+        
         asciiArtBuffer.push();
         asciiArtBuffer.fill(CONFIG.colors.gold);
         asciiArtBuffer.textAlign(asciiArtBuffer.CENTER, asciiArtBuffer.TOP);
-        asciiArtBuffer.textSize(fontSize * 0.8);
-        asciiArtBuffer.textFont('Courier New', fontSize * 0.8);
+        asciiArtBuffer.textSize(fontSize * 0.6); // Smaller for better fit
+        asciiArtBuffer.textFont('Courier New', fontSize * 0.6);
         
-        // Test with simple text first
-        asciiArtBuffer.text('ASCII ART TEST', p.width / 2, p.height / 2);
-        asciiArtBuffer.text('Phase: ' + asciiArtPhase, p.width / 2, p.height / 2 + 30);
-        asciiArtBuffer.text('Time: ' + Math.floor(currentTime - phaseStartTime), p.width / 2, p.height / 2 + 60);
+        // Center the ASCII art on screen
+        let startX = p.width / 2;
+        let startY = p.height / 2 - (asciiArtText.length * fontSize * 0.6) / 2;
+        
+        // Draw ASCII art with typing animation
+        for (let y = 0; y < asciiArtText.length; y++) {
+            let line = asciiArtText[y];
+            let lineText = '';
+            
+            if (asciiArtPhase === 1) {
+                // Typing on - show characters up to current index
+                let charsToShow = Math.floor((asciiArtTypingIndex / asciiArtText.length) * line.length);
+                lineText = line.slice(0, charsToShow).join('');
+            } else if (asciiArtPhase === 2) {
+                // Fully visible
+                lineText = line.join('');
+            } else if (asciiArtPhase === 3) {
+                // Typing off - hide characters from the end
+                let charsToHide = Math.floor(((asciiArtTypingIndex - asciiArtText.length) / asciiArtText.length) * line.length);
+                let charsToShow = Math.max(0, line.length - charsToHide);
+                lineText = line.slice(0, charsToShow).join('');
+            }
+            
+            if (lineText.length > 0) {
+                asciiArtBuffer.text(lineText, startX, startY + y * fontSize * 0.6);
+            }
+        }
         
         asciiArtBuffer.pop();
         
