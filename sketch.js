@@ -128,7 +128,7 @@ function sketch(p) {
     let currentTypingIndex = 0;
     let titleLastTypingTime = 0;
     let infoLastTypingTime = 0;
-    let typingSpeed = 20; // ms per character
+    let typingSpeed = 5; // ms per character (much faster)
     let titleGrid = [];
     let infoGrid = [];
     
@@ -247,11 +247,20 @@ function sketch(p) {
         let positions = [];
         
         // Create many more positions for code-like text placement - fill entire screen
-        for (let i = 0; i < selectedPhrases.length * 8; i++) { // 8x more code to fill screen
+        for (let i = 0; i < selectedPhrases.length * 15; i++) { // 15x more code to fill screen
             let phrase = selectedPhrases[i % selectedPhrases.length];
             let x = p.floor(p.random(0, gridCols - phrase.length)); // Allow full width usage
             let y = p.floor(p.random(0, gridRows)); // Use entire height
             positions.push({x: x, y: y, text: phrase});
+        }
+        
+        // Add more random single characters to fill gaps
+        for (let i = 0; i < gridCols * gridRows / 10; i++) {
+            let x = p.floor(p.random(0, gridCols));
+            let y = p.floor(p.random(0, gridRows));
+            let randomChars = ['#', '@', '$', '%', '&', '*', '+', '=', '~', '^', '|', '\\', '/', '-', '_'];
+            let char = randomChars[p.floor(p.random(randomChars.length))];
+            positions.push({x: x, y: y, text: char});
         }
         
         // Sort by position for more natural typing order
@@ -461,24 +470,33 @@ function sketch(p) {
 
     function handleTitleTyping() {
         if (currentTime - titleLastTypingTime > typingSpeed && currentTypingIndex < titleTypingQueue.length) {
-            let charData = titleTypingQueue[currentTypingIndex];
-            if (charData.x < gridCols && charData.y < gridRows) {
-                charGrid[charData.y][charData.x].char = charData.char;
-                charGrid[charData.y][charData.x].color = CONFIG.colors.pureRed; // Direct red, no transition
-                charGrid[charData.y][charData.x].isTyped = true;
-                charGrid[charData.y][charData.x].isMainText = true; // Mark as main text
-                charData.typed = true;
+            // Type multiple characters per frame to speed up
+            let charsToType = 2; // Type 2 characters per frame
+            let typed = 0;
+            
+            while (currentTypingIndex < titleTypingQueue.length && typed < charsToType) {
+                let charData = titleTypingQueue[currentTypingIndex];
+                if (charData.x < gridCols && charData.y < gridRows) {
+                    charGrid[charData.y][charData.x].char = charData.char;
+                    charGrid[charData.y][charData.x].color = CONFIG.colors.pureRed; // Direct red, no transition
+                    charGrid[charData.y][charData.x].isTyped = true;
+                    charGrid[charData.y][charData.x].isMainText = true; // Mark as main text
+                    charData.typed = true;
+                    typed++;
+                }
+                currentTypingIndex++;
             }
-            currentTypingIndex++;
             titleLastTypingTime = currentTime;
         }
     }
 
     function handleInfoTyping() {
         if (currentTime - infoLastTypingTime > typingSpeed) {
-            // Find next untyped character in info queue
-            let found = false;
-            for (let i = 0; i < infoTypingQueue.length && !found; i++) {
+            // Type multiple characters per frame to speed up
+            let charsToType = 3; // Type 3 characters per frame
+            let typed = 0;
+            
+            for (let i = 0; i < infoTypingQueue.length && typed < charsToType; i++) {
                 let charData = infoTypingQueue[i];
                 if (!charData.typed && charData.x < gridCols && charData.y < gridRows) {
                     // Check if this position is not already occupied by main text
@@ -488,7 +506,7 @@ function sketch(p) {
                         charGrid[charData.y][charData.x].isTyped = true;
                         charGrid[charData.y][charData.x].isMainText = true; // Mark as main text
                         charData.typed = true;
-                        found = true;
+                        typed++;
                     }
                 }
             }
