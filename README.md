@@ -4,14 +4,15 @@ An immersive event landing page with a retro-future 70s terminal computer aesthe
 
 ## Features
 
-- **5-second cinematic intro sequence** with overwhelming data-stream energy
+- **10-second cinematic intro sequence** with overwhelming data-stream energy
 - **ASCII-style text rendering** with monospaced terminal aesthetics
-- **Background code scrolling** with cult-themed cryptic phrases
-- **CRT post-processing effects** including scanlines, bloom, and blur
+- **Dense background code typing** with verbose C++/CUDA code snippets
+- **Separate buffer layer system** for clean main text rendering
 - **Mouse interaction** with text scramble effects
 - **RSVP form** with Airtable integration
 - **Responsive design** for desktop, tablet, and mobile
 - **Parameterized colors** for easy customization
+- **FPS monitoring** for performance optimization
 
 ## Quick Start
 
@@ -45,6 +46,7 @@ const CONFIG = {
         grey: '#4a4a4a',          // Background text color
         lightGrey: '#6a6a6a',     // Lighter background text
         red: '#ff0033',           // Hero text color
+        pureRed: '#ff0000',       // Pure red for main text
         darkRed: '#cc0000',       // Darker red variant
         gold: '#ffaa00',          // Event info color
         lightGold: '#ff8800'      // Lighter gold variant
@@ -57,10 +59,11 @@ Adjust the intro sequence timing:
 
 ```javascript
 timing: {
-    introDuration: 5000, // Total intro duration (5 seconds)
-    scrollPhase: 2000,   // Background scroll phase (2 seconds)
-    typingPhase: 2000,   // Title typing phase (2 seconds)
-    infoPhase: 1000      // Event info phase (1 second)
+    introDuration: 10000, // Total intro duration (10 seconds)
+    scrollPhase: 5000,    // Background typing phase (5 seconds)
+    typingPhase: 2000,    // Title typing phase (2 seconds)
+    infoPhase: 2000,      // Event info phase (2 seconds)
+    rsvpPhase: 1000       // RSVP phase (1 second)
 }
 ```
 

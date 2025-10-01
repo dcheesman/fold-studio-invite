@@ -33,7 +33,7 @@ Building an immersive event landing page for The Fold Studio Grand Opening (Octo
 ### Motion & Animation Principles
 - **Overwhelming energy:** First 2 seconds should feel intense, data-stream-like, almost too fast to read
 - **Easing:** All transitions use easing functions—prefer cubic-bezier curves for smooth, organic motion
-- **Timing:** 5-second intro (unskippable), then settle into idle state with subtle background motion
+- **Timing:** 10-second intro (5s background + 2s title + 2s info + 1s RSVP), then settle into idle state with subtle background motion
 - **Character typing:** Type-on effect should be fast (10-20ms per character) not slow typewriter speed
 - **Color transitions:** Grey to red/gold should happen over 30-60 frames for smooth gradient effect
 
@@ -48,10 +48,10 @@ Building an immersive event landing page for The Fold Studio Grand Opening (Octo
 ### Layer System (Compositing Approach)
 Think of this as composited image layers, low-res for easy 2D pixel sampling:
 
-1. **Layer 1 - Background Code Scroll:** Continuous grey text scrolling (film/video code or cult-like cryptic snippets)
-2. **Layer 2 - ASCII Hero Text:** "THE FOLD" + event info, types on with color transition
-3. **Layer 3 - Plexus Effect:** [REMOVED FOR FIRST PASS]
-4. **Layer 4 - Post-Processing:** Applied via shader or pixel manipulation for scanlines, bloom, blur
+1. **Layer 1 - Background Character Grid:** Dense code typing animation filling entire screen
+2. **Layer 2 - Main Text Buffer:** Separate p5.Graphics layer for title, event info, and RSVP text
+3. **Layer 3 - Post-Processing:** Applied via shader or pixel manipulation for scanlines, bloom, blur (currently disabled for performance)
+4. **Layer 4 - UI Elements:** Cursor, FPS monitor, and other overlay elements
 
 **Performance consideration:** Consider pre-rendering intro as video/gif if performance becomes an issue, but start with live rendering.
 
@@ -104,25 +104,28 @@ function scrambleNearMouse(x, y, mouseX, mouseY) {
 }
 ```
 
-## Intro Sequence (5 seconds)
+## Intro Sequence (10 seconds)
 
 ### Timeline Breakdown
-- **0-2s:** Background code scrolling intensifies, filling screen rapidly with grey text
-  - Multiple columns of text scrolling at different speeds (parallax effect)
-  - Random film/video code snippets OR cryptic cult-like phrases
-  - Should feel overwhelming, data-stream aesthetic
+- **0-5s:** Background code typing intensifies, filling screen rapidly with grey text
+  - Dense character grid with verbose C++/CUDA code snippets
+  - Random distribution across entire screen
+  - Should feel overwhelming, data-stream aesthetic at 2000+ chars/second
   
-- **2-4s:** "THE FOLD" types on character-by-character
-  - Center of screen, large text (3-4x normal size)
-  - Start grey, transition to red during typing
-  - Type at ~15ms per character for fast, energetic feel
+- **5-7s:** "THE FOLD" types on character-by-character
+  - Left-aligned, large text (2x normal size)
+  - Types directly as red (no color transition)
+  - Type at ~5ms per character for fast, energetic feel
   
-- **4-5s:** Event info appears below title
+- **7-9s:** Event info appears below title
   - "Studio Grand Opening"
   - "October 24, 2025"
-  - "[Address TBD]"
-  - Color transitions from grey to gold
-  - "→ RSVP" appears underlined in gold
+  - "A night for the true believers."
+  - Types directly as red (no color transition)
+  
+- **9-10s:** RSVP text appears
+  - "→ RSVP" appears in gold
+  - Static angled triangle cursor (no blinking)
 
 ### Post-Intro Settled State
 - Background code continues scrolling at slower speed
