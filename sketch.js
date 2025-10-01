@@ -117,7 +117,7 @@ function sketch(p) {
         let charGrid = [];
         let gridCols, gridRows;
         let backgroundLastTypingTime = 0;
-        let backgroundTypingSpeed = 1; // ms per character (very fast to fill screen)
+        let backgroundTypingSpeed = 5; // ms per character (200 chars/second)
         let currentTypingPosition = 0;
         let totalTypingPositions = 0;
         let typingQueue = [];
@@ -263,8 +263,8 @@ function sketch(p) {
             positions.push({x: x, y: y, text: char});
         }
         
-        // Sort by position for more natural typing order
-        positions.sort((a, b) => a.y - b.y || a.x - b.x);
+        // Don't sort - keep random order for better distribution
+        // positions.sort((a, b) => a.y - b.y || a.x - b.x);
         
         // Add to typing queue
         for (let pos of positions) {
@@ -470,44 +470,33 @@ function sketch(p) {
 
     function handleTitleTyping() {
         if (currentTime - titleLastTypingTime > typingSpeed && currentTypingIndex < titleTypingQueue.length) {
-            // Type multiple characters per frame to speed up
-            let charsToType = 2; // Type 2 characters per frame
-            let typed = 0;
-            
-            while (currentTypingIndex < titleTypingQueue.length && typed < charsToType) {
-                let charData = titleTypingQueue[currentTypingIndex];
-                if (charData.x < gridCols && charData.y < gridRows) {
-                    charGrid[charData.y][charData.x].char = charData.char;
-                    charGrid[charData.y][charData.x].color = CONFIG.colors.pureRed; // Direct red, no transition
-                    charGrid[charData.y][charData.x].isTyped = true;
-                    charGrid[charData.y][charData.x].isMainText = true; // Mark as main text
-                    charData.typed = true;
-                    typed++;
-                }
-                currentTypingIndex++;
+            let charData = titleTypingQueue[currentTypingIndex];
+            if (charData.x < gridCols && charData.y < gridRows) {
+                charGrid[charData.y][charData.x].char = charData.char;
+                charGrid[charData.y][charData.x].color = CONFIG.colors.pureRed;
+                charGrid[charData.y][charData.x].isTyped = true;
+                charGrid[charData.y][charData.x].isMainText = true;
+                charData.typed = true;
             }
+            currentTypingIndex++;
             titleLastTypingTime = currentTime;
         }
     }
 
     function handleInfoTyping() {
         if (currentTime - infoLastTypingTime > typingSpeed) {
-            // Type multiple characters per frame to speed up
-            let charsToType = 3; // Type 3 characters per frame
-            let typed = 0;
-            
-            for (let i = 0; i < infoTypingQueue.length && typed < charsToType; i++) {
+            // Find next untyped character in info queue
+            let found = false;
+            for (let i = 0; i < infoTypingQueue.length && !found; i++) {
                 let charData = infoTypingQueue[i];
                 if (!charData.typed && charData.x < gridCols && charData.y < gridRows) {
-                    // Check if this position is not already occupied by main text
-                    if (!charGrid[charData.y][charData.x].isMainText) {
-                        charGrid[charData.y][charData.x].char = charData.char;
-                        charGrid[charData.y][charData.x].color = CONFIG.colors.pureRed; // Direct red, no transition
-                        charGrid[charData.y][charData.x].isTyped = true;
-                        charGrid[charData.y][charData.x].isMainText = true; // Mark as main text
-                        charData.typed = true;
-                        typed++;
-                    }
+                    // Always place info text, even if it overwrites background
+                    charGrid[charData.y][charData.x].char = charData.char;
+                    charGrid[charData.y][charData.x].color = CONFIG.colors.pureRed;
+                    charGrid[charData.y][charData.x].isTyped = true;
+                    charGrid[charData.y][charData.x].isMainText = true;
+                    charData.typed = true;
+                    found = true;
                 }
             }
             infoLastTypingTime = currentTime;
@@ -738,15 +727,21 @@ function sketch(p) {
     // Mouse interaction
     p.mousePressed = function() {
         if (isIntroComplete) {
-            // Check if mouse clicked on RSVP text
-            let rsvpY = p.height * 0.55 + fontSize * 1.5 * 4.5;
-            let rsvpTextWidth = p.textWidth(CONFIG.text.rsvpText);
-            let rsvpX = p.width / 2;
+            // Check if mouse clicked on RSVP text (now on grid)
+            let rsvpText = CONFIG.text.rsvpText;
+            let startX = p.floor(gridCols * 0.2);
+            let startY = p.floor(gridRows * 0.7);
             
-            if (p.mouseX > rsvpX - rsvpTextWidth / 2 && 
-                p.mouseX < rsvpX + rsvpTextWidth / 2 &&
-                p.mouseY > rsvpY - fontSize / 2 && 
-                p.mouseY < rsvpY + fontSize / 2) {
+            // Convert grid coordinates to screen coordinates
+            let screenX = startX * charWidth;
+            let screenY = startY * charHeight;
+            let textWidth = rsvpText.length * charWidth;
+            let textHeight = charHeight;
+            
+            if (p.mouseX > screenX && 
+                p.mouseX < screenX + textWidth &&
+                p.mouseY > screenY && 
+                p.mouseY < screenY + textHeight) {
                 
                 // Show RSVP form
                 if (typeof showRSVPForm === 'function') {
