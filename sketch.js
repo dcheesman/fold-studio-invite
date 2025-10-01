@@ -148,9 +148,9 @@ function sketch(p) {
     
     // Post-processing
     let scanlineOffset = 0;
-    let enableBloom = true;
-    let enableScanlines = true;
-    let enableBlur = true;
+    let enableBloom = false;
+    let enableScanlines = false;
+    let enableBlur = false;
     
     // Cursor
     let cursorSize = 12;
@@ -202,16 +202,16 @@ function sketch(p) {
         // Clear background
         p.background(CONFIG.colors.background);
         
-        // Draw character grid
-        drawCharGrid();
-        
-        // Handle intro sequence phases
+        // Handle intro sequence phases FIRST
         if (!isIntroComplete) {
             handleIntroSequence(elapsed);
         } else {
             // Post-intro settled state
             drawSettledContent();
         }
+        
+        // Draw character grid AFTER main text (so it doesn't overwrite)
+        drawCharGrid();
         
         // Draw cursor
         drawCursor();
@@ -258,16 +258,16 @@ function sketch(p) {
         let selectedPhrases = CONFIG.backgroundText; // Use all phrases
         let positions = [];
         
-        // Create many more positions for code-like text placement - fill entire screen
-        for (let i = 0; i < selectedPhrases.length * 15; i++) { // 15x more code to fill screen
+        // Create moderate amount of code for performance
+        for (let i = 0; i < selectedPhrases.length * 5; i++) { // Reduced from 15x to 5x
             let phrase = selectedPhrases[i % selectedPhrases.length];
             let x = p.floor(p.random(0, gridCols - phrase.length)); // Allow full width usage
             let y = p.floor(p.random(0, gridRows)); // Use entire height
             positions.push({x: x, y: y, text: phrase});
         }
         
-        // Add more random single characters to fill gaps
-        for (let i = 0; i < gridCols * gridRows / 10; i++) {
+        // Add fewer random single characters for performance
+        for (let i = 0; i < gridCols * gridRows / 20; i++) { // Reduced from /10 to /20
             let x = p.floor(p.random(0, gridCols));
             let y = p.floor(p.random(0, gridRows));
             let randomChars = ['#', '@', '$', '%', '&', '*', '+', '=', '~', '^', '|', '\\', '/', '-', '_'];
@@ -541,8 +541,17 @@ function sketch(p) {
     }
 
     function drawSettledContent() {
-        // All content is now drawn as part of the character grid
-        // No additional drawing needed
+        // Draw all main text in settled state
+        if (titleText.length > 0) {
+            drawSimpleText(titleText, titleX, titleY, CONFIG.colors.pureRed, 2);
+        }
+        
+        if (infoText.length > 0) {
+            drawSimpleText(infoText, titleX, infoStartY, CONFIG.colors.pureRed, 1);
+        }
+        
+        // Draw RSVP text
+        drawSimpleText(CONFIG.text.rsvpText, titleX, infoStartY + 8, CONFIG.colors.gold, 1);
     }
 
     function drawCursor() {
