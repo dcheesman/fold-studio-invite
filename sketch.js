@@ -117,7 +117,7 @@ function sketch(p) {
         let charGrid = [];
         let gridCols, gridRows;
         let backgroundLastTypingTime = 0;
-        let backgroundTypingSpeed = 0.01; // ms per character (100,000 chars/second with multi-char per frame)
+        let backgroundTypingSpeed = 0.3; // ms per character (100,000 chars/second with multi-char per frame)
         let currentTypingPosition = 0;
         let totalTypingPositions = 0;
         let typingQueue = [];
@@ -202,16 +202,16 @@ function sketch(p) {
         // Clear background
         p.background(CONFIG.colors.background);
         
-        // Handle intro sequence phases FIRST
+        // Draw character grid first (background)
+        drawCharGrid();
+        
+        // Handle intro sequence phases and main text (on top)
         if (!isIntroComplete) {
             handleIntroSequence(elapsed);
         } else {
             // Post-intro settled state
             drawSettledContent();
         }
-        
-        // Draw character grid AFTER main text (so it doesn't overwrite)
-        drawCharGrid();
         
         // Draw cursor
         drawCursor();
@@ -526,6 +526,17 @@ function sketch(p) {
             // Draw text
             p.fill(color);
             p.text(lines[i], x, y);
+            
+            // Mark grid cells as main text to prevent background overwriting
+            let gridX = Math.floor(startX);
+            let gridY = Math.floor(startY + i * 2);
+            for (let j = 0; j < lines[i].length; j++) {
+                if (gridX + j < gridCols && gridY < gridRows) {
+                    charGrid[gridY][gridX + j].isMainText = true;
+                    charGrid[gridY][gridX + j].char = lines[i][j];
+                    charGrid[gridY][gridX + j].color = color;
+                }
+            }
         }
         p.pop();
     }
