@@ -125,6 +125,9 @@ function sketch(p) {
     // Main text buffer (separate layer)
     let mainTextBuffer;
     
+    // HTML RSVP element
+    let rsvpElement;
+    
     // Typing animation - simplified system
     let titleText = "";
     let infoText = "";
@@ -196,6 +199,14 @@ function sketch(p) {
         mainTextBuffer = p.createGraphics(p.width, p.height);
         mainTextBuffer.clear(); // Transparent background
         
+        // Initialize HTML RSVP element
+        rsvpElement = document.getElementById('rsvp-clickable');
+        if (rsvpElement) {
+            rsvpElement.addEventListener('click', function() {
+                document.getElementById('rsvp-overlay').classList.add('visible');
+            });
+        }
+        
         // Start intro sequence
         phaseStartTime = p.millis();
         p.textFont('Courier New', fontSize);
@@ -217,6 +228,10 @@ function sketch(p) {
         
         // Handle intro sequence phases and main text (on separate buffer)
         if (!isIntroComplete) {
+            // Hide RSVP element during intro phases
+            if (rsvpElement && introPhase < 3) {
+                rsvpElement.style.display = 'none';
+            }
             handleIntroSequence(elapsed);
         } else {
             // Post-intro settled state
@@ -515,7 +530,16 @@ function sketch(p) {
         
         // Draw RSVP text
         if (introPhase >= 3) {
-            drawSimpleText(CONFIG.text.rsvpText, titleX, infoStartY + 8, CONFIG.colors.gold, 1);
+            // Show and position HTML RSVP element instead of drawing to buffer
+            if (rsvpElement) {
+                let rsvpX = titleX * charWidth;
+                let rsvpY = (infoStartY + 8) * charHeight;
+                
+                rsvpElement.style.left = rsvpX + 'px';
+                rsvpElement.style.top = rsvpY + 'px';
+                rsvpElement.style.fontSize = fontSize + 'px';
+                rsvpElement.style.display = 'block';
+            }
         }
     }
     
@@ -524,6 +548,7 @@ function sketch(p) {
         mainTextBuffer.fill(color);
         mainTextBuffer.textAlign(mainTextBuffer.LEFT, mainTextBuffer.TOP);
         mainTextBuffer.textSize(fontSize * size);
+        mainTextBuffer.textFont('Courier New', fontSize * size);
         
         // Draw text with black background to overwrite
         let lines = text.split('\n');
@@ -554,8 +579,16 @@ function sketch(p) {
             drawSimpleText(infoText, titleX, infoStartY, CONFIG.colors.pureRed, 1);
         }
         
-        // Draw RSVP text
-        drawSimpleText(CONFIG.text.rsvpText, titleX, infoStartY + 8, CONFIG.colors.gold, 1);
+        // Show and position HTML RSVP element
+        if (rsvpElement) {
+            let rsvpX = titleX * charWidth;
+            let rsvpY = (infoStartY + 8) * charHeight;
+            
+            rsvpElement.style.left = rsvpX + 'px';
+            rsvpElement.style.top = rsvpY + 'px';
+            rsvpElement.style.fontSize = fontSize + 'px';
+            rsvpElement.style.display = 'block';
+        }
     }
 
     function drawCursor() {
@@ -745,31 +778,7 @@ function sketch(p) {
     }
 
     // Mouse interaction
-    p.mousePressed = function() {
-        if (isIntroComplete) {
-            // Check if mouse clicked on RSVP text
-            let rsvpText = CONFIG.text.rsvpText;
-            let startX = titleX;
-            let startY = infoStartY + 8;
-            
-            // Convert grid coordinates to screen coordinates
-            let screenX = startX * charWidth;
-            let screenY = startY * charHeight;
-            let textWidth = rsvpText.length * charWidth;
-            let textHeight = charHeight;
-            
-            if (p.mouseX > screenX && 
-                p.mouseX < screenX + textWidth &&
-                p.mouseY > screenY && 
-                p.mouseY < screenY + textHeight) {
-                
-                // Show RSVP form
-                if (typeof showRSVPForm === 'function') {
-                    showRSVPForm();
-                }
-            }
-        }
-    };
+    // Mouse click handling removed - RSVP is now HTML element
 
     // Window resize handling
     p.windowResized = function() {
@@ -789,6 +798,11 @@ function sketch(p) {
         // Recreate main text buffer with new dimensions
         mainTextBuffer = p.createGraphics(p.width, p.height);
         mainTextBuffer.clear(); // Transparent background
+        
+        // Update RSVP element font size
+        if (rsvpElement) {
+            rsvpElement.style.fontSize = fontSize + 'px';
+        }
         
         // Update frame rate
         if (isMobile) {

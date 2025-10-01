@@ -179,6 +179,20 @@
 <body>
     <div id="canvas-container"></div>
     
+    <!-- Clickable RSVP element positioned on grid -->
+    <div id="rsvp-clickable" style="
+        position: absolute;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 18px;
+        color: #ffaa00;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        z-index: 10;
+        display: none;
+        pointer-events: auto;
+    ">→ RSVP</div>
+    
     <div id="rsvp-overlay">
         <button class="close-btn" onclick="closeRSVPForm()">&times;</button>
         <div class="rsvp-form">
