@@ -99,6 +99,21 @@ text: {
    - Replace `YOUR_BASE_ID_HERE` with your base ID
    - Replace `YOUR_API_KEY_HERE` with your API key
 
+## Architecture
+
+The project uses a layered approach with p5.js:
+
+1. **Background Layer:** Dense character grid with C++/CUDA code typing animation
+2. **Main Text Buffer:** Separate p5.Graphics layer for title, event info, and RSVP text
+3. **HTML Layer:** Clickable RSVP element positioned on the character grid
+4. **UI Layer:** Cursor, FPS monitor, and interactive elements
+
+**Performance Optimizations:**
+- Post-processing effects disabled for better FPS
+- Separate buffer system prevents text overwriting
+- Multi-character typing per frame for fast background animation
+- Optimized character grid rendering
+
 ## Browser Compatibility
 
 - **Chrome/Edge:** Full support

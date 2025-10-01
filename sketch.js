@@ -16,10 +16,11 @@ function sketch(p) {
             lightGold: '#ff8800'
         },
         timing: {
-            introDuration: 8000, // 8 seconds total (5s background + 3s title/info)
-            scrollPhase: 5000,   // 0-5s: background scroll
-            typingPhase: 2000,   // 5-7s: title typing
-            infoPhase: 1000      // 7-8s: event info
+            introDuration: 10000, // 10 seconds total
+            scrollPhase: 5000,    // 0-5s: background typing
+            typingPhase: 2000,    // 5-7s: title typing
+            infoPhase: 2000,      // 7-9s: event info
+            rsvpPhase: 1000       // 9-10s: RSVP
         },
         text: {
             title: "THE FOLD",
@@ -142,21 +143,18 @@ function sketch(p) {
     let infoLines = [];
     let infoStartY;
     
-    // Color transitions
-    let titleColor = CONFIG.colors.grey;
-    let infoColor = CONFIG.colors.grey;
-    let rsvpColor = CONFIG.colors.gold; // RSVP stays gold
+    // Color transitions (removed - text types directly as red/gold)
     
     // Mouse interaction
     let mouseProximity = 80; // pixels
     let scrambledChars = {};
     let scrambleTimeouts = {};
     
-    // Post-processing
-    let scanlineOffset = 0;
-    let enableBloom = false;
-    let enableScanlines = false;
-    let enableBlur = false;
+    // Post-processing (disabled for performance)
+    // let scanlineOffset = 0;
+    // let enableBloom = false;
+    // let enableScanlines = false;
+    // let enableBlur = false;
     
     // Cursor
     let cursorSize = 12;
@@ -247,11 +245,7 @@ function sketch(p) {
         // Draw FPS monitor
         drawFPSMonitor();
         
-        // Apply post-processing effects
-        applyPostProcessing();
-        
-        // Update scroll offset for next frame
-        scanlineOffset += 0.5;
+        // Post-processing disabled for performance
     };
 
     function initializeCharGrid() {
@@ -496,26 +490,7 @@ function sketch(p) {
         }
     }
 
-    function handleColorTransitions(elapsed) {
-        let transitionProgress = p.constrain(elapsed / 1000, 0, 1); // 1 second transition
-        
-        // Easing function for smooth color transition
-        let eased = easeInOutCubic(transitionProgress);
-        
-        // Transition title from grey to pure red
-        titleColor = p.lerpColor(
-            p.color(CONFIG.colors.grey),
-            p.color(CONFIG.colors.pureRed),
-            eased
-        );
-        
-        // Transition info text from grey to pure red
-        infoColor = p.lerpColor(
-            p.color(CONFIG.colors.grey),
-            p.color(CONFIG.colors.pureRed),
-            eased
-        );
-    }
+    // Color transitions removed - text types directly as red/gold
 
     function drawIntroContent() {
         // Draw title text
@@ -691,87 +666,7 @@ function sketch(p) {
         }
     }
 
-    function applyPostProcessing() {
-        if (!enableScanlines && !enableBloom && !enableBlur) return;
-        
-        p.loadPixels();
-        
-        // Apply scanlines
-        if (enableScanlines) {
-            applyScanlines();
-        }
-        
-        // Apply bloom effect (simplified)
-        if (enableBloom) {
-            applyBloom();
-        }
-        
-        // Apply blur
-        if (enableBlur) {
-            applyBlur();
-        }
-        
-        p.updatePixels();
-    }
-
-    function applyScanlines() {
-        for (let y = 0; y < p.height; y += 2) {
-            if (y % 4 === 0) { // Every 4th pixel row
-                for (let x = 0; x < p.width; x++) {
-                    let index = (y * p.width + x) * 4;
-                    p.pixels[index] *= 0.8;     // R
-                    p.pixels[index + 1] *= 0.8; // G
-                    p.pixels[index + 2] *= 0.8; // B
-                }
-            }
-        }
-    }
-
-    function applyBloom() {
-        // Simple bloom effect - brighten red and gold colors
-        for (let i = 0; i < p.pixels.length; i += 4) {
-            let r = p.pixels[i];
-            let g = p.pixels[i + 1];
-            let b = p.pixels[i + 2];
-            
-            // Check if pixel is red or gold-ish
-            if ((r > 200 && g < 100 && b < 100) || (r > 200 && g > 150 && b < 100)) {
-                p.pixels[i] = p.min(255, r * 1.1);     // R
-                p.pixels[i + 1] = p.min(255, g * 1.05); // G
-                p.pixels[i + 2] = p.min(255, b * 1.05); // B
-            }
-        }
-    }
-
-    function applyBlur() {
-        // Simple box blur
-        let tempPixels = p.pixels.slice();
-        let blurRadius = 1;
-        
-        for (let y = blurRadius; y < p.height - blurRadius; y++) {
-            for (let x = blurRadius; x < p.width - blurRadius; x++) {
-                let r = 0, g = 0, b = 0, a = 0;
-                let count = 0;
-                
-                for (let dy = -blurRadius; dy <= blurRadius; dy++) {
-                    for (let dx = -blurRadius; dx <= blurRadius; dx++) {
-                        let index = ((y + dy) * p.width + (x + dx)) * 4;
-                        r += tempPixels[index];
-                        g += tempPixels[index + 1];
-                        b += tempPixels[index + 2];
-                        a += tempPixels[index + 3];
-                        count++;
-                    }
-                }
-                
-                let index = (y * p.width + x) * 4;
-                p.pixels[index] = r / count;
-                p.pixels[index + 1] = g / count;
-                p.pixels[index + 2] = b / count;
-                p.pixels[index + 3] = a / count;
-            }
-        }
-    }
+    // Post-processing functions removed (disabled for performance)
 
     function easeInOutCubic(t) {
         return t < 0.5 ? 4 * t * t * t : 1 - p.pow(-2 * t + 2, 3) / 2;
@@ -807,10 +702,8 @@ function sketch(p) {
         // Update frame rate
         if (isMobile) {
             targetFrameRate = 24;
-            enableBloom = false;
         } else {
             targetFrameRate = 30;
-            enableBloom = true;
         }
         p.frameRate(targetFrameRate);
     };

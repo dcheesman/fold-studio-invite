@@ -325,11 +325,12 @@ pixelDensity(1);
 Before considering work complete, verify:
 
 - [ ] Canvas resizes properly on window resize without breaking grid
-- [ ] Intro sequence timing is exactly 5 seconds (measure with console logs)
-- [ ] Color transitions are smooth, not stepped or jumpy
-- [ ] Text remains readable with all post-processing effects enabled
+- [ ] Intro sequence timing is exactly 10 seconds (5s background + 2s title + 2s info + 1s RSVP)
+- [ ] Main text (title, info, RSVP) stays visible and not overwritten by background
+- [ ] RSVP HTML element is clickable and positioned correctly on grid
 - [ ] Mouse scramble effect reverts characters correctly after timeout
-- [ ] [Plexus particles will be added in future iteration]
+- [ ] FPS monitor shows 30+ FPS on desktop, 24+ FPS on mobile
+- [ ] All text uses monospaced font and aligns with character grid
 - [ ] RSVP form appears/dismisses without canvas errors
 - [ ] Form submission successfully sends to Airtable (test with dummy data)
 - [ ] Mobile version loads and runs without performance issues
