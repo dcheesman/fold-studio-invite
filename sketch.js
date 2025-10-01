@@ -113,14 +113,17 @@ function sketch(p) {
     let cols, rows;
     let fontSize;
     
-        // Character grid system
-        let charGrid = [];
-        let gridCols, gridRows;
-        let backgroundLastTypingTime = 0;
-        let backgroundTypingSpeed = 0.3; // ms per character (100,000 chars/second with multi-char per frame)
-        let currentTypingPosition = 0;
-        let totalTypingPositions = 0;
-        let typingQueue = [];
+    // Character grid system
+    let charGrid = [];
+    let gridCols, gridRows;
+    let backgroundLastTypingTime = 0;
+    let backgroundTypingSpeed = 0.3; // ms per character (100,000 chars/second with multi-char per frame)
+    let currentTypingPosition = 0;
+    let totalTypingPositions = 0;
+    let typingQueue = [];
+    
+    // Main text buffer (separate layer)
+    let mainTextBuffer;
     
     // Typing animation - simplified system
     let titleText = "";
@@ -189,6 +192,10 @@ function sketch(p) {
         // Initialize character grid
         initializeCharGrid();
         
+        // Initialize main text buffer
+        mainTextBuffer = p.createGraphics(p.width, p.height);
+        mainTextBuffer.background(CONFIG.colors.background, 0); // Transparent background
+        
         // Start intro sequence
         phaseStartTime = p.millis();
         p.textFont('Courier New', fontSize);
@@ -202,16 +209,22 @@ function sketch(p) {
         // Clear background
         p.background(CONFIG.colors.background);
         
-        // Draw character grid first (background)
+        // Draw character grid (background can write anywhere)
         drawCharGrid();
         
-        // Handle intro sequence phases and main text (on top)
+        // Clear main text buffer
+        mainTextBuffer.clear();
+        
+        // Handle intro sequence phases and main text (on separate buffer)
         if (!isIntroComplete) {
             handleIntroSequence(elapsed);
         } else {
             // Post-intro settled state
             drawSettledContent();
         }
+        
+        // Draw main text buffer on top
+        p.image(mainTextBuffer, 0, 0);
         
         // Draw cursor
         drawCursor();
@@ -315,7 +328,7 @@ function sketch(p) {
                     let displayColor = cell.color;
                     
                     // Apply mouse scramble effect only to background code, not main text
-                    if (isIntroComplete && !cell.isMainText) {
+                    if (isIntroComplete) {
                         let scrambled = applyMouseScrambleToCell(x, y, screenX, screenY);
                         if (scrambled) {
                             displayChar = scrambled;
@@ -346,7 +359,7 @@ function sketch(p) {
             let x = nextChar.x;
             let y = nextChar.y;
             
-            if (x < gridCols && y < gridRows && !charGrid[y][x].isMainText) {
+            if (x < gridCols && y < gridRows) {
                 charGrid[y][x].char = nextChar.char;
                 charGrid[y][x].color = nextChar.color;
                 charGrid[y][x].isTyped = true;
@@ -507,10 +520,10 @@ function sketch(p) {
     }
     
     function drawSimpleText(text, startX, startY, color, size) {
-        p.push();
-        p.fill(color);
-        p.textAlign(p.LEFT, p.TOP);
-        p.textSize(fontSize * size);
+        mainTextBuffer.push();
+        mainTextBuffer.fill(color);
+        mainTextBuffer.textAlign(mainTextBuffer.LEFT, mainTextBuffer.TOP);
+        mainTextBuffer.textSize(fontSize * size);
         
         // Draw text with black background to overwrite
         let lines = text.split('\n');
@@ -519,45 +532,17 @@ function sketch(p) {
             let y = (startY + i * 2) * charHeight;
             
             // Draw black background rectangle
-            p.fill(CONFIG.colors.background);
-            p.noStroke();
-            p.rect(x - 2, y - 2, lines[i].length * charWidth + 4, charHeight + 4);
+            mainTextBuffer.fill(CONFIG.colors.background);
+            mainTextBuffer.noStroke();
+            mainTextBuffer.rect(x - 2, y - 2, lines[i].length * charWidth + 4, charHeight + 4);
             
             // Draw text
-            p.fill(color);
-            p.text(lines[i], x, y);
-            
-            // Mark grid cells as main text to prevent background overwriting
-            let gridX = Math.floor(startX);
-            let gridY = Math.floor(startY + i * 2);
-            for (let j = 0; j < lines[i].length; j++) {
-                if (gridX + j < gridCols && gridY < gridRows) {
-                    charGrid[gridY][gridX + j].isMainText = true;
-                    charGrid[gridY][gridX + j].char = lines[i][j];
-                    charGrid[gridY][gridX + j].color = color;
-                }
-            }
+            mainTextBuffer.fill(color);
+            mainTextBuffer.text(lines[i], x, y);
         }
-        p.pop();
+        mainTextBuffer.pop();
     }
 
-    function drawRSVPText() {
-        // Add RSVP text to the character grid
-        let rsvpText = CONFIG.text.rsvpText;
-        let startX = p.floor(gridCols * 0.2);
-        let startY = p.floor(gridRows * 0.7);
-        
-        for (let i = 0; i < rsvpText.length; i++) {
-            let x = startX + i;
-            let y = startY;
-            if (x < gridCols && y < gridRows) {
-                charGrid[y][x].char = rsvpText[i];
-                charGrid[y][x].color = rsvpColor;
-                charGrid[y][x].isTyped = true;
-                charGrid[y][x].isMainText = true; // Mark as main text
-            }
-        }
-    }
 
     function drawSettledContent() {
         // Draw all main text in settled state
@@ -800,6 +785,10 @@ function sketch(p) {
         
         // Reinitialize character grid
         initializeCharGrid();
+        
+        // Recreate main text buffer with new dimensions
+        mainTextBuffer = p.createGraphics(p.width, p.height);
+        mainTextBuffer.background(CONFIG.colors.background, 0); // Transparent background
         
         // Update frame rate
         if (isMobile) {
