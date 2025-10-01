@@ -571,15 +571,17 @@ function sketch(p) {
         p.fill(CONFIG.colors.gold);
         p.noStroke();
         
-        // Draw angled triangle pointer
+        // Draw isosceles triangle pointer with sharpest point as active end
         let cursorX = p.mouseX;
         let cursorY = p.mouseY;
+        let baseWidth = cursorSize * 0.6;  // Shorter base for sharper triangle
+        let height = cursorSize;           // Full height
         
-        // Create triangle pointing right
+        // Create isosceles triangle pointing right with sharpest point
         p.triangle(
-            cursorX, cursorY - cursorSize/2,  // Top point
-            cursorX, cursorY + cursorSize/2,  // Bottom point  
-            cursorX + cursorSize, cursorY     // Right point
+            cursorX, cursorY - baseWidth/2,     // Top left point
+            cursorX, cursorY + baseWidth/2,     // Bottom left point  
+            cursorX + height, cursorY           // Right point (sharpest)
         );
         
         p.pop();
