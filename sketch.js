@@ -30,6 +30,30 @@ function sketch(p) {
             description: "A night for the true believers.",
             rsvpText: "→ RSVP"
         },
+        titleAsciiArt: [
+            "                                      #*##*##**  *##   #**  #*##*##*    #*## *### *###                                                     ",
+            "                                         *##     *##   ##*  #*          #**# *#*# *#*#                                                     ",
+            "                                         *##     ***##**#*  *##*#**#    *### #**# *#*#                                                     ",
+            "                                         #*#     *##   #**  *#          *#*# #*## *###                                                     ",
+            "                                         #*#     *#*   #**  #**#*##*    #**# *##* **##                                                     ",
+            "                                                                        #*## *#*# *#*#                                                     ",
+            "     #*##*##*##*##*##*##*##*##*##*    #*#*#*##*##**##*#*##*#*##*#**#    *### #**# *#*#                   #*##*##*##*##*##*##*##*##*##*     ",
+            "     #**#**#**#**#**#**#**#**#**##    *##*#**#**##**#*#**#*#**#*##*#    *#*# #*## *###                   #**#**#**#**#**#**#**#**#**##*    ",
+            "     *##                              *#*#                      *##*    #**# *##* **##                                             #*#*    ",
+            "     *#*  #**#**#**#**#**#**#**#**    *#*# #**#***#**#**#***#** #*#*    #*## *#*# *#*#                   **#**#**#**#**#**#**#**#  #*#*    ",
+            "     #**  ##*##*##*##*##*##*##*###    *##* *##*##*##*##*###*##* #*##    *### #**# *#*#                   ##*##*##*##*##*##*##*##*  *##*    ",
+            "     #*#  #*##                        **#* *##*            #*#* #**#    *#*# #*## *###                                       #*#*  *#**    ",
+            "     *##  #*#**#**#**#**#**#**#**#    #*## **## ##**#**#** #*#* ##**    #**# *##* **##                   *##**#**#**#**#**#* #*##  #*#*    ",
+            "     *#*  #*##*##*##*##*##*##*##*#    *#** #**# #*##*##*#* #*#* #*##    #*## *#*# *#*#                   #**##*##*##*##*##*# #**#  #*#*    ",
+            "     #**                              *##* *##* #*#*  #*#* #*#* #*#*    *### #**# *#*#                                  #**# ##**  *##*    ",
+            "     #*#  ##**#**#**#**#**#**#**#*    **## *##* #*#*#**##* #*#* #*#*    *#*# #*## *##**##*##*##*##*##    *##**#**#**#**#*### #*##  *#**    ",
+            "     *##  #*#*###################*    #**# **##  *##*##*** #*#* #*##    #**# *##* #*##**#**#**#**#***    #**##*##*##*##**#*# #*#*  #*#*    ",
+            "     *#*  #*##                        *##* #**#            #*#* #**#    #*## *#*#                                            #*#*  #*#*    ",
+            "     #**  #**# #**#                   *##* *##**##**#**##**##** ##**    *### #**#**#**##*##*##*##*##    *##**#**#**#**##*#**##*#  *##*    ",
+            "     #*#  ##*# ##*#                   **##  #*##**##*##**##*##  #*##    *#*#  ##*##*##**#**#**#**#***     *##*##*##*##**#*##**#*#  *#**    ",
+            "     *##  #*## *##*                   #**#***********************##*    #**#************#**#**#**#**#    #************#*****#*****##*#*    ",
+            "     *#*  #*## #*#*                   *##*######################*#**    #*##*###########*##*##*##*##*    ############*#####*#####**#*#*    "
+        ],
         backgroundText: [
             "// Initialize neural network parameters",
             "constexpr auto MAX_ITERATIONS = 1000000;",
@@ -578,13 +602,22 @@ function sketch(p) {
     // Color transitions removed - text types directly as red/gold
     
     function drawAsciiArt() {
-        if (asciiArtPhase === 0) return; // Not started
-        
+        // Debug: Always show something to test
         asciiArtBuffer.push();
         asciiArtBuffer.fill(CONFIG.colors.gold);
         asciiArtBuffer.textAlign(asciiArtBuffer.CENTER, asciiArtBuffer.TOP);
-        asciiArtBuffer.textSize(fontSize * 0.6); // Smaller for better fit
+        asciiArtBuffer.textSize(fontSize * 0.6);
         asciiArtBuffer.textFont('Courier New', fontSize * 0.6);
+        
+        // Debug text
+        asciiArtBuffer.text('ASCII DEBUG - Phase: ' + asciiArtPhase, p.width / 2, p.height / 2);
+        asciiArtBuffer.text('Time: ' + Math.floor(currentTime - phaseStartTime), p.width / 2, p.height / 2 + 30);
+        
+        if (asciiArtPhase === 0) {
+            asciiArtBuffer.pop();
+            updateAsciiArtAnimation();
+            return;
+        }
         
         // Center the ASCII art on screen
         let startX = p.width / 2;
@@ -656,7 +689,8 @@ function sketch(p) {
     function drawIntroContent() {
         // Draw title text
         if (introPhase >= 1 && titleText.length > 0) {
-            drawSimpleText(titleText, titleX, titleY, CONFIG.colors.pureRed, 2);
+            // Use ASCII art for title
+            drawAsciiTitle(CONFIG.titleAsciiArt, titleX, titleY, CONFIG.colors.pureRed, 2);
         }
         
         // Draw info text
@@ -703,12 +737,37 @@ function sketch(p) {
         }
         mainTextBuffer.pop();
     }
+    
+    function drawAsciiTitle(text, startX, startY, color, size) {
+        mainTextBuffer.push();
+        mainTextBuffer.fill(color);
+        mainTextBuffer.textAlign(mainTextBuffer.LEFT, mainTextBuffer.TOP);
+        mainTextBuffer.textSize(fontSize * size * 0.3); // Much smaller for ASCII art
+        mainTextBuffer.textFont('Courier New', fontSize * size * 0.3);
+        
+        // Draw ASCII art title
+        for (let i = 0; i < text.length; i++) {
+            let x = startX * charWidth;
+            let y = (startY + i) * charHeight * 0.3;
+            
+            // Draw black background rectangle
+            mainTextBuffer.fill(CONFIG.colors.background);
+            mainTextBuffer.noStroke();
+            mainTextBuffer.rect(x - 2, y - 2, text[i].length * charWidth * 0.3 + 4, charHeight * 0.3 + 4);
+            
+            // Draw ASCII art line
+            mainTextBuffer.fill(color);
+            mainTextBuffer.text(text[i], x, y);
+        }
+        mainTextBuffer.pop();
+    }
 
 
     function drawSettledContent() {
         // Draw all main text in settled state
         if (titleText.length > 0) {
-            drawSimpleText(titleText, titleX, titleY, CONFIG.colors.pureRed, 2);
+            // Use ASCII art for title
+            drawAsciiTitle(CONFIG.titleAsciiArt, titleX, titleY, CONFIG.colors.pureRed, 2);
         }
         
         if (infoText.length > 0) {
