@@ -117,20 +117,24 @@ function sketch(p) {
         let charGrid = [];
         let gridCols, gridRows;
         let backgroundLastTypingTime = 0;
-        let backgroundTypingSpeed = 5; // ms per character (200 chars/second)
+        let backgroundTypingSpeed = 0.5; // ms per character (2000 chars/second)
         let currentTypingPosition = 0;
         let totalTypingPositions = 0;
         let typingQueue = [];
     
-    // Typing animation
-    let titleTypingQueue = [];
-    let infoTypingQueue = [];
-    let currentTypingIndex = 0;
+    // Typing animation - simplified system
+    let titleText = "";
+    let infoText = "";
+    let titleTypingIndex = 0;
+    let infoTypingIndex = 0;
     let titleLastTypingTime = 0;
     let infoLastTypingTime = 0;
     let typingSpeed = 5; // ms per character (much faster)
-    let titleGrid = [];
-    let infoGrid = [];
+    
+    // Text positions
+    let titleX, titleY;
+    let infoLines = [];
+    let infoStartY;
     
     // Color transitions
     let titleColor = CONFIG.colors.grey;
@@ -150,6 +154,11 @@ function sketch(p) {
     
     // Cursor
     let cursorSize = 12;
+    
+    // FPS monitoring
+    let fps = 0;
+    let frameCount = 0;
+    let lastFpsTime = 0;
     
     // Responsive settings
     let targetFrameRate = 30;
@@ -206,6 +215,9 @@ function sketch(p) {
         
         // Draw cursor
         drawCursor();
+        
+        // Draw FPS monitor
+        drawFPSMonitor();
         
         // Apply post-processing effects
         applyPostProcessing();
@@ -369,12 +381,11 @@ function sketch(p) {
             // Start typing phase
             introPhase = 1;
             phaseStartTime = currentTime;
-            initializeTitleTyping();
+            initializeSimpleTyping();
         } else if (introPhase === 1 && elapsed > 2000) { // 2 seconds of title typing
             // Start info typing phase
             introPhase = 2;
             phaseStartTime = currentTime;
-            initializeInfoTyping();
         } else if (introPhase === 2 && elapsed > 2000) { // 2 seconds of info typing
             // Start color transition phase
             introPhase = 3;
@@ -403,101 +414,47 @@ function sketch(p) {
         drawIntroContent();
     }
 
-    function initializeTitleTyping() {
-        titleGrid = [];
-        titleTypingQueue = [];
+    function initializeSimpleTyping() {
+        // Set up simple text positions
+        titleX = p.floor(gridCols * 0.2);
+        titleY = p.floor(gridRows * 0.4);
         
-        // Create grid positions for title
-        let titleText = CONFIG.text.title;
-        let startX = p.floor(gridCols * 0.2); // Left aligned
-        let startY = p.floor(gridRows * 0.4); // Center vertically
-        
-        // Initialize grid
-        for (let i = 0; i < titleText.length; i++) {
-            let x = startX + i;
-            let y = startY;
-            if (x < gridCols && y < gridRows) {
-                titleGrid.push({x: x, y: y, char: titleText[i], typed: false});
-            }
-        }
-        
-        // Shuffle the typing order
-        titleTypingQueue = [...titleGrid];
-        for (let i = titleTypingQueue.length - 1; i > 0; i--) {
-            let j = p.floor(p.random(i + 1));
-            [titleTypingQueue[i], titleTypingQueue[j]] = [titleTypingQueue[j], titleTypingQueue[i]];
-        }
-        
-        currentTypingIndex = 0;
-    }
-
-    function initializeInfoTyping() {
-        infoGrid = [];
-        infoTypingQueue = [];
-        
-        // Create grid positions for info text
-        let infoTexts = [
+        infoLines = [
             CONFIG.text.subtitle,
             CONFIG.text.date,
             CONFIG.text.address,
             CONFIG.text.description
         ];
+        infoStartY = p.floor(gridRows * 0.55);
         
-        let startX = p.floor(gridCols * 0.2); // Left aligned
-        let startY = p.floor(gridRows * 0.55); // Below title
-        
-        // Initialize grid for each info line
-        for (let lineIndex = 0; lineIndex < infoTexts.length; lineIndex++) {
-            let text = infoTexts[lineIndex];
-            for (let i = 0; i < text.length; i++) {
-                let x = startX + i;
-                let y = startY + lineIndex * 2; // 2 lines spacing
-                if (x < gridCols && y < gridRows) {
-                    infoGrid.push({x: x, y: y, char: text[i], typed: false, lineIndex: lineIndex});
-                }
-            }
-        }
-        
-        // Shuffle the typing order
-        infoTypingQueue = [...infoGrid];
-        for (let i = infoTypingQueue.length - 1; i > 0; i--) {
-            let j = p.floor(p.random(i + 1));
-            [infoTypingQueue[i], infoTypingQueue[j]] = [infoTypingQueue[j], infoTypingQueue[i]];
-        }
-        
-        console.log('Info typing queue initialized with', infoTypingQueue.length, 'characters');
+        // Reset typing indices
+        titleTypingIndex = 0;
+        infoTypingIndex = 0;
+        titleText = "";
+        infoText = "";
     }
 
     function handleTitleTyping() {
-        if (currentTime - titleLastTypingTime > typingSpeed && currentTypingIndex < titleTypingQueue.length) {
-            let charData = titleTypingQueue[currentTypingIndex];
-            if (charData.x < gridCols && charData.y < gridRows) {
-                charGrid[charData.y][charData.x].char = charData.char;
-                charGrid[charData.y][charData.x].color = CONFIG.colors.pureRed;
-                charGrid[charData.y][charData.x].isTyped = true;
-                charGrid[charData.y][charData.x].isMainText = true;
-                charData.typed = true;
-            }
-            currentTypingIndex++;
+        if (currentTime - titleLastTypingTime > typingSpeed && titleTypingIndex < CONFIG.text.title.length) {
+            titleText += CONFIG.text.title[titleTypingIndex];
+            titleTypingIndex++;
             titleLastTypingTime = currentTime;
         }
     }
 
     function handleInfoTyping() {
         if (currentTime - infoLastTypingTime > typingSpeed) {
-            // Find next untyped character in info queue
-            let found = false;
-            for (let i = 0; i < infoTypingQueue.length && !found; i++) {
-                let charData = infoTypingQueue[i];
-                if (!charData.typed && charData.x < gridCols && charData.y < gridRows) {
-                    // Always place info text, even if it overwrites background
-                    charGrid[charData.y][charData.x].char = charData.char;
-                    charGrid[charData.y][charData.x].color = CONFIG.colors.pureRed;
-                    charGrid[charData.y][charData.x].isTyped = true;
-                    charGrid[charData.y][charData.x].isMainText = true;
-                    charData.typed = true;
-                    found = true;
+            // Build info text line by line
+            let currentLine = Math.floor(infoTypingIndex / 50); // Approximate chars per line
+            if (currentLine < infoLines.length) {
+                let lineText = infoLines[currentLine];
+                let lineIndex = infoTypingIndex % 50;
+                if (lineIndex < lineText.length) {
+                    infoText += lineText[lineIndex];
+                } else if (lineIndex === lineText.length) {
+                    infoText += "\n"; // Add newline after each line
                 }
+                infoTypingIndex++;
             }
             infoLastTypingTime = currentTime;
         }
@@ -525,11 +482,44 @@ function sketch(p) {
     }
 
     function drawIntroContent() {
-        // Title and info are now drawn as part of the character grid
-        // Only need to draw RSVP text separately
-        if (introPhase >= 3) {
-            drawRSVPText();
+        // Draw title text
+        if (introPhase >= 1 && titleText.length > 0) {
+            drawSimpleText(titleText, titleX, titleY, CONFIG.colors.pureRed, 2);
         }
+        
+        // Draw info text
+        if (introPhase >= 2 && infoText.length > 0) {
+            drawSimpleText(infoText, titleX, infoStartY, CONFIG.colors.pureRed, 1);
+        }
+        
+        // Draw RSVP text
+        if (introPhase >= 3) {
+            drawSimpleText(CONFIG.text.rsvpText, titleX, infoStartY + 8, CONFIG.colors.gold, 1);
+        }
+    }
+    
+    function drawSimpleText(text, startX, startY, color, size) {
+        p.push();
+        p.fill(color);
+        p.textAlign(p.LEFT, p.TOP);
+        p.textSize(fontSize * size);
+        
+        // Draw text with black background to overwrite
+        let lines = text.split('\n');
+        for (let i = 0; i < lines.length; i++) {
+            let x = startX * charWidth;
+            let y = (startY + i * 2) * charHeight;
+            
+            // Draw black background rectangle
+            p.fill(CONFIG.colors.background);
+            p.noStroke();
+            p.rect(x - 2, y - 2, lines[i].length * charWidth + 4, charHeight + 4);
+            
+            // Draw text
+            p.fill(color);
+            p.text(lines[i], x, y);
+        }
+        p.pop();
     }
 
     function drawRSVPText() {
@@ -574,6 +564,23 @@ function sketch(p) {
         p.pop();
     }
 
+    function drawFPSMonitor() {
+        // Update FPS calculation
+        frameCount++;
+        if (currentTime - lastFpsTime >= 1000) { // Update every second
+            fps = frameCount;
+            frameCount = 0;
+            lastFpsTime = currentTime;
+        }
+        
+        // Draw FPS in top left
+        p.push();
+        p.fill(CONFIG.colors.gold);
+        p.textAlign(p.LEFT, p.TOP);
+        p.textSize(12);
+        p.text(`FPS: ${fps}`, 10, 10);
+        p.pop();
+    }
 
     function randomScrambleChar() {
         let scrambleChars = ['#', '@', '$', '%', '&', '*', '+', '=', '~', '^'];
@@ -727,10 +734,10 @@ function sketch(p) {
     // Mouse interaction
     p.mousePressed = function() {
         if (isIntroComplete) {
-            // Check if mouse clicked on RSVP text (now on grid)
+            // Check if mouse clicked on RSVP text
             let rsvpText = CONFIG.text.rsvpText;
-            let startX = p.floor(gridCols * 0.2);
-            let startY = p.floor(gridRows * 0.7);
+            let startX = titleX;
+            let startY = infoStartY + 8;
             
             // Convert grid coordinates to screen coordinates
             let screenX = startX * charWidth;
