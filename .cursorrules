@@ -348,6 +348,56 @@ Before considering work complete, verify:
 
 **Leave NO to-do's, placeholders, or missing pieces in code.** Always implement complete, working, functional code that can run immediately.
 
+## Git Commit Practices
+
+**CRITICAL:** Make meaningful commits after each significant change to enable easy rollbacks and change tracking.
+
+### Commit Guidelines:
+- **Make commits frequently** - After each logical feature or fix
+- **Use descriptive commit messages** - Explain what was changed and why
+- **Test before committing** - Ensure code works before committing
+- **Commit working states** - Only commit functional, tested code
+
+### Commit Message Format:
+```
+Type: Brief description
+
+- Specific change 1
+- Specific change 2
+- Fix for issue X
+```
+
+### Examples:
+```
+feat: Add character grid system with random typing animation
+
+- Replace column-based background with proper 2D character grid
+- Implement random order typing for title and info text
+- Add protection for main text from background overwrites
+- Fix mouse scrambling to only affect background code
+
+fix: Resolve event info not fully typing on
+
+- Fix info typing logic to find next untyped character
+- Ensure all info text completes typing animation
+- Add proper character tracking for info queue
+
+style: Replace blinking cursor with static triangle pointer
+
+- Remove blinking animation from cursor
+- Add angled triangle cursor design
+- Improve cursor visibility and aesthetics
+```
+
+### When to Commit:
+- ✅ After completing a feature
+- ✅ After fixing a bug
+- ✅ After refactoring code
+- ✅ After updating configuration
+- ✅ Before making experimental changes
+- ❌ Don't commit broken code
+- ❌ Don't commit incomplete features
+
 ## Color Configuration
 
 All colors are parameterized for easy modification:
@@ -360,6 +410,7 @@ const COLORS = {
   lightGrey: '#6a6a6a',
   red: '#ff0033',
   darkRed: '#cc0000',
+  pureRed: '#ff0000',  // Pure red for main text
   gold: '#ffaa00',
   lightGold: '#ff8800'
 };
