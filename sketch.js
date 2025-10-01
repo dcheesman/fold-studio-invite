@@ -117,7 +117,7 @@ function sketch(p) {
         let charGrid = [];
         let gridCols, gridRows;
         let backgroundLastTypingTime = 0;
-        let backgroundTypingSpeed = 2; // ms per character (even faster)
+        let backgroundTypingSpeed = 1; // ms per character (very fast to fill screen)
         let currentTypingPosition = 0;
         let totalTypingPositions = 0;
         let typingQueue = [];
@@ -246,11 +246,11 @@ function sketch(p) {
         let selectedPhrases = CONFIG.backgroundText; // Use all phrases
         let positions = [];
         
-        // Create many more positions for code-like text placement
-        for (let i = 0; i < selectedPhrases.length * 3; i++) { // 3x more code
+        // Create many more positions for code-like text placement - fill entire screen
+        for (let i = 0; i < selectedPhrases.length * 8; i++) { // 8x more code to fill screen
             let phrase = selectedPhrases[i % selectedPhrases.length];
-            let x = p.floor(p.random(1, gridCols - 30)); // Leave more margin for longer lines
-            let y = p.floor(p.random(1, gridRows - 1));
+            let x = p.floor(p.random(0, gridCols - phrase.length)); // Allow full width usage
+            let y = p.floor(p.random(0, gridRows)); // Use entire height
             positions.push({x: x, y: y, text: phrase});
         }
         
@@ -455,6 +455,8 @@ function sketch(p) {
             let j = p.floor(p.random(i + 1));
             [infoTypingQueue[i], infoTypingQueue[j]] = [infoTypingQueue[j], infoTypingQueue[i]];
         }
+        
+        console.log('Info typing queue initialized with', infoTypingQueue.length, 'characters');
     }
 
     function handleTitleTyping() {
@@ -479,12 +481,15 @@ function sketch(p) {
             for (let i = 0; i < infoTypingQueue.length && !found; i++) {
                 let charData = infoTypingQueue[i];
                 if (!charData.typed && charData.x < gridCols && charData.y < gridRows) {
-                    charGrid[charData.y][charData.x].char = charData.char;
-                    charGrid[charData.y][charData.x].color = CONFIG.colors.pureRed; // Direct red, no transition
-                    charGrid[charData.y][charData.x].isTyped = true;
-                    charGrid[charData.y][charData.x].isMainText = true; // Mark as main text
-                    charData.typed = true;
-                    found = true;
+                    // Check if this position is not already occupied by main text
+                    if (!charGrid[charData.y][charData.x].isMainText) {
+                        charGrid[charData.y][charData.x].char = charData.char;
+                        charGrid[charData.y][charData.x].color = CONFIG.colors.pureRed; // Direct red, no transition
+                        charGrid[charData.y][charData.x].isTyped = true;
+                        charGrid[charData.y][charData.x].isMainText = true; // Mark as main text
+                        charData.typed = true;
+                        found = true;
+                    }
                 }
             }
             infoLastTypingTime = currentTime;
