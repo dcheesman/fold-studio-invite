@@ -1,0 +1,366 @@
+# The Fold Studio Grand Opening - Landing Page
+
+You are an expert in p5.js, creative coding, HTML5 Canvas, JavaScript ES6+, ASCII art rendering, retro computer aesthetics, post-processing effects, and performant web animations. You possess deep knowledge of 1970s terminal design, CRT display characteristics, generative art, particle systems, and real-time visual effects optimization.
+
+## Project Overview
+
+Building an immersive event landing page for The Fold Studio Grand Opening (October 24, 2025) with a retro-future 70s terminal computer aesthetic. The entire page is a p5.js canvas with ASCII-style rendering, code scrolling effects, CRT post-processing, and mouse-reactive glitch interactions. The experience is cinematic, overwhelming with energy, and completes in a 5-second intro sequence before settling into an interactive state.
+
+**Critical constraint:** Small event scale with no database rate limits or scalability concerns. Prioritize aesthetic impact and creative expression over enterprise patterns.
+
+## Visual Aesthetic Requirements
+
+### Color Palette
+- **Base environment:** Near-black on pure black (`#1a1a1a` on `#000000`)
+- **Background animation text:** All grey monochrome (`#4a4a4a`, `#6a6a6a`)
+- **Hero text (THE FOLD):** Transition from grey to red (`#ff0033`, `#cc0000`)
+- **Info text & RSVP:** Gold/amber terminal color (`#ffaa00`, `#ff8800`)
+- **Aesthetic reference:** Early UNIX terminal green-on-black, but desaturated and darker—almost black-on-black with just enough contrast to read
+
+### Typography & Grid
+- **Font:** Monospaced only—use `'Courier New', Courier, monospace` or `'JetBrains Mono', monospace`
+- **Grid system:** Common character grid for all text (think terminal columns/rows)
+- **Character size:** 12-16px depending on viewport, maintaining readable ASCII rendering
+- **Line height:** 1.2-1.4 for tight, dense terminal feel
+
+### Post-Processing Effects
+- **Scanlines:** Realistic CRT density—one scanline every 2-4 pixels, subtle but visible
+- **Bloom/glow:** Subtle glow only on red and gold text, NOT on grey background text. Should feel like phosphor persistence, not excessive blur
+- **Blur:** Light gaussian blur (0.5-1px) for retro CRT softness without sacrificing readability
+- **Optional:** Interlaced effect or pixel row jitter for extra authenticity
+- **NO chromatic aberration** for now—keep it simple and readable
+
+### Motion & Animation Principles
+- **Overwhelming energy:** First 2 seconds should feel intense, data-stream-like, almost too fast to read
+- **Easing:** All transitions use easing functions—prefer cubic-bezier curves for smooth, organic motion
+- **Timing:** 5-second intro (unskippable), then settle into idle state with subtle background motion
+- **Character typing:** Type-on effect should be fast (10-20ms per character) not slow typewriter speed
+- **Color transitions:** Grey to red/gold should happen over 30-60 frames for smooth gradient effect
+
+## p5.js Canvas Architecture
+
+### Setup & Structure
+- **Use p5.js instance mode** to avoid global namespace pollution
+- **Full-screen canvas:** `createCanvas(windowWidth, windowHeight)` in 2D mode (no WEBGL needed)
+- **Implement `windowResized()`** to handle responsive resizing: recalculate grid, reposition elements
+- **Use `pixelDensity(1)`** for better performance on retina displays—ASCII doesn't need high DPI
+
+### Layer System (Compositing Approach)
+Think of this as composited image layers, low-res for easy 2D pixel sampling:
+
+1. **Layer 1 - Background Code Scroll:** Continuous grey text scrolling (film/video code or cult-like cryptic snippets)
+2. **Layer 2 - ASCII Hero Text:** "THE FOLD" + event info, types on with color transition
+3. **Layer 3 - Plexus Effect:** [REMOVED FOR FIRST PASS]
+4. **Layer 4 - Post-Processing:** Applied via shader or pixel manipulation for scanlines, bloom, blur
+
+**Performance consideration:** Consider pre-rendering intro as video/gif if performance becomes an issue, but start with live rendering.
+
+### Animation Patterns
+```javascript
+// ✅ CORRECT - Structured intro sequence with timing
+let introPhase = 0; // 0: scroll, 1: typing, 2: color transition, 3: settled
+let phaseStartTime;
+
+function draw() {
+  let elapsed = millis() - phaseStartTime;
+  
+  if (introPhase === 0 && elapsed > 2000) {
+    introPhase = 1;
+    phaseStartTime = millis();
+  }
+  // ... continue through phases
+}
+
+// ❌ AVOID - Unstructured timing without clear phases
+function draw() {
+  if (someCondition) {
+    // scattered animation logic
+  }
+}
+```
+
+### ASCII Rendering System
+- **Character grid:** Calculate based on viewport: `cols = floor(width / charWidth)`, `rows = floor(height / charHeight)`
+- **Render approach:** Use p5's `text()` function positioned on grid, OR use custom pixel buffer for more control
+- **Character set:** Full ASCII for code scrolling, limited set for hero text (A-Z, 0-9, space, punctuation)
+- **Scramble effect:** On mouse interaction, randomly swap character indices within a radius (50-100px)
+
+### Plexus/Connected Particles Effect
+[REMOVED FOR FIRST PASS - Will be added in future iteration]
+
+### Mouse Interaction
+- **Text scramble:** Within 50-100px radius of mouse, characters randomly change to different ASCII chars
+- **Behavior:** Scramble should be temporary—characters revert after 200-500ms
+- **Performance:** Only check distance for visible text elements, not every character on screen
+
+```javascript
+// ✅ CORRECT - Efficient proximity check with timeout
+function scrambleNearMouse(x, y, mouseX, mouseY) {
+  let d = dist(x, y, mouseX, mouseY);
+  if (d < 80) {
+    return random(['#', '@', '$', '%', '&', '*']);
+  }
+  return originalChar;
+}
+```
+
+## Intro Sequence (5 seconds)
+
+### Timeline Breakdown
+- **0-2s:** Background code scrolling intensifies, filling screen rapidly with grey text
+  - Multiple columns of text scrolling at different speeds (parallax effect)
+  - Random film/video code snippets OR cryptic cult-like phrases
+  - Should feel overwhelming, data-stream aesthetic
+  
+- **2-4s:** "THE FOLD" types on character-by-character
+  - Center of screen, large text (3-4x normal size)
+  - Start grey, transition to red during typing
+  - Type at ~15ms per character for fast, energetic feel
+  
+- **4-5s:** Event info appears below title
+  - "Studio Grand Opening"
+  - "October 24, 2025"
+  - "[Address TBD]"
+  - Color transitions from grey to gold
+  - "→ RSVP" appears underlined in gold
+
+### Post-Intro Settled State
+- Background code continues scrolling at slower speed
+- [Plexus effect will be added in future iteration]
+- Mouse interaction enables
+- Subtle idle animations (text very slightly drifting, particles moving)
+
+## Content & Information Hierarchy
+
+### Displayed Text (in order of appearance)
+1. **THE FOLD** (large, red, center)
+2. **Studio Grand Opening** (medium, gold)
+3. **October 24, 2025** (small, grey)
+4. **[Address TBD]** (small, grey)
+5. **A night for the true believers.** (small, grey)
+6. **→ RSVP** (underlined, gold, clickable)
+
+**Keep text minimal**—only essential information. Let the aesthetic breathe.
+
+### Background Code Snippets
+Choose ONE direction for authenticity:
+
+**Option A - Film/Video Technical:**
+```
+ffmpeg -i input.mp4 -vf scale=1920:1080 output.mp4
+codec: h264 | bitrate: 5000k | fps: 24
+SMPTE timecode: 01:23:45:12
+aperture: f/2.8 | shutter: 1/50 | ISO: 800
+```
+
+**Option B - Cult/Cryptic Aesthetic:**
+```
+Brainwashing for hire
+Welcome to the Fold
+Take our hand
+Turning buyers into believers
+the signal persists beyond the frame
+fold the image back into itself
+transmission received: coordinates locked
+patterns repeat but never align
+what was hidden becomes visible
+```
+
+## RSVP Form (HTML Overlay)
+
+### Trigger & Behavior
+- **Click** the underlined "→ RSVP" text to reveal form
+- Form slides in or materializes with ASCII box-drawing border effect
+- Canvas dims or blurs slightly behind form (focus shift)
+
+### Form Structure (HTML, not canvas-rendered)
+```html
+<div class="rsvp-overlay" style="font-family: monospace;">
+  ╔════════════════════════════════════╗
+  ║           RSVP REQUIRED            ║
+  ╠════════════════════════════════════╣
+  ║ Name: [_________________________] ║
+  ║                                    ║
+  ║ Plus One? [ ] Yes  [ ] No          ║
+  ║                                    ║
+  ║ [ SUBMIT ]                         ║
+  ╚════════════════════════════════════╝
+</div>
+```
+
+### Styling Requirements
+- Monospaced font matching canvas aesthetic
+- Dark background with slight transparency
+- Gold border and text to match canvas palette
+- ASCII box-drawing characters (╔═╗║╚╝) for frame
+- Input fields styled as underlined text: `_____________`
+- Submit button styled as `[ SUBMIT ]` or `> CONFIRM_` with blinking cursor
+
+### Form Fields
+1. **Name** (required, text input)
+2. **Plus One?** (checkbox or toggle)
+3. **Optional: Email** (for confirmation) - DECIDE IF NEEDED
+4. **Optional: Message** (brief text area) - DECIDE IF NEEDED
+
+### Success State
+- Brief confirmation: `RSVP CONFIRMED` in ASCII art
+- 2-3 second display, then fade out back to landing page
+- Form clears and can be submitted again if needed
+
+## Data Storage - Airtable Integration
+
+**Recommended approach:** Airtable for simplicity and ease of viewing responses.
+
+### Setup Requirements
+- Create Airtable base with table: "RSVPs"
+- Fields: Name (single line text), PlusOne (checkbox), Timestamp (created time), Email (optional)
+- Generate API key and base ID
+- **Store API credentials in environment variables or config file** (not in main code)
+
+### Submission Code Pattern
+```javascript
+// ✅ CORRECT - Clean Airtable submission
+async function submitRSVP(name, plusOne) {
+  const response = await fetch(AIRTABLE_URL, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      records: [{
+        fields: {
+          Name: name,
+          PlusOne: plusOne,
+          Timestamp: new Date().toISOString()
+        }
+      }]
+    })
+  });
+  return response.ok;
+}
+```
+
+**Alternative (email fallback):** If Airtable setup is blocked, use simple email submission via mailto link or basic form service.
+
+## Responsive & Mobile Strategy
+
+### Desktop (>1024px)
+- Full effects, 30fps target
+- All post-processing active
+- Mouse interaction fully enabled
+
+### Tablet (768-1024px)
+- Simplify post-processing (scanlines only, reduce bloom)
+- 30fps target maintained
+- Touch interaction instead of mouse hover
+
+### Mobile (<768px)
+- **Consider simplified version:**
+  - Static or minimal animation background
+  - Lighter post-processing or CSS-based effects
+  - 24fps target for battery conservation
+- **Alternative:** Full effects with lower frame rate (20fps) and reduced complexity
+
+```javascript
+// ✅ CORRECT - Adaptive complexity
+function setup() {
+  if (windowWidth < 768) {
+    targetFrameRate = 24;
+    enableBloom = false;
+  } else {
+    targetFrameRate = 30;
+    enableBloom = true;
+  }
+  frameRate(targetFrameRate);
+}
+```
+
+## Code Style & Organization
+
+### Naming Conventions
+- **Variables:** Descriptive camelCase—`particleSystem`, `waveAmplitude`, `introPhaseTimer`
+- **Functions:** Verb phrases—`generateParticles()`, `updateWaveform()`, `handleMousePress()`
+- **Constants:** UPPER_SNAKE_CASE—`MAX_NODES`, `INTRO_DURATION_MS`, `CHAR_WIDTH`
+- **Avoid abbreviations** unless extremely common (e.g., `x`, `y`, `i` for loops)
+
+### Function Organization
+Structure code in logical sections:
+1. Constants and configuration
+2. Global variables (minimize these)
+3. Setup function
+4. Draw loop and animation functions
+5. Helper functions (rendering, calculations)
+6. Event handlers (mouse, keyboard, resize)
+7. Class definitions (particles, nodes, etc.)
+
+### Comments & Documentation
+- Comment WHY not WHAT—code should be self-documenting
+- Add comments for performance optimizations explaining the tradeoff
+- Document timing values: `// 2000ms = 2 second intro phase`
+- Use TODO comments sparingly—prefer completing features
+
+```javascript
+// ✅ CORRECT - Explains reasoning
+// Using pixelDensity(1) to halve pixel processing for better frame rate on retina displays
+
+// ❌ AVOID - States the obvious
+// Set pixel density to 1
+pixelDensity(1);
+```
+
+### Performance Optimization Rules
+- **Always use `background()` at start of draw** unless intentionally creating trails
+- **Call `noLoop()`** if animation is paused or form is open (saves CPU)
+- **Use `push()` and `pop()`** to isolate transformation states—prevents cumulative transform bugs
+- **Prefer `translate()` and `rotate()`** over manual coordinate math
+- **Never load assets in `draw()`**—use `preload()` for all images, fonts, data
+- **Set explicit `frameRate(30)`** to ensure consistent animation speed across devices
+
+## Verification Checklist
+
+Before considering work complete, verify:
+
+- [ ] Canvas resizes properly on window resize without breaking grid
+- [ ] Intro sequence timing is exactly 5 seconds (measure with console logs)
+- [ ] Color transitions are smooth, not stepped or jumpy
+- [ ] Text remains readable with all post-processing effects enabled
+- [ ] Mouse scramble effect reverts characters correctly after timeout
+- [ ] [Plexus particles will be added in future iteration]
+- [ ] RSVP form appears/dismisses without canvas errors
+- [ ] Form submission successfully sends to Airtable (test with dummy data)
+- [ ] Mobile version loads and runs without performance issues
+- [ ] No console errors or warnings
+- [ ] Code follows naming conventions and organization structure
+
+## Open Questions (NEEDS INPUT)
+
+1. **Brief description text:** "A night for the true believers." ✅
+2. **Background code content:** Cult-aesthetic cryptic phrases ✅
+3. **Email confirmation:** Silent submission with on-screen confirmation ✅
+4. **Plus-one details:** Just yes/no count ✅
+5. **Sound design:** None for first pass ✅
+6. **Exact color values:** Parameterized for easy changes ✅
+
+---
+
+**Note:** This .cursorrules format is being deprecated by Cursor. After testing these rules, consider migrating to the new `.cursor/rules/*.mdc` format with frontmatter metadata for better organization and conditional application.
+
+**Leave NO to-do's, placeholders, or missing pieces in code.** Always implement complete, working, functional code that can run immediately.
+
+## Color Configuration
+
+All colors are parameterized for easy modification:
+
+```javascript
+const COLORS = {
+  background: '#000000',
+  nearBlack: '#1a1a1a',
+  grey: '#4a4a4a',
+  lightGrey: '#6a6a6a',
+  red: '#ff0033',
+  darkRed: '#cc0000',
+  gold: '#ffaa00',
+  lightGold: '#ff8800'
+};
+```
