@@ -100,6 +100,59 @@ function sketch(p) {
             "// Cleanup",
             "cudaStreamDestroy(stream);",
             "cudaFree(unified_memory);"
+        ],
+        asciiArt: [
+            "                                          ░░▒▓▓▓▓▓▓▒░░                                              ",
+            "                                  ░▓████████████████████████▓▒                                      ",
+            "                              ▒████████▓▒░░          ░░▒▓████████▒                                  ",
+            "                          ░▓██████▒                          ░██████▓                               ",
+            "                        ▒█████░                                  ▒█████░                            ",
+            "                      ▒████░                                        ▒████░                          ",
+            "                    ░████░                   ░░░░░░░                  ▒███▓                         ",
+            "                   ▓███░              ▒███████████████████▒             ████                        ",
+            "                  ████           ░▓█████▒░             ░▒█████▓          ███▓                       ",
+            "                 ███▓          ▓███▓░                       ░▓███▒        ███░                      ",
+            "                ███▓         ▓███                              ░███▒      ░███                      ",
+            "               ▒███        ▒██▓                                  ░███      ▓██▒                     ",
+            "               ███░       ███              ░▒████████▒░            ▓██     ▒███                     ",
+            "              ▒██▓       ███          ░▓██▓▒░        ░▒▓██▓░        ██▓    ░███                     ",
+            "              ███▒      ▓██         ▓█▓░                  ░██▒      ░██░   ░███                     ",
+            "              ███░     ░██░       ▒█▒                        ██░     ██▓   ░███                     ",
+            "              ███      ▓█▓       ██                           ▒█     ▒██   ░███                     ",
+            "              ███      ██▒      ██                             █▓    ▒██    ▓███                    ",
+            "              ███      ██░     ▒█                              ░█░   ▒██     ███▓                   ",
+            "              ███░     ██░     █▓                               █░   ░██▒     ███▓                  ",
+            "              ▒██▓     ██░     █▒                               █░    ░██▒     ████                 ",
+            "               ███░    ██▓     █▒                               ██     ░██▒     ▓███░                ",
+            "               ▓███    ░██     █▓                                ██      ██▓     ▒███░               ",
+            "                ███░    ██▓    ▒█                                 ▓█░     ███     ▒███               ",
+            "                ░███    ░██░    █▓                                 ▒█     ░██     ░███               ",
+            "                 ▒███    ▒██    ░█▒                               ██▓   ░███▓   █████▒               ",
+            "                  ▒███    ▒██    ░█▒                             ░█▒    ██▓    ▒███░                 ",
+            "                   ▓███    ▒██░   ░█▓                            ░██    ░██▒   ░███░                 ",
+            "                    ▒███░   ░██░    ██                           ░█▓   ░███▒    ░███                 ",
+            "                     ▒███░   ░██▒    █▓                          ▓█    ░███   ░█████                 ",
+            "                      ░███▒   ░██▒    █▒                         ▒█░    ███   ▒████                  ",
+            "                       ░███▒    ██▒   █▒                          █▒   ░██      ███▓                 ",
+            "                        ░███▒   ░██   █▒                 ░▒▒▒▒▒▒▓█▓     ██▒    ███▓                 ",
+            "                         ░███░   ██░ ░█░                ▓█░             ▒██   ░███                  ",
+            "                          ░███   ██▒ █▓                 █▓              ██▓    ███░                  ",
+            "                           ▓██▒  ██▒▓█                  ▓█  ▒████████████▓     ▒███                  ",
+            "                           ▒██▓  ████                    █▒███▓▓▓▓█▓▓▒▒         ███                  ",
+            "                           ░███ ▒███                     ▒███                  ▓███                  ",
+            "                           ░███ ██▒                       ▒██   ░░▒▒▒░░░░░▒▒▓█████░                 ",
+            "                           ░███▓██                         ██░░█████████████████░                    ",
+            "                           ▒█████░                         ▓█████░     ░                            ",
+            "                           █████░                          ░████▓                                    ",
+            "                          ░████░                            ░███▓                                    ",
+            "                          ████░                              ░███                                    ",
+            "                         ▒███                                 ███░                                   ",
+            "                         ███░                                 ▓██▓                                   ",
+            "                        ███▓                                   ███░                                  ",
+            "                       ▓███                                    ░███                                  ",
+            "                      ▓███                                      ▓███░                                ",
+            "                     ▓███                                        ▒███░                               ",
+            "                      ▓▒                                           ▒▒                                "
         ]
     };
 
@@ -125,6 +178,17 @@ function sketch(p) {
     
     // Main text buffer (separate layer)
     let mainTextBuffer;
+    
+    // ASCII art buffer (between background and main text)
+    let asciiArtBuffer;
+    let asciiArtText = [];
+    let asciiArtTypingIndex = 0;
+    let asciiArtTypingSpeed = 50; // ms per character
+    let asciiArtPhase = 0; // 0: not started, 1: typing on, 2: visible, 3: typing off, 4: hidden
+    let asciiArtStartTime = 0;
+    let asciiArtTypingOnDuration = 5000; // 5 seconds to type on
+    let asciiArtVisibleDuration = 2000;  // 2 seconds visible
+    let asciiArtTypingOffDuration = 4000; // 4 seconds to type off
     
     // HTML RSVP element
     let rsvpElement;
@@ -197,6 +261,11 @@ function sketch(p) {
         mainTextBuffer = p.createGraphics(p.width, p.height);
         mainTextBuffer.clear(); // Transparent background
         
+        // Initialize ASCII art buffer
+        asciiArtBuffer = p.createGraphics(p.width, p.height);
+        asciiArtBuffer.clear(); // Transparent background
+        initializeAsciiArt();
+        
         // Initialize HTML RSVP element
         rsvpElement = document.getElementById('rsvp-clickable');
         if (rsvpElement) {
@@ -220,6 +289,11 @@ function sketch(p) {
         
         // Draw character grid (background can write anywhere)
         drawCharGrid();
+        
+        // Clear and draw ASCII art buffer
+        asciiArtBuffer.clear();
+        drawAsciiArt();
+        p.image(asciiArtBuffer, 0, 0);
         
         // Clear main text buffer
         mainTextBuffer.clear();
@@ -270,6 +344,17 @@ function sketch(p) {
         
         // Initialize typing queue with background text
         initializeTypingQueue();
+    }
+    
+    function initializeAsciiArt() {
+        // Convert ASCII art to character array for typing animation
+        asciiArtText = [];
+        for (let line of CONFIG.asciiArt) {
+            asciiArtText.push(line.split(''));
+        }
+        asciiArtTypingIndex = 0;
+        asciiArtPhase = 0;
+        asciiArtStartTime = 0;
     }
 
     function initializeTypingQueue() {
@@ -491,6 +576,82 @@ function sketch(p) {
     }
 
     // Color transitions removed - text types directly as red/gold
+    
+    function drawAsciiArt() {
+        if (asciiArtPhase === 0) return; // Not started
+        
+        asciiArtBuffer.push();
+        asciiArtBuffer.fill(CONFIG.colors.gold);
+        asciiArtBuffer.textAlign(asciiArtBuffer.CENTER, asciiArtBuffer.TOP);
+        asciiArtBuffer.textSize(fontSize * 0.8); // Slightly smaller than main text
+        asciiArtBuffer.textFont('Courier New', fontSize * 0.8);
+        
+        // Center the ASCII art on screen
+        let startX = p.width / 2;
+        let startY = p.height / 2 - (asciiArtText.length * fontSize * 0.8) / 2;
+        
+        // Draw ASCII art with typing animation
+        for (let y = 0; y < asciiArtText.length; y++) {
+            let line = asciiArtText[y];
+            let lineText = '';
+            
+            if (asciiArtPhase === 1) {
+                // Typing on - show characters up to current index
+                let charsToShow = Math.floor((asciiArtTypingIndex / asciiArtText.length) * line.length);
+                lineText = line.slice(0, charsToShow).join('');
+            } else if (asciiArtPhase === 2) {
+                // Fully visible
+                lineText = line.join('');
+            } else if (asciiArtPhase === 3) {
+                // Typing off - hide characters from the end
+                let charsToHide = Math.floor(((asciiArtTypingIndex - asciiArtText.length) / asciiArtText.length) * line.length);
+                let charsToShow = Math.max(0, line.length - charsToHide);
+                lineText = line.slice(0, charsToShow).join('');
+            }
+            
+            if (lineText.length > 0) {
+                asciiArtBuffer.text(lineText, startX, startY + y * fontSize * 0.8);
+            }
+        }
+        
+        asciiArtBuffer.pop();
+        
+        // Update ASCII art animation
+        updateAsciiArtAnimation();
+    }
+    
+    function updateAsciiArtAnimation() {
+        if (asciiArtPhase === 0) {
+            // Start ASCII art after 3 seconds
+            if (currentTime - phaseStartTime > 3000) {
+                asciiArtPhase = 1;
+                asciiArtStartTime = currentTime;
+            }
+        } else if (asciiArtPhase === 1) {
+            // Typing on phase
+            if (currentTime - asciiArtStartTime >= asciiArtTypingOnDuration) {
+                asciiArtPhase = 2;
+                asciiArtStartTime = currentTime;
+            } else {
+                let progress = (currentTime - asciiArtStartTime) / asciiArtTypingOnDuration;
+                asciiArtTypingIndex = Math.floor(progress * asciiArtText.length);
+            }
+        } else if (asciiArtPhase === 2) {
+            // Visible phase
+            if (currentTime - asciiArtStartTime >= asciiArtVisibleDuration) {
+                asciiArtPhase = 3;
+                asciiArtStartTime = currentTime;
+            }
+        } else if (asciiArtPhase === 3) {
+            // Typing off phase
+            if (currentTime - asciiArtStartTime >= asciiArtTypingOffDuration) {
+                asciiArtPhase = 4; // Hidden
+            } else {
+                let progress = (currentTime - asciiArtStartTime) / asciiArtTypingOffDuration;
+                asciiArtTypingIndex = asciiArtText.length + Math.floor(progress * asciiArtText.length);
+            }
+        }
+    }
 
     function drawIntroContent() {
         // Draw title text
@@ -695,6 +856,10 @@ function sketch(p) {
         // Recreate main text buffer with new dimensions
         mainTextBuffer = p.createGraphics(p.width, p.height);
         mainTextBuffer.clear(); // Transparent background
+        
+        // Recreate ASCII art buffer with new dimensions
+        asciiArtBuffer = p.createGraphics(p.width, p.height);
+        asciiArtBuffer.clear(); // Transparent background
         
         // Update RSVP element font size
         if (rsvpElement) {
