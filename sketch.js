@@ -117,7 +117,7 @@ function sketch(p) {
         let charGrid = [];
         let gridCols, gridRows;
         let backgroundLastTypingTime = 0;
-        let backgroundTypingSpeed = 0.5; // ms per character (2000 chars/second)
+        let backgroundTypingSpeed = 0.01; // ms per character (100,000 chars/second with multi-char per frame)
         let currentTypingPosition = 0;
         let totalTypingPositions = 0;
         let typingQueue = [];
@@ -333,8 +333,15 @@ function sketch(p) {
     function updateCharGridTyping() {
         if (currentTime - backgroundLastTypingTime < backgroundTypingSpeed) return;
         
-        // Type next character from queue
-        if (currentTypingPosition < typingQueue.length) {
+        // Calculate how many characters to type this frame based on speed
+        let charsToType = 1;
+        if (backgroundTypingSpeed < 1) {
+            // For very fast speeds, type multiple characters per frame
+            charsToType = Math.floor(1 / backgroundTypingSpeed);
+        }
+        
+        // Type multiple characters from queue
+        for (let i = 0; i < charsToType && currentTypingPosition < typingQueue.length; i++) {
             let nextChar = typingQueue[currentTypingPosition];
             let x = nextChar.x;
             let y = nextChar.y;
@@ -346,8 +353,9 @@ function sketch(p) {
             }
             
             currentTypingPosition++;
-            backgroundLastTypingTime = currentTime;
         }
+        
+        backgroundLastTypingTime = currentTime;
     }
 
     function applyMouseScrambleToCell(x, y, screenX, screenY) {
