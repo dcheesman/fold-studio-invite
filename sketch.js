@@ -577,11 +577,11 @@ function sketch(p) {
         let baseWidth = cursorSize * 0.6;  // Shorter base for sharper triangle
         let height = cursorSize;           // Full height
         
-        // Create isosceles triangle pointing right with sharpest point
+        // Create isosceles triangle pointing left with sharpest point
         p.triangle(
-            cursorX, cursorY - baseWidth/2,     // Top left point
-            cursorX, cursorY + baseWidth/2,     // Bottom left point  
-            cursorX + height, cursorY           // Right point (sharpest)
+            cursorX, cursorY - baseWidth/2,     // Top right point
+            cursorX, cursorY + baseWidth/2,     // Bottom right point  
+            cursorX - height, cursorY           // Left point (sharpest)
         );
         
         p.pop();
