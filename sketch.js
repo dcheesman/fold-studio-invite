@@ -478,7 +478,7 @@ function sketch(p) {
     
     function initializeSimpleTyping() {
         // Set up simple text positions
-        titleX = p.floor(gridCols * 0.05); // Move closer to left edge (5% instead of 20%)
+        titleX = 2; // Start at column 2 (very close to left edge)
         titleY = p.floor(p.height * 0.07) / charHeight; // Higher up in top quarter
         
         infoLines = [
