@@ -452,10 +452,13 @@ function sketch(p) {
             "                      (^                                           *+                               ",
             "                                                                                                    ",
             "                                                                                                    "
-        ];
-        
+        ]
+    };
+    
+    function initializeAsciiArt() {
+        // Use CONFIG.asciiArt
         asciiArtText = [];
-        for (let line of headAsciiArt) {
+        for (let line of CONFIG.asciiArt) {
             asciiArtText.push(line.split(''));
         }
         setupAsciiArtRandomOrder();
@@ -469,7 +472,6 @@ function sketch(p) {
         }
         setupTitleAsciiArtRandomOrder();
     }
-    
     
     function setupAsciiArtRandomOrder() {
         asciiArtTypingIndex = 0;
