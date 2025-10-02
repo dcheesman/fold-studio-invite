@@ -674,7 +674,7 @@ function sketch(p) {
         }
     }
     
-    function p.windowResized() {
+    p.windowResized = function() {
         p.resizeCanvas(p.windowWidth, p.windowHeight);
         initializeCharGrid();
         initializeTypingQueue();
@@ -692,9 +692,9 @@ function sketch(p) {
         }
     }
     
-    function p.mousePressed() {
+    p.mousePressed = function() {
         // Mouse press handling if needed
-    }
+    };
     
     // Return the p5 instance
     return p;
