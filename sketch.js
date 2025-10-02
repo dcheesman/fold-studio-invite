@@ -474,7 +474,7 @@ function sketch(p) {
     function initializeSimpleTyping() {
         // Set up simple text positions
         titleX = p.floor(gridCols * 0.2);
-        titleY = p.floor(gridRows * 0.4);
+        titleY = p.floor(gridRows * 0.25); // Top quarter of the page
         
         infoLines = [
             CONFIG.text.subtitle,
@@ -482,7 +482,7 @@ function sketch(p) {
             CONFIG.text.address,
             CONFIG.text.description
         ];
-        infoStartY = p.floor(gridRows * 0.55);
+        infoStartY = p.floor(gridRows * 0.35); // Below title in top quarter
         
         // Reset typing indices
         titleTypingIndex = 0;
@@ -780,8 +780,12 @@ function sketch(p) {
         asciiArtBuffer.fill(CONFIG.colors.gold);
         asciiArtBuffer.textFont('Courier New', fontSize);
         
-        // Center the ASCII art
-        let startX = Math.floor((cols - asciiArtText[0].length) / 2);
+        // Center the ASCII art horizontally (find longest line for proper centering)
+        let maxLineLength = 0;
+        for (let line of asciiArtText) {
+            maxLineLength = Math.max(maxLineLength, line.length);
+        }
+        let startX = Math.floor((cols - maxLineLength) / 2);
         let startY = Math.floor((rows - asciiArtText.length) / 2);
         
         for (let i = 0; i < asciiArtText.length; i++) {
@@ -861,9 +865,13 @@ function sketch(p) {
         mainTextBuffer.textFont('Courier New', fontSize);
         mainTextBuffer.textSize(fontSize);
         
-        // Center the ASCII art
-        let startX = Math.floor((cols - titleAsciiText[0].length) / 2);
-        let startY = Math.floor((rows - titleAsciiText.length) / 2);
+        // Center the ASCII art horizontally (find longest line for proper centering)
+        let maxLineLength = 0;
+        for (let line of titleAsciiText) {
+            maxLineLength = Math.max(maxLineLength, line.length);
+        }
+        let startX = Math.floor((cols - maxLineLength) / 2);
+        let startY = Math.floor(gridRows * 0.25); // Top quarter of the page
         
         for (let i = 0; i < titleAsciiText.length; i++) {
             let lineText = '';
@@ -880,9 +888,9 @@ function sketch(p) {
                 let drawY = (startY + i) * charHeight;
                 
                 // Draw black background rectangle
-                mainTextBuffer.fill(CONFIG.colors.background);
-                mainTextBuffer.noStroke();
-                mainTextBuffer.rect(x - 2, drawY - 2, lineText.length * charWidth + 4, charHeight + 4);
+                // mainTextBuffer.fill(CONFIG.colors.background);
+                // mainTextBuffer.noStroke();
+                // mainTextBuffer.rect(x - 2, drawY - 2, lineText.length * charWidth + 4, charHeight + 4);
                 
                 // Draw ASCII art line
                 mainTextBuffer.fill(CONFIG.colors.pureRed);
