@@ -674,6 +674,7 @@ function sketch(p) {
         } else if (introPhase === 2) {
             // Wait for info typing to complete
             let totalInfoChars = infoLines.reduce((sum, line) => sum + line.length + 1, 0); // +1 for newline
+            console.log(`Info typing progress: ${infoTypingIndex}/${totalInfoChars}`);
             if (infoTypingIndex >= totalInfoChars) {
                 // Intro complete - stay in this phase
                 console.log("Transitioning to Phase 3 - Complete");
@@ -710,10 +711,22 @@ function sketch(p) {
     function handleInfoTyping() {
         if (currentTime - infoLastTypingTime > typingSpeed) {
             // Build info text line by line
-            let currentLine = Math.floor(infoTypingIndex / 50); // Approximate chars per line
+            let currentLine = 0;
+            let charCount = 0;
+            
+            // Find which line we're currently typing
+            for (let i = 0; i < infoLines.length; i++) {
+                if (infoTypingIndex < charCount + infoLines[i].length + 1) { // +1 for newline
+                    currentLine = i;
+                    break;
+                }
+                charCount += infoLines[i].length + 1; // +1 for newline
+            }
+            
             if (currentLine < infoLines.length) {
                 let lineText = infoLines[currentLine];
-                let lineIndex = infoTypingIndex % 50;
+                let lineIndex = infoTypingIndex - charCount;
+                
                 if (lineIndex < lineText.length) {
                     infoText += lineText[lineIndex];
                 } else if (lineIndex === lineText.length) {
@@ -788,7 +801,7 @@ function sketch(p) {
             
             // Draw text (align with background rectangle)
             mainTextBuffer.fill(color);
-            mainTextBuffer.text(lines[i], x, y + charHeight - 2); // Align with background
+            mainTextBuffer.text(lines[i], x, y + charHeight - 4); // Better vertical centering
         }
         mainTextBuffer.pop();
     }
