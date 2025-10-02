@@ -406,6 +406,71 @@ function sketch(p) {
         setupTitleAsciiArtRandomOrder();
     }
     
+    function initializeTypingQueue() {
+        typingQueue = [];
+        currentTypingPosition = 0;
+        
+        // Create a dense, code-like layout with much more content
+        let selectedPhrases = CONFIG.backgroundText; // Use all phrases
+        let positions = [];
+        
+        // Create moderate amount of code for performance
+        for (let i = 0; i < selectedPhrases.length * 5; i++) { // Reduced from 15x to 5x
+            let phrase = selectedPhrases[i % selectedPhrases.length];
+            let x = p.floor(p.random(0, gridCols - phrase.length)); // Allow full width usage
+            let y = p.floor(p.random(0, gridRows)); // Use entire height
+            positions.push({x: x, y: y, text: phrase});
+        }
+        
+        // Add fewer random single characters for performance
+        for (let i = 0; i < gridCols * gridRows / 20; i++) { // Reduced from /10 to /20
+            let x = p.floor(p.random(0, gridCols));
+            let y = p.floor(p.random(0, gridRows));
+            let randomChars = ['#', '@', '$', '%', '&', '*', '+', '=', '~', '^', '|', '\\', '/', '-', '_'];
+            let char = randomChars[p.floor(p.random(randomChars.length))];
+            positions.push({x: x, y: y, text: char});
+        }
+        
+        // Don't sort - keep random order for better distribution
+        // positions.sort((a, b) => a.y - b.y || a.x - b.x);
+        
+        // Add to typing queue
+        for (let pos of positions) {
+            for (let i = 0; i < pos.text.length; i++) {
+                if (pos.x + i < gridCols) {
+                    typingQueue.push({
+                        x: pos.x + i,
+                        y: pos.y,
+                        char: pos.text[i],
+                        color: CONFIG.colors.grey
+                    });
+                }
+            }
+        }
+        
+        totalTypingPositions = typingQueue.length;
+    }
+    
+    function initializeSimpleTyping() {
+        // Set up simple text positions
+        titleX = p.floor(gridCols * 0.2);
+        titleY = p.floor(gridRows * 0.4);
+        
+        infoLines = [
+            CONFIG.text.subtitle,
+            CONFIG.text.date,
+            CONFIG.text.address,
+            CONFIG.text.description
+        ];
+        infoStartY = p.floor(gridRows * 0.55);
+        
+        // Reset typing indices
+        titleTypingIndex = 0;
+        infoTypingIndex = 0;
+        titleText = "";
+        infoText = "";
+    }
+    
     function setupAsciiArtRandomOrder() {
         asciiArtTypingIndex = 0;
         asciiArtPhase = 0;
