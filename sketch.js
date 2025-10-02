@@ -478,7 +478,7 @@ function sketch(p) {
     
     function initializeSimpleTyping() {
         // Set up simple text positions
-        titleX = p.floor(gridCols * 0.2);
+        titleX = p.floor(gridCols * 0.05); // Move closer to left edge (5% instead of 20%)
         titleY = p.floor(p.height * 0.07) / charHeight; // Higher up in top quarter
         
         infoLines = [
@@ -487,7 +487,7 @@ function sketch(p) {
             CONFIG.text.address,
             CONFIG.text.description
         ];
-        infoStartY = p.floor(p.height * 0.65) / charHeight; // Bottom third of page
+        infoStartY = p.floor(p.height * 0.60) / charHeight; // Move up slightly from bottom third
         
         // Reset typing indices
         titleTypingIndex = 0;
@@ -785,8 +785,6 @@ function sketch(p) {
     }
     
     function drawSimpleText(text, startX, startY, color, size, backgroundColor = null) {
-        console.log(`drawSimpleText: text="${text}", color=${color}, backgroundColor=${backgroundColor}`);
-        
         mainTextBuffer.push();
         mainTextBuffer.textAlign(mainTextBuffer.LEFT, mainTextBuffer.TOP);
         mainTextBuffer.textSize(fontSize);
@@ -799,21 +797,16 @@ function sketch(p) {
             let x = startX * charWidth;
             let y = (startY + i) * charHeight;
             
-            console.log(`Drawing line ${i}: "${lines[i]}", x=${x}, y=${y}, width=${lines[i].length * charWidth}`);
-            
             // Draw background rectangle
             if (backgroundColor) {
-                console.log(`Drawing background with color: ${backgroundColor}`);
                 mainTextBuffer.fill(p.color(backgroundColor));
             } else {
-                console.log(`Drawing background with default color: ${CONFIG.colors.background}`);
                 mainTextBuffer.fill(p.color(CONFIG.colors.background));
             }
             mainTextBuffer.noStroke();
             mainTextBuffer.rect(x - 2, y - 2, lines[i].length * charWidth + 4, charHeight + 4);
             
             // Draw text (align with background rectangle)
-            console.log(`Drawing text with color: ${color}`);
             mainTextBuffer.fill(p.color(color));
             mainTextBuffer.noStroke();
             mainTextBuffer.text(lines[i], x, y + charHeight - 4);
