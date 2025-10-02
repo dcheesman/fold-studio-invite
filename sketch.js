@@ -198,13 +198,18 @@ function sketch(p) {
     let fontSize;
     
     // Character grid system
-    let charGrid = [];
     let gridCols, gridRows;
     let backgroundLastTypingTime = 0;
-    let backgroundTypingSpeed = 0.3; // ms per character (100,000 chars/second with multi-char per frame)
-    let currentTypingPosition = 0;
-    let totalTypingPositions = 0;
-    let typingQueue = [];
+    let backgroundTypingSpeed = 50; // ms per character (same as ASCII art)
+    let backgroundRandomOrder = []; // Random order for typing
+    let backgroundVisibleChars = []; // Track which chars are visible
+    let backgroundTypingIndex = 0;
+    let backgroundPhase = 0; // 0: typing on, 1: visible, 2: typing off
+    let backgroundStartTime = 0;
+    let backgroundTypingOnDuration = 5000; // 5 seconds to type on
+    let backgroundVisibleDuration = 3000;  // 3 seconds visible
+    let backgroundTypingOffDuration = 2000; // 2 seconds to type off
+    let backgroundText = []; // Store the background text as 2D array
     
     // Main text buffer (separate layer)
     let mainTextBuffer;
@@ -291,8 +296,8 @@ function sketch(p) {
         
         // Calculate grid system
         fontSize = isMobile ? 16 : 18;
-        charWidth = fontSize * 0.6; // Monospace character width
-        charHeight = fontSize * 1.2; // Line height
+        charWidth = fontSize; // Monospace character width
+        charHeight = fontSize; // Line height
         cols = p.floor(p.width / charWidth);
         rows = p.floor(p.height / charHeight);
         
@@ -372,23 +377,8 @@ function sketch(p) {
         // Initialize character grid
         gridCols = cols;
         gridRows = rows;
-        charGrid = [];
         
-        // Initialize empty grid
-        for (let y = 0; y < gridRows; y++) {
-            charGrid[y] = [];
-            for (let x = 0; x < gridCols; x++) {
-                charGrid[y][x] = {
-                    char: ' ',
-                    color: CONFIG.colors.grey,
-                    isTyped: false,
-                    scrambleChar: null,
-                    scrambleTimeout: null
-                };
-            }
-        }
-        
-        // Initialize typing queue with background text
+        // Initialize typing queue with new random system
         initializeTypingQueue();
     }
     
@@ -411,8 +401,14 @@ function sketch(p) {
     }
     
     function initializeTypingQueue() {
-        typingQueue = [];
-        currentTypingPosition = 0;
+        // Initialize background text as 2D array
+        backgroundText = [];
+        for (let y = 0; y < gridRows; y++) {
+            backgroundText[y] = [];
+            for (let x = 0; x < gridCols; x++) {
+                backgroundText[y][x] = ' ';
+            }
+        }
         
         // Create a dense, code-like layout with much more content
         let selectedPhrases = CONFIG.backgroundText; // Use all phrases
@@ -435,24 +431,44 @@ function sketch(p) {
             positions.push({x: x, y: y, text: char});
         }
         
-        // Don't sort - keep random order for better distribution
-        // positions.sort((a, b) => a.y - b.y || a.x - b.x);
-        
-        // Add to typing queue
+        // Fill the background text array
         for (let pos of positions) {
             for (let i = 0; i < pos.text.length; i++) {
                 if (pos.x + i < gridCols) {
-                    typingQueue.push({
-                        x: pos.x + i,
-                        y: pos.y,
-                        char: pos.text[i],
-                        color: CONFIG.colors.grey
-                    });
+                    backgroundText[pos.y][pos.x + i] = pos.text[i];
                 }
             }
         }
         
-        totalTypingPositions = typingQueue.length;
+        // Create random order for typing
+        backgroundRandomOrder = [];
+        for (let y = 0; y < gridRows; y++) {
+            for (let x = 0; x < gridCols; x++) {
+                if (backgroundText[y][x] !== ' ') {
+                    backgroundRandomOrder.push({x, y});
+                }
+            }
+        }
+        
+        // Shuffle the order
+        for (let i = backgroundRandomOrder.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [backgroundRandomOrder[i], backgroundRandomOrder[j]] = [backgroundRandomOrder[j], backgroundRandomOrder[i]];
+        }
+        
+        // Initialize visible chars array
+        backgroundVisibleChars = [];
+        for (let y = 0; y < gridRows; y++) {
+            backgroundVisibleChars[y] = [];
+            for (let x = 0; x < gridCols; x++) {
+                backgroundVisibleChars[y][x] = false;
+            }
+        }
+        
+        // Reset animation state
+        backgroundTypingIndex = 0;
+        backgroundPhase = 0;
+        backgroundStartTime = 0;
     }
     
     function initializeSimpleTyping() {
@@ -525,21 +541,16 @@ function sketch(p) {
     function drawCharGrid() {
         p.push();
         p.textAlign(p.LEFT, p.TOP);
+        p.fill(CONFIG.colors.grey);
+        p.textFont('Courier New', fontSize);
         
-        // Update typing animation
-        updateCharGridTyping();
-        
-        // Draw the character grid
+        // Draw characters that are visible
         for (let y = 0; y < gridRows; y++) {
             for (let x = 0; x < gridCols; x++) {
-                let cell = charGrid[y][x];
-                let screenX = x * charWidth;
-                let screenY = y * charHeight;
-                
-                // Only draw if cell is visible and has content
-                if (screenY > -charHeight && screenY < p.height && cell.char !== ' ') {
-                    let displayChar = cell.char;
-                    let displayColor = cell.color;
+                if (backgroundVisibleChars[y] && backgroundVisibleChars[y][x]) {
+                    let screenX = x * charWidth;
+                    let screenY = y * charHeight;
+                    let displayChar = backgroundText[y][x];
                     
                     // Apply mouse scramble effect only to background code, not main text
                     if (isIntroComplete) {
@@ -549,40 +560,66 @@ function sketch(p) {
                         }
                     }
                     
-                    p.fill(displayColor);
                     p.text(displayChar, screenX, screenY);
                 }
             }
         }
+        
+        // Update typing animation
+        updateCharGridTyping();
         p.pop();
     }
     
     function updateCharGridTyping() {
-        if (currentTime - backgroundLastTypingTime < backgroundTypingSpeed) return;
+        if (!backgroundRandomOrder) return;
         
-        // Calculate how many characters to type this frame based on speed
-        let charsToType = 1;
-        if (backgroundTypingSpeed < 1) {
-            // For very fast speeds, type multiple characters per frame
-            charsToType = Math.floor(1 / backgroundTypingSpeed);
-        }
-        
-        // Type multiple characters from queue
-        for (let i = 0; i < charsToType && currentTypingPosition < typingQueue.length; i++) {
-            let nextChar = typingQueue[currentTypingPosition];
-            let x = nextChar.x;
-            let y = nextChar.y;
-            
-            if (x < gridCols && y < gridRows) {
-                charGrid[y][x].char = nextChar.char;
-                charGrid[y][x].color = nextChar.color;
-                charGrid[y][x].isTyped = true;
+        let currentTime = p.millis();
+        if (backgroundPhase === 0) { // Typing on
+            if (currentTime - backgroundLastTypingTime > backgroundTypingSpeed) {
+                let charsToType = Math.floor(Math.random() * 21) + 10; // 10-30 chars per frame
+                for (let i = 0; i < charsToType && backgroundTypingIndex < backgroundRandomOrder.length; i++) {
+                    let pos = backgroundRandomOrder[backgroundTypingIndex];
+                    if (!backgroundVisibleChars[pos.y]) {
+                        backgroundVisibleChars[pos.y] = [];
+                    }
+                    backgroundVisibleChars[pos.y][pos.x] = true;
+                    backgroundTypingIndex++;
+                }
+                backgroundLastTypingTime = currentTime;
+                
+                if (backgroundTypingIndex >= backgroundRandomOrder.length) {
+                    backgroundPhase = 1; // Wait
+                    backgroundStartTime = currentTime;
+                }
             }
-            
-            currentTypingPosition++;
+        } else if (backgroundPhase === 1) { // Wait
+            if (currentTime - backgroundStartTime > backgroundVisibleDuration) {
+                backgroundPhase = 2; // Typing off
+                backgroundTypingIndex = backgroundRandomOrder.length - 1;
+            }
+        } else if (backgroundPhase === 2) { // Typing off
+            if (currentTime - backgroundLastTypingTime > backgroundTypingSpeed) {
+                let charsToType = Math.floor(Math.random() * 21) + 10; // 10-30 chars per frame
+                for (let i = 0; i < charsToType && backgroundTypingIndex >= 0; i++) {
+                    let pos = backgroundRandomOrder[backgroundTypingIndex];
+                    if (backgroundVisibleChars[pos.y]) {
+                        backgroundVisibleChars[pos.y][pos.x] = false;
+                    }
+                    backgroundTypingIndex--;
+                }
+                backgroundLastTypingTime = currentTime;
+                
+                if (backgroundTypingIndex < 0) {
+                    backgroundPhase = 0; // Restart
+                    backgroundTypingIndex = 0;
+                    // Reshuffle for next cycle
+                    for (let i = backgroundRandomOrder.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [backgroundRandomOrder[i], backgroundRandomOrder[j]] = [backgroundRandomOrder[j], backgroundRandomOrder[i]];
+                    }
+                }
+            }
         }
-        
-        backgroundLastTypingTime = currentTime;
     }
     
     function applyMouseScrambleToCell(x, y, screenX, screenY) {
@@ -591,22 +628,28 @@ function sketch(p) {
         let distance = p.dist(screenX, screenY, mouseX, mouseY);
         
         if (distance < mouseProximity) {
-            let cell = charGrid[y][x];
             let cellKey = `${x}-${y}`;
             
-            if (!cell.scrambleChar) {
-                cell.scrambleChar = randomScrambleChar();
+            // Initialize scramble tracking if needed
+            if (!window.scrambleCells) {
+                window.scrambleCells = {};
+            }
+            
+            if (!window.scrambleCells[cellKey]) {
+                window.scrambleCells[cellKey] = {
+                    scrambleChar: randomScrambleChar(),
+                    scrambleTimeout: null
+                };
                 
                 // Set timeout to revert character
-                if (cell.scrambleTimeout) {
-                    clearTimeout(cell.scrambleTimeout);
+                if (window.scrambleCells[cellKey].scrambleTimeout) {
+                    clearTimeout(window.scrambleCells[cellKey].scrambleTimeout);
                 }
-                cell.scrambleTimeout = setTimeout(() => {
-                    cell.scrambleChar = null;
-                    cell.scrambleTimeout = null;
+                window.scrambleCells[cellKey].scrambleTimeout = setTimeout(() => {
+                    delete window.scrambleCells[cellKey];
                 }, 300);
             }
-            return cell.scrambleChar;
+            return window.scrambleCells[cellKey].scrambleChar;
         }
         return null;
     }
@@ -709,8 +752,8 @@ function sketch(p) {
         mainTextBuffer.push();
         mainTextBuffer.fill(color);
         mainTextBuffer.textAlign(mainTextBuffer.LEFT, mainTextBuffer.TOP);
-        mainTextBuffer.textSize(fontSize * size);
-        mainTextBuffer.textFont('Courier New', fontSize * size);
+        mainTextBuffer.textSize(fontSize);
+        mainTextBuffer.textFont('Courier New', fontSize);
         
         // Draw text with black background to overwrite
         let lines = text.split('\n');
@@ -735,7 +778,7 @@ function sketch(p) {
         
         asciiArtBuffer.push();
         asciiArtBuffer.fill(CONFIG.colors.grey);
-        asciiArtBuffer.textFont('Courier New', fontSize * 0.6);
+        asciiArtBuffer.textFont('Courier New', fontSize);
         
         // Center the ASCII art
         let startX = Math.floor((cols - asciiArtText[0].length) / 2);
