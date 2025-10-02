@@ -30,6 +30,7 @@ function sketch(p) {
             description: "A night for the true believers.",
             rsvpText: "→ RSVP"
         },
+        // ASCII art will be loaded from files
         titleAsciiArt: [
             "                                      #*##*##**  *##   #**  #*##*##*    #*## *### *###                                                     ",
             "                                         *##     *##   ##*  #*          #**# *#*# *#*#                                                     ",
@@ -217,6 +218,14 @@ function sketch(p) {
     let asciiArtVisibleChars = []; // Track which chars are visible
     let asciiArtLastTypingTime = 0;
     
+    // Title ASCII art animation (same system as head ASCII art)
+    let titleAsciiText = [];
+    let titleAsciiRandomOrder = [];
+    let titleAsciiVisibleChars = [];
+    let titleAsciiTypingIndex = 0;
+    let titleAsciiLastTypingTime = 0;
+    let titleAsciiPhase = 0; // 0: not started, 1: typing on, 2: visible, 3: typing off, 4: done
+    
     // HTML RSVP element
     let rsvpElement;
     
@@ -292,6 +301,7 @@ function sketch(p) {
         asciiArtBuffer = p.createGraphics(p.width, p.height);
         asciiArtBuffer.clear(); // Transparent background
         initializeAsciiArt();
+        initializeTitleAsciiArt();
         
         // Initialize HTML RSVP element
         rsvpElement = document.getElementById('rsvp-clickable');
@@ -373,12 +383,35 @@ function sketch(p) {
         initializeTypingQueue();
     }
     
+    function loadAsciiArtFromFile(filename, callback) {
+        p.loadStrings(filename, (lines) => {
+            callback(lines);
+        });
+    }
+    
     function initializeAsciiArt() {
-        // Convert ASCII art to character array for typing animation
-        asciiArtText = [];
-        for (let line of CONFIG.asciiArt) {
-            asciiArtText.push(line.split(''));
-        }
+        // Load head ASCII art from file
+        loadAsciiArtFromFile('head.txt', (lines) => {
+            asciiArtText = [];
+            for (let line of lines) {
+                asciiArtText.push(line.split(''));
+            }
+            setupAsciiArtRandomOrder();
+        });
+    }
+    
+    function initializeTitleAsciiArt() {
+        // Load title ASCII art from file
+        loadAsciiArtFromFile('the_fold.txt', (lines) => {
+            titleAsciiText = [];
+            for (let line of lines) {
+                titleAsciiText.push(line.split(''));
+            }
+            setupTitleAsciiArtRandomOrder();
+        });
+    }
+    
+    function setupAsciiArtRandomOrder() {
         asciiArtTypingIndex = 0;
         asciiArtPhase = 0;
         asciiArtStartTime = 0;
@@ -400,8 +433,29 @@ function sketch(p) {
             const j = Math.floor(Math.random() * (i + 1));
             [asciiArtRandomOrder[i], asciiArtRandomOrder[j]] = [asciiArtRandomOrder[j], asciiArtRandomOrder[i]];
         }
+    }
+    
+    function setupTitleAsciiArtRandomOrder() {
+        titleAsciiTypingIndex = 0;
+        titleAsciiPhase = 0;
         
-        asciiArtTypingIndex = 0;
+        // Create random order for typing
+        titleAsciiRandomOrder = [];
+        titleAsciiVisibleChars = [];
+        
+        // Create array of all character positions
+        for (let y = 0; y < titleAsciiText.length; y++) {
+            for (let x = 0; x < titleAsciiText[y].length; x++) {
+                titleAsciiRandomOrder.push({x: x, y: y});
+                titleAsciiVisibleChars.push(false);
+            }
+        }
+        
+        // Shuffle the order
+        for (let i = titleAsciiRandomOrder.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [titleAsciiRandomOrder[i], titleAsciiRandomOrder[j]] = [titleAsciiRandomOrder[j], titleAsciiRandomOrder[i]];
+        }
     }
 
     function initializeTypingQueue() {
@@ -730,7 +784,7 @@ function sketch(p) {
         // Draw title text
         if (introPhase >= 1 && titleText.length > 0) {
             // Use ASCII art for title
-            drawAsciiTitle(CONFIG.titleAsciiArt, titleX, titleY, CONFIG.colors.pureRed, 2);
+            drawAsciiTitle(titleAsciiText, titleX, titleY, CONFIG.colors.pureRed, 1);
         }
         
         // Draw info text
@@ -778,28 +832,85 @@ function sketch(p) {
         mainTextBuffer.pop();
     }
     
+    function updateTitleAsciiAnimation() {
+        let currentTime = p.millis();
+        
+        if (titleAsciiPhase === 0) {
+            // Start title ASCII art when title phase begins
+            if (introPhase >= 1) {
+                titleAsciiPhase = 1;
+                titleAsciiLastTypingTime = currentTime;
+            }
+        } else if (titleAsciiPhase === 1) {
+            // Typing on - random characters per frame
+            if (currentTime - titleAsciiLastTypingTime >= asciiArtTypingSpeed) {
+                let charsToType = Math.floor(p.random(10, 31)); // 10-30 characters per frame
+                for (let i = 0; i < charsToType && titleAsciiTypingIndex < titleAsciiRandomOrder.length; i++) {
+                    titleAsciiVisibleChars[titleAsciiTypingIndex] = true;
+                    titleAsciiTypingIndex++;
+                }
+                titleAsciiLastTypingTime = currentTime;
+            }
+            
+            if (titleAsciiTypingIndex >= titleAsciiRandomOrder.length) {
+                titleAsciiPhase = 2; // Fully visible
+            }
+        }
+    }
+    
     function drawAsciiTitle(text, startX, startY, color, size) {
+        if (titleAsciiPhase === 0 || titleAsciiText.length === 0) {
+            updateTitleAsciiAnimation();
+            return;
+        }
+        
         mainTextBuffer.push();
         mainTextBuffer.fill(color);
         mainTextBuffer.textAlign(mainTextBuffer.LEFT, mainTextBuffer.TOP);
         mainTextBuffer.textSize(fontSize * size); // Match background code size
         mainTextBuffer.textFont('Courier New', fontSize * size);
         
-        // Draw ASCII art title
-        for (let i = 0; i < text.length; i++) {
-            let x = startX * charWidth;
-            let y = (startY + i) * charHeight; // Match background code line spacing
+        // Draw ASCII art title with random character visibility
+        for (let y = 0; y < titleAsciiText.length; y++) {
+            let line = titleAsciiText[y];
+            let lineText = '';
             
-            // Draw black background rectangle
-            mainTextBuffer.fill(CONFIG.colors.background);
-            mainTextBuffer.noStroke();
-            mainTextBuffer.rect(x - 2, y - 2, text[i].length * charWidth + 4, charHeight + 4);
+            // Build line based on visible characters
+            for (let x = 0; x < line.length; x++) {
+                // Find this character's index in the random order
+                let charIndex = -1;
+                for (let i = 0; i < titleAsciiRandomOrder.length; i++) {
+                    if (titleAsciiRandomOrder[i].x === x && titleAsciiRandomOrder[i].y === y) {
+                        charIndex = i;
+                        break;
+                    }
+                }
+                
+                // Only show character if it's marked as visible
+                if (charIndex >= 0 && titleAsciiVisibleChars[charIndex]) {
+                    lineText += line[x];
+                } else {
+                    lineText += ' '; // Space for invisible characters
+                }
+            }
             
-            // Draw ASCII art line
-            mainTextBuffer.fill(color);
-            mainTextBuffer.text(text[i], x, y);
+            if (lineText.trim().length > 0) {
+                let x = startX * charWidth;
+                let y = (startY + y) * charHeight;
+                
+                // Draw black background rectangle
+                mainTextBuffer.fill(CONFIG.colors.background);
+                mainTextBuffer.noStroke();
+                mainTextBuffer.rect(x - 2, y - 2, lineText.length * charWidth + 4, charHeight + 4);
+                
+                // Draw ASCII art line
+                mainTextBuffer.fill(color);
+                mainTextBuffer.text(lineText, x, y);
+            }
         }
+        
         mainTextBuffer.pop();
+        updateTitleAsciiAnimation();
     }
 
 
@@ -807,7 +918,7 @@ function sketch(p) {
         // Draw all main text in settled state
         if (titleText.length > 0) {
             // Use ASCII art for title
-            drawAsciiTitle(CONFIG.titleAsciiArt, titleX, titleY, CONFIG.colors.pureRed, 2);
+            drawAsciiTitle(titleAsciiText, titleX, titleY, CONFIG.colors.pureRed, 1);
         }
         
         if (infoText.length > 0) {
