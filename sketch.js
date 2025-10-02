@@ -223,6 +223,9 @@ function sketch(p) {
     
     // ASCII art buffer (between background and main text)
     let asciiArtBuffer;
+    
+    // Title ASCII art buffer (above event info)
+    let titleAsciiBuffer;
     let asciiArtText = [];
     let asciiArtTypingIndex = 0;
     let asciiArtTypingSpeed = 50; // ms per character
@@ -317,6 +320,9 @@ function sketch(p) {
         
         // Initialize ASCII art buffer
         asciiArtBuffer = p.createGraphics(p.width, p.height);
+        
+        // Initialize title ASCII art buffer
+        titleAsciiBuffer = p.createGraphics(p.width, p.height);
         asciiArtBuffer.clear(); // Transparent background
         initializeAsciiArt();
         initializeTitleAsciiArt();
@@ -361,14 +367,23 @@ function sketch(p) {
             drawIntroContent();
         }
         
-        // Draw main text buffer on top
-        p.image(mainTextBuffer, 0, 0);
-        
-        // Draw ASCII art buffer (only during intro phases)
+        // Draw layers in correct order (bottom to top):
+        // 1. Background code (already drawn)
+        // 2. ASCII art head buffer
         if (!isIntroComplete) {
             asciiArtBuffer.clear();
             drawAsciiArt();
             p.image(asciiArtBuffer, 0, 0);
+        }
+        
+        // 3. Event info (main text buffer)
+        p.image(mainTextBuffer, 0, 0);
+        
+        // 4. Title ASCII art buffer (above event info)
+        if (introPhase >= 1) {
+            titleAsciiBuffer.clear();
+            drawAsciiTitle();
+            p.image(titleAsciiBuffer, 0, 0);
         }
         
         // Draw cursor
@@ -764,12 +779,6 @@ function sketch(p) {
     }
     
     function drawIntroContent() {
-        // Draw title text
-        if (introPhase >= 1) {
-            // Use ASCII art for title
-            drawAsciiTitle();
-        }
-        
         // Draw info text
         if (introPhase >= 2) {
             // In phase 3, use the full info text from CONFIG
@@ -921,10 +930,10 @@ function sketch(p) {
     function drawAsciiTitle() {
         if (!titleAsciiText || titleAsciiText.length === 0) return;
         
-        mainTextBuffer.push();
-        mainTextBuffer.fill(CONFIG.colors.pureRed);
-        mainTextBuffer.textFont('Courier New', fontSize);
-        mainTextBuffer.textSize(fontSize);
+        titleAsciiBuffer.push();
+        titleAsciiBuffer.fill(CONFIG.colors.pureRed);
+        titleAsciiBuffer.textFont('Courier New', fontSize);
+        titleAsciiBuffer.textSize(fontSize);
         
         // Calculate scaling to fit within page width while maintaining aspect ratio
         let maxLineLength = 0;
@@ -947,7 +956,7 @@ function sketch(p) {
         let startY = p.height * 0.15; // Higher up in top quarter
         
         // Set scaled font size
-        mainTextBuffer.textSize(fontSize * scaleFactor);
+        titleAsciiBuffer.textSize(fontSize * scaleFactor);
         
         for (let i = 0; i < titleAsciiText.length; i++) {
             let lineText = '';
@@ -969,12 +978,12 @@ function sketch(p) {
                 // mainTextBuffer.rect(x - 2, drawY - 2, lineText.length * scaledCharWidth + 4, scaledCharHeight + 4);
                 
                 // Draw ASCII art line
-                mainTextBuffer.fill(CONFIG.colors.pureRed);
-                mainTextBuffer.text(lineText, x, drawY);
+                titleAsciiBuffer.fill(CONFIG.colors.pureRed);
+                titleAsciiBuffer.text(lineText, x, drawY);
             }
         }
         
-        mainTextBuffer.pop();
+        titleAsciiBuffer.pop();
         updateTitleAsciiAnimation();
     }
     
@@ -1097,6 +1106,7 @@ function sketch(p) {
         // Recreate buffers with new dimensions
         mainTextBuffer = p.createGraphics(p.width, p.height);
         asciiArtBuffer = p.createGraphics(p.width, p.height);
+        titleAsciiBuffer = p.createGraphics(p.width, p.height);
         
         // Update RSVP element position
         if (rsvpElement) {
