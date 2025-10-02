@@ -657,22 +657,28 @@ function sketch(p) {
     }
     
     function handleIntroSequence(elapsed) {
+        console.log(`Phase: ${introPhase}, Elapsed: ${elapsed}, TitleIndex: ${titleTypingIndex}/${CONFIG.text.title.length}, InfoIndex: ${infoTypingIndex}`);
+        
         if (introPhase === 0 && elapsed > 5000) { // Wait 5 seconds before showing title
             // Start typing phase
+            console.log("Transitioning to Phase 1 - Title typing");
             introPhase = 1;
             phaseStartTime = currentTime;
             initializeSimpleTyping();
         } else if (introPhase === 1) {
             // Wait for title typing to complete
             if (titleTypingIndex >= CONFIG.text.title.length) {
+                console.log("Transitioning to Phase 2 - Info typing");
                 introPhase = 2;
                 phaseStartTime = currentTime;
             }
         } else if (introPhase === 2) {
             // Wait for info typing to complete
             let totalInfoChars = infoLines.reduce((sum, line) => sum + line.length + 1, 0); // +1 for newline
+            console.log(`Info typing progress: ${infoTypingIndex}/${totalInfoChars}`);
             if (infoTypingIndex >= totalInfoChars) {
                 // Intro complete - stay in this phase
+                console.log("Transitioning to Phase 3 - Complete");
                 introPhase = 3;
                 isIntroComplete = true;
                 phaseStartTime = currentTime;
@@ -700,6 +706,7 @@ function sketch(p) {
             titleText += CONFIG.text.title[titleTypingIndex];
             titleTypingIndex++;
             titleLastTypingTime = currentTime;
+            console.log(`Title typing: "${titleText}" (${titleTypingIndex}/${CONFIG.text.title.length})`);
         }
     }
     
@@ -716,26 +723,35 @@ function sketch(p) {
                     infoText += "\n"; // Add newline after each line
                 }
                 infoTypingIndex++;
+                console.log(`Info typing: Line ${currentLine}, Index ${lineIndex}, Text: "${infoText}"`);
             }
             infoLastTypingTime = currentTime;
         }
     }
     
     function drawIntroContent() {
+        console.log(`Drawing content - Phase: ${introPhase}, TitleText length: ${titleText.length}, InfoText length: ${infoText.length}`);
+        
         // Draw title text
         if (introPhase >= 1) {
+            console.log("Drawing ASCII title");
             // Use ASCII art for title
             drawAsciiTitle();
         }
         
         // Draw info text
         if (introPhase >= 2) {
+            console.log(`Drawing info text - Phase: ${introPhase}, InfoText: "${infoText}"`);
             // In phase 3, use the full info text from CONFIG
             if (introPhase >= 3) {
                 let fullInfoText = infoLines.join('\n');
+                console.log(`Using full info text: "${fullInfoText}"`);
                 drawSimpleText(fullInfoText, titleX, infoStartY, CONFIG.colors.background, 1, CONFIG.colors.pureRed);
             } else if (infoText.length > 0) {
+                console.log(`Using typed info text: "${infoText}"`);
                 drawSimpleText(infoText, titleX, infoStartY, CONFIG.colors.background, 1, CONFIG.colors.pureRed);
+            } else {
+                console.log("No info text to draw");
             }
         }
         
@@ -761,6 +777,8 @@ function sketch(p) {
     }
     
     function drawSimpleText(text, startX, startY, color, size, backgroundColor = null) {
+        console.log(`drawSimpleText called - Text: "${text}", StartX: ${startX}, StartY: ${startY}, Color: ${color}, BackgroundColor: ${backgroundColor}`);
+        
         mainTextBuffer.push();
         mainTextBuffer.textAlign(mainTextBuffer.LEFT, mainTextBuffer.TOP);
         mainTextBuffer.textSize(fontSize);
@@ -768,9 +786,13 @@ function sketch(p) {
         
         // Draw text with background
         let lines = text.split('\n');
+        console.log(`Drawing ${lines.length} lines of text`);
+        
         for (let i = 0; i < lines.length; i++) {
             let x = startX * charWidth;
             let y = (startY + i * 2) * charHeight;
+            
+            console.log(`Line ${i}: "${lines[i]}", X: ${x}, Y: ${y}, Width: ${lines[i].length * charWidth}`);
             
             // Draw background rectangle
             if (backgroundColor) {
