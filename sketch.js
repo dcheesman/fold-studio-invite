@@ -17,18 +17,23 @@ function sketch(p) {
             white: '#ffffff'
         },
         timing: {
-            introDuration: 10000, // 10 seconds total
+            introDuration: 12000, // 12 seconds total (extended for more content)
             scrollPhase: 5000,    // 0-5s: background typing
             typingPhase: 2000,    // 5-7s: title typing
-            infoPhase: 2000,      // 7-9s: event info
-            rsvpPhase: 1000       // 9-10s: RSVP
+            infoPhase: 4000,      // 7-11s: event info (extended for more text)
+            rsvpPhase: 1000       // 11-12s: RSVP
         },
         text: {
             title: "THE FOLD",
-            subtitle: "Studio Grand Opening",
-            date: "October 24, 2025",
-            address: "[Address TBD]",
-            description: "A night for the true believers.",
+            subtitle: "YOU ARE INVITED",
+            date: "To a celebration",
+            address: "8 years of The Fold",
+            description: "at their new office",
+            location: "located at 40w 100n Provo",
+            time: "6:30pm - 9:30pm on the 23rd of October",
+            refreshments: "drinks and refreshments provided",
+            rsvpRequest: "please rsvp",
+            closing: "we're looking forward to your initiation",
             rsvpText: "→ RSVP"
         },
         // Title ASCII art
@@ -485,7 +490,12 @@ function sketch(p) {
             CONFIG.text.subtitle,
             CONFIG.text.date,
             CONFIG.text.address,
-            CONFIG.text.description
+            CONFIG.text.description,
+            CONFIG.text.location,
+            CONFIG.text.time,
+            CONFIG.text.refreshments,
+            CONFIG.text.rsvpRequest,
+            CONFIG.text.closing
         ];
         infoStartY = p.floor(p.height * 0.60) / charHeight; // Move up slightly from bottom third
         
