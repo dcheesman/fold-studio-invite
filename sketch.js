@@ -482,7 +482,7 @@ function sketch(p) {
             CONFIG.text.address,
             CONFIG.text.description
         ];
-        infoStartY = p.floor(p.height * 0.25) / charHeight; // Below title in top quarter
+        infoStartY = p.floor(p.height * 0.65) / charHeight; // Bottom third of page
         
         // Reset typing indices
         titleTypingIndex = 0;
@@ -665,14 +665,19 @@ function sketch(p) {
             introPhase = 1;
             phaseStartTime = currentTime;
             initializeSimpleTyping();
-        } else if (introPhase === 1 && elapsed > 2000) { // 2 seconds of title typing
-            // Start info typing phase
-            introPhase = 2;
-            phaseStartTime = currentTime;
-        } else if (introPhase === 2 && elapsed > 2000) { // 2 seconds of info typing
-            // Start color transition phase
-            introPhase = 3;
-            phaseStartTime = currentTime;
+        } else if (introPhase === 1) {
+            // Wait for title typing to complete
+            if (titleTypingIndex >= CONFIG.text.title.length) {
+                introPhase = 2;
+                phaseStartTime = currentTime;
+            }
+        } else if (introPhase === 2) {
+            // Wait for info typing to complete
+            let totalInfoChars = infoLines.reduce((sum, line) => sum + line.length + 1, 0); // +1 for newline
+            if (infoTypingIndex >= totalInfoChars) {
+                introPhase = 3;
+                phaseStartTime = currentTime;
+            }
         } else if (introPhase === 3 && elapsed > 1000) { // 1 second of color transition
             // Intro complete
             introPhase = 4;
@@ -769,9 +774,9 @@ function sketch(p) {
             mainTextBuffer.noStroke();
             mainTextBuffer.rect(x - 2, y - 2, lines[i].length * charWidth + 4, charHeight + 4);
             
-            // Draw text
+            // Draw text (adjust y position to align with background)
             mainTextBuffer.fill(color);
-            mainTextBuffer.text(lines[i], x, y);
+            mainTextBuffer.text(lines[i], x, y + charHeight * 0.8); // Adjust vertical alignment
         }
         mainTextBuffer.pop();
     }
@@ -955,7 +960,7 @@ function sketch(p) {
         drawAsciiTitle();
         
         // Draw event info with black text on red background
-        let infoY = Math.floor(p.height * 0.25) / charHeight; // Match intro phase position
+        let infoY = Math.floor(p.height * 0.65) / charHeight; // Bottom third of page
         let infoText = [
             CONFIG.text.subtitle,
             CONFIG.text.date,
@@ -973,9 +978,9 @@ function sketch(p) {
             mainTextBuffer.noStroke();
             mainTextBuffer.rect(x - 2, y - 2, infoText[i].length * charWidth + 4, charHeight + 4);
             
-            // Draw black text
+            // Draw black text (adjust y position to align with background)
             mainTextBuffer.fill(CONFIG.colors.background);
-            mainTextBuffer.text(infoText[i], x, y);
+            mainTextBuffer.text(infoText[i], x, y + charHeight * 0.8); // Adjust vertical alignment
         }
         
         mainTextBuffer.pop();
