@@ -192,6 +192,7 @@ function sketch(p) {
     let phaseStartTime;
     let currentTime = 0;
     let isIntroComplete = false;
+    let mainTextBufferNeedsUpdate = true;
     
     // Grid system
     let charWidth, charHeight;
@@ -796,25 +797,26 @@ function sketch(p) {
         
         for (let i = 0; i < lines.length; i++) {
             let x = startX * charWidth;
-            let y = (startY + i) * charHeight; // Fixed: removed the * 2 multiplier
+            let y = (startY + i) * charHeight;
             
             console.log(`Drawing line ${i}: "${lines[i]}", x=${x}, y=${y}, width=${lines[i].length * charWidth}`);
             
             // Draw background rectangle
             if (backgroundColor) {
                 console.log(`Drawing background with color: ${backgroundColor}`);
-                mainTextBuffer.fill(backgroundColor);
+                mainTextBuffer.fill(p.color(backgroundColor));
             } else {
                 console.log(`Drawing background with default color: ${CONFIG.colors.background}`);
-                mainTextBuffer.fill(CONFIG.colors.background);
+                mainTextBuffer.fill(p.color(CONFIG.colors.background));
             }
             mainTextBuffer.noStroke();
             mainTextBuffer.rect(x - 2, y - 2, lines[i].length * charWidth + 4, charHeight + 4);
             
             // Draw text (align with background rectangle)
             console.log(`Drawing text with color: ${color}`);
-            mainTextBuffer.fill(color);
-            mainTextBuffer.text(lines[i], x, y + charHeight - 4); // Better vertical centering
+            mainTextBuffer.fill(p.color(color));
+            mainTextBuffer.noStroke();
+            mainTextBuffer.text(lines[i], x, y + charHeight - 4);
         }
         mainTextBuffer.pop();
     }
