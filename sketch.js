@@ -30,23 +30,30 @@ function sketch(p) {
             description: "A night for the true believers.",
             rsvpText: "→ RSVP"
         },
-        // Title ASCII art (compact version)
+        // Title ASCII art
         titleAsciiArt: [
-            "    ████████    ██    ██    ████████    ████████    ██    ██    ",
-            "    ██    ██    ██    ██    ██    ██    ██    ██    ██    ██    ",
-            "    ██    ██    ██    ██    ██    ██    ██    ██    ██    ██    ",
-            "    ████████    ██    ██    ████████    ████████    ██    ██    ",
-            "    ██    ██    ██    ██    ██    ██    ██    ██    ██    ██    ",
-            "    ██    ██    ██    ██    ██    ██    ██    ██    ██    ██    ",
-            "    ████████    ████████    ████████    ████████    ████████    ",
-            "                                                                 ",
-            "    ████████    ████████    ████████    ████████    ████████    ",
-            "    ██    ██    ██    ██    ██    ██    ██    ██    ██    ██    ",
-            "    ██    ██    ██    ██    ██    ██    ██    ██    ██    ██    ",
-            "    ████████    ████████    ████████    ████████    ████████    ",
-            "    ██    ██    ██    ██    ██    ██    ██    ██    ██    ██    ",
-            "    ██    ██    ██    ██    ██    ██    ██    ██    ██    ██    ",
-            "    ████████    ████████    ████████    ████████    ████████    "
+            "                                ░░░▒▒░░░   ▓░   ░▒░  ░▒░░░░░░    ░▒░  ░▒▓  ░▒▓                                               ",
+            "                                   ▓▓      █▓   ▓█▒  ▒▓          ▒█▒  ▒██  ▒██                                               ",
+            "                                   ▒▒      █▓▒░▒▓█▒  ▒▓▒░░░░░    ▒█▒  ▒██  ▒██                                               ",
+            "                                   ▒▒      █▓   ▓█▒  ▒▓          ▒█▒  ▒██  ▒██                                               ",
+            "                                   ░░      ▓░   ░▒░  ░▒░░░░░░    ▒█▒  ▒██  ▒██                                               ",
+            "                                                                 ▒█▒  ▒██  ▒██                                               ",
+            "░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░    ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░    ▒█▒  ▒██  ▒██                   ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░",
+            "▒█▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░    ▒██▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓██▒    ▒█▒  ▒██  ▒██                   ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓██▒",
+            "▒█▓                             ▒██▓                     ▓██▒    ▒█▒  ▒██  ▒██                                            ██▒",
+            "▒█▒  ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░    ▒██▒ ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░ ▒██▒    ▒█▒  ▒██  ▒██                   ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░  ██▒",
+            "▒█▒ ▓██▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░    ▒██▒ ▒██▓▓▒▒▒▒▒▒▒▒▒▓▓██▒ ▒██▒    ▒█▒  ▒██  ▒██                   ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓██▒  ██▒",
+            "▒█▒ ▒██▓                        ▒██▒ ▒██▓           ▓██▒ ▒██▒    ▒█▒  ▒██  ▒██                                      ▒██▒  ██▒",
+            "▒█▒ ▒██▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░    ▒██▒ ▒██▒ ░▒▒▒▒▒▒▒░ ▓██▒ ▒██▒    ▒█▒  ▒██  ▒██                   ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░ ▒██▒  ██▒",
+            "▒█▒ ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░    ▒██▒ ▒██▒ ▒██▓▓▓██▒ ▓██▒ ▒██▒    ▒█▒  ▒██  ▒██                   ░▒▒▒▒▒▒▒▒▒▒▒▒▓▓██▒ ▒██▒  ██▒",
+            "▒█▒                             ▒██▒ ▒██▒ ▒██▓ ▓██▒ ▓██▒ ▒██▒    ▒█▒  ▒██  ▒██                                 ███▒ ▒██▒  ██▒",
+            "▒█▒ ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░    ▒██▒ ▒██▒ ▒██▓▓▓██▒ ▓██▒ ▒██▒    ▒█▒  ▒██  ▒███▓▒▒▒▒▒▒▒▒▒▒▒▒░    ░▒▒▒▒▒▒▒▒▒▒▒▒▓▓██▒ ▒██▒  ██▒",
+            "▒█▒ ▒██▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░    ▒██▒ ▒██▒ ░▒▒▒▒▒▒▒░ ▓██▒ ▒██▒    ▒█▒  ▒██  ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░    ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░ ▒██▒  ██▒",
+            "▒█▒ ▒██▓                        ▒██▒ ▒██▓           ▓██▒ ▒██▒    ▒█▒  ▒██                                           ▓██▒  ██▒",
+            "▒█▒ ▒██▒  ▓▒░                   ▒██▒ ▒███▓▓▓▓▓▓▓▓▓▓▓███▒ ▒██▒    ▒█▒  ▓███▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒░    ▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓███▓  ██▒",
+            "▒█▒ ▒██▒  ██▒                   ▒██▓                     ▓██▒    ▒█▓                                                      ██▒",
+            "▒█▒ ▒██▒  ██▒                   ▒██▓▓▓█████████████████▓▓▓██▒    ▒█▓▓▓██████████████████████▒    ▓███████████████████████▓██▒",
+            "░▒░ ░▒▒░  ▒▒░                   ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░    ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░    ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░"
         ],
         // Head ASCII art
         asciiArt: [
@@ -862,14 +869,28 @@ function sketch(p) {
         mainTextBuffer.textFont('Courier New', fontSize);
         mainTextBuffer.textSize(fontSize);
         
-        // Center the ASCII art horizontally (calculate based on actual text width)
+        // Calculate scaling to fit within page width while maintaining aspect ratio
         let maxLineLength = 0;
         for (let line of titleAsciiText) {
             maxLineLength = Math.max(maxLineLength, line.length);
         }
-        let textWidthPixels = maxLineLength * charWidth;
-        let startX = Math.floor((p.width - textWidthPixels) / 2) / charWidth;
-        let startY = Math.floor(p.height * 0.15) / charHeight; // Higher up in top quarter
+        
+        // Calculate scale factor to fit within 90% of page width
+        let maxWidthPixels = p.width * 0.9;
+        let originalWidthPixels = maxLineLength * charWidth;
+        let scaleFactor = Math.min(1, maxWidthPixels / originalWidthPixels);
+        
+        // Calculate scaled dimensions
+        let scaledCharWidth = charWidth * scaleFactor;
+        let scaledCharHeight = charHeight * scaleFactor;
+        let scaledTextWidth = maxLineLength * scaledCharWidth;
+        
+        // Center the scaled ASCII art
+        let startX = (p.width - scaledTextWidth) / 2;
+        let startY = p.height * 0.15; // Higher up in top quarter
+        
+        // Set scaled font size
+        mainTextBuffer.textSize(fontSize * scaleFactor);
         
         for (let i = 0; i < titleAsciiText.length; i++) {
             let lineText = '';
@@ -882,13 +903,13 @@ function sketch(p) {
             }
             
             if (lineText.trim().length > 0) {
-                let x = startX * charWidth;
-                let drawY = (startY + i) * charHeight;
+                let x = startX;
+                let drawY = startY + (i * scaledCharHeight);
                 
                 // Draw black background rectangle
                 // mainTextBuffer.fill(CONFIG.colors.background);
                 // mainTextBuffer.noStroke();
-                // mainTextBuffer.rect(x - 2, drawY - 2, lineText.length * charWidth + 4, charHeight + 4);
+                // mainTextBuffer.rect(x - 2, drawY - 2, lineText.length * scaledCharWidth + 4, scaledCharHeight + 4);
                 
                 // Draw ASCII art line
                 mainTextBuffer.fill(CONFIG.colors.pureRed);
