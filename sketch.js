@@ -213,6 +213,9 @@ function sketch(p) {
     let asciiArtTypingOnDuration = 5000; // 5 seconds to type on
     let asciiArtVisibleDuration = 2000;  // 2 seconds visible
     let asciiArtTypingOffDuration = 4000; // 4 seconds to type off
+    let asciiArtRandomOrder = []; // Random order for typing
+    let asciiArtVisibleChars = []; // Track which chars are visible
+    let asciiArtLastTypingTime = 0;
     
     // HTML RSVP element
     let rsvpElement;
@@ -379,6 +382,26 @@ function sketch(p) {
         asciiArtTypingIndex = 0;
         asciiArtPhase = 0;
         asciiArtStartTime = 0;
+        
+        // Create random order for typing
+        asciiArtRandomOrder = [];
+        asciiArtVisibleChars = [];
+        
+        // Create array of all character positions
+        for (let y = 0; y < asciiArtText.length; y++) {
+            for (let x = 0; x < asciiArtText[y].length; x++) {
+                asciiArtRandomOrder.push({x: x, y: y});
+                asciiArtVisibleChars.push(false);
+            }
+        }
+        
+        // Shuffle the order
+        for (let i = asciiArtRandomOrder.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [asciiArtRandomOrder[i], asciiArtRandomOrder[j]] = [asciiArtRandomOrder[j], asciiArtRandomOrder[i]];
+        }
+        
+        asciiArtTypingIndex = 0;
     }
 
     function initializeTypingQueue() {
@@ -602,47 +625,46 @@ function sketch(p) {
     // Color transitions removed - text types directly as red/gold
     
     function drawAsciiArt() {
-        // Debug: Always show something to test
+        if (asciiArtPhase === 0) {
+            updateAsciiArtAnimation();
+            return;
+        }
+        
         asciiArtBuffer.push();
         asciiArtBuffer.fill(CONFIG.colors.gold);
         asciiArtBuffer.textAlign(asciiArtBuffer.CENTER, asciiArtBuffer.TOP);
         asciiArtBuffer.textSize(fontSize * 0.6);
         asciiArtBuffer.textFont('Courier New', fontSize * 0.6);
         
-        // Debug text
-        asciiArtBuffer.text('ASCII DEBUG - Phase: ' + asciiArtPhase, p.width / 2, p.height / 2);
-        asciiArtBuffer.text('Time: ' + Math.floor(currentTime - phaseStartTime), p.width / 2, p.height / 2 + 30);
-        
-        if (asciiArtPhase === 0) {
-            asciiArtBuffer.pop();
-            updateAsciiArtAnimation();
-            return;
-        }
-        
         // Center the ASCII art on screen
         let startX = p.width / 2;
         let startY = p.height / 2 - (asciiArtText.length * fontSize * 0.6) / 2;
         
-        // Draw ASCII art with typing animation
+        // Draw ASCII art with random character visibility
         for (let y = 0; y < asciiArtText.length; y++) {
             let line = asciiArtText[y];
             let lineText = '';
             
-            if (asciiArtPhase === 1) {
-                // Typing on - show characters up to current index
-                let charsToShow = Math.floor((asciiArtTypingIndex / asciiArtText.length) * line.length);
-                lineText = line.slice(0, charsToShow).join('');
-            } else if (asciiArtPhase === 2) {
-                // Fully visible
-                lineText = line.join('');
-            } else if (asciiArtPhase === 3) {
-                // Typing off - hide characters from the end
-                let charsToHide = Math.floor(((asciiArtTypingIndex - asciiArtText.length) / asciiArtText.length) * line.length);
-                let charsToShow = Math.max(0, line.length - charsToHide);
-                lineText = line.slice(0, charsToShow).join('');
+            // Build line based on visible characters
+            for (let x = 0; x < line.length; x++) {
+                // Find this character's index in the random order
+                let charIndex = -1;
+                for (let i = 0; i < asciiArtRandomOrder.length; i++) {
+                    if (asciiArtRandomOrder[i].x === x && asciiArtRandomOrder[i].y === y) {
+                        charIndex = i;
+                        break;
+                    }
+                }
+                
+                // Only show character if it's marked as visible
+                if (charIndex >= 0 && asciiArtVisibleChars[charIndex]) {
+                    lineText += line[x];
+                } else {
+                    lineText += ' '; // Space for invisible characters
+                }
             }
             
-            if (lineText.length > 0) {
+            if (lineText.trim().length > 0) {
                 asciiArtBuffer.text(lineText, startX, startY + y * fontSize * 0.6);
             }
         }
@@ -654,34 +676,52 @@ function sketch(p) {
     }
     
     function updateAsciiArtAnimation() {
+        let currentTime = p.millis();
+        
         if (asciiArtPhase === 0) {
             // Start ASCII art after 3 seconds
             if (currentTime - phaseStartTime > 3000) {
                 asciiArtPhase = 1;
                 asciiArtStartTime = currentTime;
+                asciiArtLastTypingTime = currentTime;
             }
         } else if (asciiArtPhase === 1) {
-            // Typing on phase
-            if (currentTime - asciiArtStartTime >= asciiArtTypingOnDuration) {
+            // Typing on - random characters per frame
+            if (currentTime - asciiArtLastTypingTime >= asciiArtTypingSpeed) {
+                let charsToType = Math.floor(p.random(10, 31)); // 10-30 characters per frame
+                for (let i = 0; i < charsToType && asciiArtTypingIndex < asciiArtRandomOrder.length; i++) {
+                    asciiArtVisibleChars[asciiArtTypingIndex] = true;
+                    asciiArtTypingIndex++;
+                }
+                asciiArtLastTypingTime = currentTime;
+            }
+            
+            if (asciiArtTypingIndex >= asciiArtRandomOrder.length) {
                 asciiArtPhase = 2;
                 asciiArtStartTime = currentTime;
-            } else {
-                let progress = (currentTime - asciiArtStartTime) / asciiArtTypingOnDuration;
-                asciiArtTypingIndex = Math.floor(progress * asciiArtText.length);
             }
         } else if (asciiArtPhase === 2) {
             // Visible phase
             if (currentTime - asciiArtStartTime >= asciiArtVisibleDuration) {
                 asciiArtPhase = 3;
                 asciiArtStartTime = currentTime;
+                asciiArtLastTypingTime = currentTime;
+                // Reset for typing off
+                asciiArtTypingIndex = asciiArtRandomOrder.length - 1;
             }
         } else if (asciiArtPhase === 3) {
-            // Typing off phase
-            if (currentTime - asciiArtStartTime >= asciiArtTypingOffDuration) {
+            // Typing off - random characters per frame
+            if (currentTime - asciiArtLastTypingTime >= asciiArtTypingSpeed) {
+                let charsToType = Math.floor(p.random(10, 31)); // 10-30 characters per frame
+                for (let i = 0; i < charsToType && asciiArtTypingIndex >= 0; i++) {
+                    asciiArtVisibleChars[asciiArtTypingIndex] = false;
+                    asciiArtTypingIndex--;
+                }
+                asciiArtLastTypingTime = currentTime;
+            }
+            
+            if (asciiArtTypingIndex < 0) {
                 asciiArtPhase = 4; // Hidden
-            } else {
-                let progress = (currentTime - asciiArtStartTime) / asciiArtTypingOffDuration;
-                asciiArtTypingIndex = asciiArtText.length + Math.floor(progress * asciiArtText.length);
             }
         }
     }
