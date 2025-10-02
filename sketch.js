@@ -30,30 +30,23 @@ function sketch(p) {
             description: "A night for the true believers.",
             rsvpText: "→ RSVP"
         },
-        // Title ASCII art
+        // Title ASCII art (compact version)
         titleAsciiArt: [
-            "                                    ░░░░░░░░  ░░░   ░░  ░░░░░░░░    ░░░  ░░░ ░░░░                                                  ",
-            "                                     ░░▒▒░░   ░▒░   ░░  ░▒▒         ▒▒░ ░▓▒░ ░▒▒░                                                  ",
-            "                                       ░░     ░▒▒░░░▒░  ░▒▒▒▒▒▒░    ▒▒░ ░▓▒░ ░▓▒░                                                  ",
-            "                                       ░░     ░▒▒▒░▒▒░  ░▒▒▓▓▓▓░    ▒▒░ ░▓▒░ ░▓▒░                                                  ",
-            "                                       ░░     ░▒░   ░░  ░▓▓▓▓▓▓░    ▒▒░ ░▓▒░ ░▓▒░                                                  ",
-            "                                                                    ▒▒░ ░▓▒░ ░▓▒░                                                  ",
-            "                                                                    ▒▒░ ░▓▒░ ░▓▒░                                                  ",
-            "    ░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░    ░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░    ▒▒░ ░▓▒░ ░▓▒░                  ░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░    ",
-            "    ░▒▒▒                            ░▒▒▒                    ▒▒▒░    ▒▒░ ░▓▒░ ░▓▒░                                          ▒▒▒░    ",
-            "    ░▒▒▒ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░    ░▒▒▒ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ░▒▒░    ▒▒░ ░▓▒░ ░▓▒░                  ░▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ▒▒▒░    ",
-            "    ░▒▒░ ░▒▒▒░░░░░░░░░░░░░░░░░░░    ░▒▒░ ░▒▒░░░░░░░░░░▒▒▒▒░ ░▓▒░    ▒▒░ ░▓▒░ ░▓▒░                  ░░░░░░░░░░░░░░░░░░░▒▒▒░ ░▒▒░    ",
-            "    ░▒▒░ ░▒▒▒                       ░▒▒░ ░▒░            ▓▒░ ░▓▒░    ▒▒░ ░▓▒░ ░▓▒░                                     ░▒▒░ ░▒▒░    ",
-            "    ░▒▒░ ░▒▒▒░░░░░░░░░░░░░░░░░░░    ░▒▒░ ░▒░  ░░░░░░░░  ▓▒░ ░▓▒░    ▒▒░ ░▓▒░ ░▓▒░                  ░░░░░░░░░░░░░░░░░░ ░▒▒░ ░▒▒░    ",
-            "    ░▒▒░ ░░░░░░░░░░░░░░░░░░░░░░░    ░▒▒░ ░▒░  ░▒▒▒▒▒▒░  ▓▒░ ░▓▒░    ▒▒░ ░▓▒░ ░▓▒░                  ░░░░░░░░░░░░░▒▒▒▒░ ░▒▒░ ░▒▒░    ",
-            "    ░▒▒░                            ░▒▒░ ░▒░  ░▒▒  ▒▒░  ▓▒░ ░▓▒░    ▒▒░ ░▓▒░ ░▓▒░                                ▒▒▒░ ░▒▒░ ░▒▒░    ",
-            "    ░▒▒░ ░░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░    ░▒▒░ ░▒░  ░▒▒░▒▒▒░  ▓▒░ ░▓▒░    ▒▒░ ░▓▒░ ░▒▒▒▒░░░░░░░░░░░░░    ░░░░░░░░░░░░░░▒▒▓░ ░▒▒░ ░▒▒░    ",
-            "    ░▒▒░ ░▒▒▒                       ░▒▒░ ░▒░            ▓▒░ ░▓▒░    ▒▒░ ░▓▒░                                          ░▒▒░ ░▒▒░    ",
-            "    ░▒▒░ ░▒▒▒                       ░▒▒░ ░▒▒░░▒▒▒▒▒▒▒▒▒▒▒▒░ ░▓▒░    ▒▒░ ░▓▒▒░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░    ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▒▒▒▒▒░ ░▒▒░    ",
-            "    ░▒▒░ ░▒▒░ ░░░░                  ░▒▒░ ░░░░░░░░░░░░░░░░░░ ░▓▒░    ▒▒░ ░░░░░░░░░░░░░░░░░░░░░░░    ░░░░░░░░░░░░░░░░░░░░░░░ ░▒▒░    ",
-            "    ░▒▒░ ░▒▒░ ░▒▒░                  ░▒▒▒                    ░▒▒░    ▒▒░                                                    ▒▒▒░    ",
-            "    ▒▓▒░ ░▓▒░ ░▓▓░                  ░▒▒▒░░░░░░░░░░░░░░░░░░░░▒▒▒░    ▒▒▒░░░░░░░░░░░░░░░░░░░░░░░░    ░░░░░░░░░░░░░░░░░░░░░░░░▒▒▒░    ",
-            "     ░░░  ░░   ░░                   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░    ░░░░░░░░░░░░░░░░░░░░░░░░░░░    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░    "
+            "    ████████    ██    ██    ████████    ████████    ██    ██    ",
+            "    ██    ██    ██    ██    ██    ██    ██    ██    ██    ██    ",
+            "    ██    ██    ██    ██    ██    ██    ██    ██    ██    ██    ",
+            "    ████████    ██    ██    ████████    ████████    ██    ██    ",
+            "    ██    ██    ██    ██    ██    ██    ██    ██    ██    ██    ",
+            "    ██    ██    ██    ██    ██    ██    ██    ██    ██    ██    ",
+            "    ████████    ████████    ████████    ████████    ████████    ",
+            "                                                                 ",
+            "    ████████    ████████    ████████    ████████    ████████    ",
+            "    ██    ██    ██    ██    ██    ██    ██    ██    ██    ██    ",
+            "    ██    ██    ██    ██    ██    ██    ██    ██    ██    ██    ",
+            "    ████████    ████████    ████████    ████████    ████████    ",
+            "    ██    ██    ██    ██    ██    ██    ██    ██    ██    ██    ",
+            "    ██    ██    ██    ██    ██    ██    ██    ██    ██    ██    ",
+            "    ████████    ████████    ████████    ████████    ████████    "
         ],
         // Head ASCII art
         asciiArt: [
@@ -474,7 +467,7 @@ function sketch(p) {
     function initializeSimpleTyping() {
         // Set up simple text positions
         titleX = p.floor(gridCols * 0.2);
-        titleY = p.floor(p.height * 0.15) / charHeight; // Higher up in top quarter
+        titleY = p.floor(p.height * 0.07) / charHeight; // Higher up in top quarter
         
         infoLines = [
             CONFIG.text.subtitle,
@@ -940,8 +933,8 @@ function sketch(p) {
         // Draw title as ASCII art
         drawAsciiTitle();
         
-        // Draw event info
-        let infoY = Math.floor(rows * 0.6);
+        // Draw event info with black text on red background
+        let infoY = Math.floor(p.height * 0.25) / charHeight; // Match intro phase position
         let infoText = [
             CONFIG.text.subtitle,
             CONFIG.text.date,
@@ -949,12 +942,19 @@ function sketch(p) {
             CONFIG.text.description
         ];
         
+        // Draw each line with black text on red background
         for (let i = 0; i < infoText.length; i++) {
-            let y = infoY + i;
-            if (y < rows) {
-                let x = Math.floor(cols * 0.1);
-                mainTextBuffer.text(infoText[i], x * charWidth, y * charHeight);
-            }
+            let x = titleX * charWidth;
+            let y = (infoY + i * 2) * charHeight;
+            
+            // Draw red background rectangle
+            mainTextBuffer.fill(CONFIG.colors.pureRed);
+            mainTextBuffer.noStroke();
+            mainTextBuffer.rect(x - 2, y - 2, infoText[i].length * charWidth + 4, charHeight + 4);
+            
+            // Draw black text
+            mainTextBuffer.fill(CONFIG.colors.background);
+            mainTextBuffer.text(infoText[i], x, y);
         }
         
         mainTextBuffer.pop();
