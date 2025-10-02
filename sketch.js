@@ -777,7 +777,7 @@ function sketch(p) {
         if (!asciiArtText || asciiArtText.length === 0) return;
         
         asciiArtBuffer.push();
-        asciiArtBuffer.fill(CONFIG.colors.grey);
+        asciiArtBuffer.fill(CONFIG.colors.gold);
         asciiArtBuffer.textFont('Courier New', fontSize);
         
         // Center the ASCII art

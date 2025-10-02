@@ -176,6 +176,18 @@
                 padding: 8px 16px;
             }
         }
+        
+        /* RSVP flashing animation */
+        @keyframes rsvp-flash {
+            0% {
+                color: #ffaa00;
+                background: transparent;
+            }
+            100% {
+                color: #000000;
+                background: #ffaa00;
+            }
+        }
     </style>
 </head>
 <body>
@@ -193,6 +205,7 @@
         z-index: 10;
         display: none;
         pointer-events: auto;
+        animation: rsvp-flash 1.5s ease-in-out infinite alternate;
     ">→ RSVP</div>
     
     <div id="rsvp-overlay">
