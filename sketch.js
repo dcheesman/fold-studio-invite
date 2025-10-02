@@ -712,7 +712,6 @@ function sketch(p) {
         } else if (introPhase === 2) {
             // Wait for info typing to complete
             let totalInfoChars = infoLines.reduce((sum, line) => sum + line.length + 1, 0); // +1 for newline
-            console.log(`Info typing progress: ${infoTypingIndex}/${totalInfoChars}`);
             if (infoTypingIndex >= totalInfoChars) {
                 // Intro complete - stay in this phase
                 console.log("Transitioning to Phase 3 - Complete");

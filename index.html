@@ -361,7 +361,9 @@
 
             try {
                 // Check if Airtable is configured
-                if (AIRTABLE_CONFIG.baseId === 'YOUR_BASE_ID_HERE' || AIRTABLE_CONFIG.apiKey === 'YOUR_API_KEY_HERE') {
+                if (!AIRTABLE_CONFIG.baseId || !AIRTABLE_CONFIG.apiKey || 
+                    AIRTABLE_CONFIG.baseId === 'YOUR_BASE_ID_HERE' || 
+                    AIRTABLE_CONFIG.apiKey === 'YOUR_API_KEY_HERE') {
                     // Fallback: simulate successful submission
                     console.warn('Airtable not configured, using simulation mode');
                     await new Promise(resolve => setTimeout(resolve, 1000));
