@@ -302,15 +302,7 @@
             ]
         };
 
-        // Airtable configuration (replace with your actual values)
-        const AIRTABLE_CONFIG = {
-            baseId: 'YOUR_BASE_ID_HERE',
-            apiKey: 'YOUR_API_KEY_HERE',
-            tableName: 'RSVPs',
-            get url() {
-                return `https://api.airtable.com/v0/${this.baseId}/${this.tableName}`;
-            }
-        };
+        // Airtable configuration is loaded from config.js
 
         let p5Instance;
         let rsvpFormVisible = false;
