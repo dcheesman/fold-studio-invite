@@ -6,9 +6,12 @@ An immersive event landing page with a retro-future 70s terminal computer aesthe
 
 - **10-second cinematic intro sequence** with overwhelming data-stream energy
 - **ASCII-style text rendering** with monospaced terminal aesthetics
-- **Dense background code typing** with verbose C++/CUDA code snippets
+- **Large ASCII art title** ("THE FOLD") with random type-on/type-off animation
+- **Dense background code typing** with verbose C++/CUDA code snippets (2000+ chars/second)
 - **Separate buffer layer system** for clean main text rendering
+- **Event info with black text on red background** styling
 - **Mouse interaction** with text scramble effects
+- **Flashing RSVP button** with color inversion animation
 - **RSVP form** with Airtable integration
 - **Responsive design** for desktop, tablet, and mobile
 - **Parameterized colors** for easy customization
@@ -48,8 +51,9 @@ const CONFIG = {
         red: '#ff0033',           // Hero text color
         pureRed: '#ff0000',       // Pure red for main text
         darkRed: '#cc0000',       // Darker red variant
-        gold: '#ffaa00',          // Event info color
-        lightGold: '#ff8800'      // Lighter gold variant
+        gold: '#ffaa00',          // RSVP button color
+        lightGold: '#ff8800',     // Lighter gold variant
+        white: '#ffffff'          // Cursor color
     }
 };
 ```
@@ -103,16 +107,18 @@ text: {
 
 The project uses a layered approach with p5.js:
 
-1. **Background Layer:** Dense character grid with C++/CUDA code typing animation
-2. **Main Text Buffer:** Separate p5.Graphics layer for title, event info, and RSVP text
-3. **HTML Layer:** Clickable RSVP element positioned on the character grid
-4. **UI Layer:** Cursor, FPS monitor, and interactive elements
+1. **Background Layer:** Dense character grid with C++/CUDA code typing animation (2000+ chars/second)
+2. **ASCII Art Buffer:** Separate layer for "THE FOLD" ASCII art with random type-on/type-off animation
+3. **Main Text Buffer:** Separate p5.Graphics layer for event info with black text on red background
+4. **HTML Layer:** Clickable RSVP element with flashing animation positioned on the character grid
+5. **UI Layer:** White triangle cursor, FPS monitor, and interactive elements
 
 **Performance Optimizations:**
 - Post-processing effects disabled for better FPS
 - Separate buffer system prevents text overwriting
-- Multi-character typing per frame for fast background animation
-- Optimized character grid rendering
+- Random character typing (10-30 chars per frame) for fast background animation
+- Optimized character grid rendering with proper push/pop state management
+- FPS monitoring and adaptive frame rates
 
 ## Browser Compatibility
 

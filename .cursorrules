@@ -13,8 +13,9 @@ Building an immersive event landing page for The Fold Studio Grand Opening (Octo
 ### Color Palette
 - **Base environment:** Near-black on pure black (`#1a1a1a` on `#000000`)
 - **Background animation text:** All grey monochrome (`#4a4a4a`, `#6a6a6a`)
-- **Hero text (THE FOLD):** Transition from grey to red (`#ff0033`, `#cc0000`)
-- **Info text & RSVP:** Gold/amber terminal color (`#ffaa00`, `#ff8800`)
+- **Hero text (THE FOLD):** Large ASCII art in pure red (`#ff0000`) with random type-on/type-off animation
+- **Event info text:** Black text (`#000000`) on red background (`#ff0000`)
+- **RSVP button:** Gold/amber terminal color (`#ffaa00`) with flashing animation
 - **Aesthetic reference:** Early UNIX terminal green-on-black, but desaturated and darker—almost black-on-black with just enough contrast to read
 
 ### Typography & Grid
@@ -31,11 +32,12 @@ Building an immersive event landing page for The Fold Studio Grand Opening (Octo
 - **NO chromatic aberration** for now—keep it simple and readable
 
 ### Motion & Animation Principles
-- **Overwhelming energy:** First 2 seconds should feel intense, data-stream-like, almost too fast to read
+- **Overwhelming energy:** First 5 seconds should feel intense, data-stream-like, almost too fast to read
 - **Easing:** All transitions use easing functions—prefer cubic-bezier curves for smooth, organic motion
 - **Timing:** 10-second intro (5s background + 2s title + 2s info + 1s RSVP), then settle into idle state with subtle background motion
-- **Character typing:** Type-on effect should be fast (10-20ms per character) not slow typewriter speed
-- **Color transitions:** Grey to red/gold should happen over 30-60 frames for smooth gradient effect
+- **Character typing:** Random type-on effect with 10-30 characters per frame for fast, energetic feel
+- **Background typing:** 2000+ characters per second for overwhelming data-stream effect
+- **ASCII art animation:** Random type-on then random type-off with proper scaling to fit page width
 
 ## p5.js Canvas Architecture
 
@@ -48,12 +50,13 @@ Building an immersive event landing page for The Fold Studio Grand Opening (Octo
 ### Layer System (Compositing Approach)
 Think of this as composited image layers, low-res for easy 2D pixel sampling:
 
-1. **Layer 1 - Background Character Grid:** Dense code typing animation filling entire screen
-2. **Layer 2 - Main Text Buffer:** Separate p5.Graphics layer for title, event info, and RSVP text
-3. **Layer 3 - Post-Processing:** Applied via shader or pixel manipulation for scanlines, bloom, blur (currently disabled for performance)
-4. **Layer 4 - UI Elements:** Cursor, FPS monitor, and other overlay elements
+1. **Layer 1 - Background Character Grid:** Dense code typing animation filling entire screen (2000+ chars/second)
+2. **Layer 2 - ASCII Art Buffer:** Separate p5.Graphics layer for "THE FOLD" ASCII art with random animation
+3. **Layer 3 - Main Text Buffer:** Separate p5.Graphics layer for event info with black text on red background
+4. **Layer 4 - HTML Layer:** Clickable RSVP element with flashing animation
+5. **Layer 5 - UI Elements:** White triangle cursor, FPS monitor, and other overlay elements
 
-**Performance consideration:** Consider pre-rendering intro as video/gif if performance becomes an issue, but start with live rendering.
+**Performance consideration:** Post-processing effects disabled for better FPS. Random character typing optimized for smooth animation.
 
 ### Animation Patterns
 ```javascript
@@ -320,21 +323,34 @@ pixelDensity(1);
 - **Never load assets in `draw()`**—use `preload()` for all images, fonts, data
 - **Set explicit `frameRate(30)`** to ensure consistent animation speed across devices
 
-## Verification Checklist
+## Current Implementation Status
+
+### ✅ Completed Features
+- [x] Canvas resizes properly on window resize without breaking grid
+- [x] Intro sequence timing is exactly 10 seconds (5s background + 2s title + 2s info + 1s RSVP)
+- [x] ASCII art title ("THE FOLD") with random type-on/type-off animation
+- [x] Event info with black text on red background styling
+- [x] RSVP HTML element with flashing animation
+- [x] Mouse scramble effect reverts characters correctly after timeout
+- [x] FPS monitor shows 30+ FPS on desktop
+- [x] All text uses monospaced font and aligns with character grid
+- [x] Background code typing at 2000+ characters per second
+- [x] Proper push/pop state management for text rendering
+- [x] Responsive character grid system
+- [x] No console errors or warnings
+
+### 🔄 In Progress
+- [ ] RSVP form appears/dismisses without canvas errors
+- [ ] Form submission successfully sends to Airtable (test with dummy data)
+- [ ] Mobile version optimization and testing
+
+### 📋 Verification Checklist
 
 Before considering work complete, verify:
 
-- [ ] Canvas resizes properly on window resize without breaking grid
-- [ ] Intro sequence timing is exactly 10 seconds (5s background + 2s title + 2s info + 1s RSVP)
-- [ ] Main text (title, info, RSVP) stays visible and not overwritten by background
-- [ ] RSVP HTML element is clickable and positioned correctly on grid
-- [ ] Mouse scramble effect reverts characters correctly after timeout
-- [ ] FPS monitor shows 30+ FPS on desktop, 24+ FPS on mobile
-- [ ] All text uses monospaced font and aligns with character grid
 - [ ] RSVP form appears/dismisses without canvas errors
 - [ ] Form submission successfully sends to Airtable (test with dummy data)
 - [ ] Mobile version loads and runs without performance issues
-- [ ] No console errors or warnings
 - [ ] Code follows naming conventions and organization structure
 
 ## Open Questions (NEEDS INPUT)
