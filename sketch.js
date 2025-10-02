@@ -407,163 +407,19 @@ function sketch(p) {
     }
     
     function setupAsciiArtRandomOrder() {
-            "                 @@@)          )@@@(:                       .(@@@*        @@@=                      ",
-            "                #@@]         [@@}                              .%@@+      ~@@@                      ",
-            "               <@@%        *@@)                                  :@@#      [@@*                     ",
-            "               @@@.       }@@              ->#@@@@@@#>:            [@@     +@@@                     ",
-            "              >@@}       {@#          :]@@]+.        .*[@@(.        %@)    .@@@                     ",
-            "              %@@+      (@%         (@].                  :%@+      :@@.   .@@@                     ",
-            "              @@@.     :@@.       >@^                        #@.     {@<   :@@@                     ",
-            "              @@@      }@]       #%                           <@     +@@   .@@@                     ",
-            "              @@@      @@=      #{                             @[    +@%    (@@#                    ",
-            "              @@@      @@.     ^@                              :@:   *@#     #@@]                   ",
-            "              @@@=     @@.     %(                               @=   .@@+     @@@[                  ",
-            "              <@@[     @@-     @^                               @-    .@@=     #@@%                 ",
-            "               @@@.    {@(     @^                               {@     :@@>     (@@@:                ",
-            "               ]@@}    =@@     %)                                }%      @@]     *@@@:               ",
-            "                @@@~    #@(    ^@                                 )@.     #@}     +@@@              ",
-            "                ~@@@    .@@:    %[                                 >@     .@@     -@@@              ",
-            "                 ^@@@    *@@    .@<                               }@(   ~@@@<   %@@@@=              ",
-            "                  <@@@    ^@@    -@>                             .@^    #@)    >@@}.                ",
-            "                   <@@@    *@@:   :@)                            ~#@    .@@^   :@@@-                ",
-            "                    >@@@.   =@@=    @{                           .@}   ~@@@*    ~@@@                ",
-            "                     *@@@:   :@@^    @[                          ]@    .@@@   :@@@@%                ",
-            "                      ~@@@+   .@@<    @+                         *@.    %@%   ^@@@@                 ",
-            "                       .@@@*    @@>   @<                          @>   :@@      @@@<                ",
-            "                        .@@@^   ~@@   @>                 ~>>>>><[@]     @@+    @@@]                 ",
-            "                         .@@@~   @@~ .@-                [@.             >@#   .@@@                  ",
-            "                          -@@@   }@< @[                 #]              #@}    @@@-                 ",
-            "                           [@@+  {@^[@                  ]@  *{###{{{#%@@@[     *@@{                 ",
-            "                           +@@[  @@#@                    @>@@@(][}}[]<+         @@@                 ",
-            "                           -@@@ ^@@{                     +@@@                  <@@#                 ",
-            "                           -@@@ @@^                       =@@   .=*++=~~~=+>[@@@@@.                 ",
-            "                           =@@{[@#                         @@.~@@@@@@@@@@@@@@@@%:                    ",
-            "                           <@@{@@.                         )@@@@@-     .                            ",
-            "                           @@@@@-                          .@@@@)                                   ",
-            "                          ~@@@@-                            ~@@@<                                   ",
-            "                          {@@@.                              -@@#                                   ",
-            "                         *@@@                                 @@@:                                  ",
-            "                         @@@:                                 (@@)                                  ",
-            "                        {@@(                                   @@@-                                 ",
-            "                       [@@{                                    ~@@@                                 ",
-            "                      (@@%                                      <@@@.                               ",
-            "                     (@@@                                        *@@@~                              ",
-            "                      (^                                           *+                               ",
-            "                                                                                                    ",
-            "                                                                                                    "
-        ],
-        backgroundText: [
-            "// Initialize neural network parameters",
-            "constexpr auto MAX_ITERATIONS = 1000000;",
-            "std::vector<std::unique_ptr<Layer>> network_layers;",
-            "// Configure backpropagation algorithm",
-            "auto learning_rate = 0.001f;",
-            "auto momentum = 0.9f;",
-            "auto weight_decay = 1e-4f;",
-            "// CUDA kernel launch configuration",
-            "dim3 blockSize(256, 1, 1);",
-            "dim3 gridSize((numElements + blockSize.x - 1) / blockSize.x, 1, 1);",
-            "// Memory allocation and management",
-            "cudaMallocManaged(&unified_memory, size);",
-            "cudaMemPrefetchAsync(unified_memory, size, device);",
-            "// Stream synchronization",
-            "cudaStreamSynchronize(stream);",
-            "cudaDeviceSynchronize();",
-            "// Error checking and validation",
-            "cudaError_t err = cudaGetLastError();",
-            "if (err != cudaSuccess) {",
-            "    printf(\"CUDA error: %s\\n\", cudaGetErrorString(err));",
-            "    return -1;",
-            "}",
-            "// Performance optimization flags",
-            "#pragma unroll",
-            "#pragma GCC optimize(\"O3\")",
-            "// Memory coalescing patterns",
-            "for (int i = 0; i < numElements; i += blockDim.x) {",
-            "    int idx = blockIdx.x * blockDim.x + threadIdx.x + i;",
-            "    if (idx < numElements) {",
-            "        // Vectorized operations",
-            "        float4 data = reinterpret_cast<float4*>(input)[idx];",
-            "        float4 result = make_float4(",
-            "            data.x * weights.x + bias.x,",
-            "            data.y * weights.y + bias.y,",
-            "            data.z * weights.z + bias.z,",
-            "            data.w * weights.w + bias.w",
-            "        );",
-            "        reinterpret_cast<float4*>(output)[idx] = result;",
-            "    }",
-            "}",
-            "// Atomic operations for thread safety",
-            "atomicAdd(&shared_memory[threadIdx.x], value);",
-            "atomicExch(&global_counter, new_value);",
-            "// Warp-level primitives",
-            "__syncwarp();",
-            "__shfl_down_sync(0xffffffff, value, 1);",
-            "// Memory barriers and synchronization",
-            "__threadfence_block();",
-            "__threadfence_system();",
-            "// Texture memory access patterns",
-            "tex1Dfetch<float>(texture_ref, index);",
-            "tex2D<float>(texture_2d, x, y);",
-            "// Constant memory utilization",
-            "__constant__ float constant_weights[MAX_WEIGHTS];",
-            "// Shared memory bank conflict avoidance",
-            "int bank_offset = threadIdx.x % 32;",
-            "shared_memory[threadIdx.x + bank_offset] = value;",
-            "// Occupancy optimization",
-            "cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize,",
-            "                                   kernel_function, 0, 0);",
-            "// Profiling and timing",
-            "cudaEvent_t start, stop;",
-            "cudaEventCreate(&start);",
-            "cudaEventCreate(&stop);",
-            "cudaEventRecord(start);",
-            "// Kernel execution",
-            "kernel_function<<<gridSize, blockSize, sharedMemSize, stream>>>(args);",
-            "cudaEventRecord(stop);",
-            "cudaEventSynchronize(stop);",
-            "float milliseconds = 0;",
-            "cudaEventElapsedTime(&milliseconds, start, stop);",
-            "// Cleanup and resource management",
-            "cudaEventDestroy(start);",
-            "cudaEventDestroy(stop);",
-            "cudaStreamDestroy(stream);",
-            "cudaFree(unified_memory);"
-        ]
-    };
-    
-    function initializeAsciiArt() {
-        // Use CONFIG.asciiArt
-        asciiArtText = [];
-        for (let line of CONFIG.asciiArt) {
-            asciiArtText.push(line.split(''));
-        }
-        setupAsciiArtRandomOrder();
-    }
-    
-    function initializeTitleAsciiArt() {
-        // Use CONFIG.titleAsciiArt
-        titleAsciiText = [];
-        for (let line of CONFIG.titleAsciiArt) {
-            titleAsciiText.push(line.split(''));
-        }
-        setupTitleAsciiArtRandomOrder();
-    }
-    
-    function setupAsciiArtRandomOrder() {
         asciiArtTypingIndex = 0;
         asciiArtPhase = 0;
         asciiArtStartTime = 0;
         
         // Create random order for typing
         asciiArtRandomOrder = [];
-        asciiArtVisibleChars = [];
-        
-        // Create array of all character positions
+        let totalChars = 0;
         for (let y = 0; y < asciiArtText.length; y++) {
             for (let x = 0; x < asciiArtText[y].length; x++) {
-                asciiArtRandomOrder.push({x: x, y: y});
-                asciiArtVisibleChars.push(false);
+                if (asciiArtText[y][x] !== ' ') {
+                    asciiArtRandomOrder.push({x, y});
+                    totalChars++;
+                }
             }
         }
         
@@ -580,13 +436,13 @@ function sketch(p) {
         
         // Create random order for typing
         titleAsciiRandomOrder = [];
-        titleAsciiVisibleChars = [];
-        
-        // Create array of all character positions
+        let totalChars = 0;
         for (let y = 0; y < titleAsciiText.length; y++) {
             for (let x = 0; x < titleAsciiText[y].length; x++) {
-                titleAsciiRandomOrder.push({x: x, y: y});
-                titleAsciiVisibleChars.push(false);
+                if (titleAsciiText[y][x] !== ' ') {
+                    titleAsciiRandomOrder.push({x, y});
+                    totalChars++;
+                }
             }
         }
         
@@ -596,438 +452,23 @@ function sketch(p) {
             [titleAsciiRandomOrder[i], titleAsciiRandomOrder[j]] = [titleAsciiRandomOrder[j], titleAsciiRandomOrder[i]];
         }
     }
-
-    function initializeTypingQueue() {
-        typingQueue = [];
-        currentTypingPosition = 0;
-        
-        // Create a dense, code-like layout with much more content
-        let selectedPhrases = CONFIG.backgroundText; // Use all phrases
-        let positions = [];
-        
-        // Create moderate amount of code for performance
-        for (let i = 0; i < selectedPhrases.length * 5; i++) { // Reduced from 15x to 5x
-            let phrase = selectedPhrases[i % selectedPhrases.length];
-            let x = p.floor(p.random(0, gridCols - phrase.length)); // Allow full width usage
-            let y = p.floor(p.random(0, gridRows)); // Use entire height
-            positions.push({x: x, y: y, text: phrase});
-        }
-        
-        // Add fewer random single characters for performance
-        for (let i = 0; i < gridCols * gridRows / 20; i++) { // Reduced from /10 to /20
-            let x = p.floor(p.random(0, gridCols));
-            let y = p.floor(p.random(0, gridRows));
-            let randomChars = ['#', '@', '$', '%', '&', '*', '+', '=', '~', '^', '|', '\\', '/', '-', '_'];
-            let char = randomChars[p.floor(p.random(randomChars.length))];
-            positions.push({x: x, y: y, text: char});
-        }
-        
-        // Don't sort - keep random order for better distribution
-        // positions.sort((a, b) => a.y - b.y || a.x - b.x);
-        
-        // Add to typing queue
-        for (let pos of positions) {
-            for (let i = 0; i < pos.text.length; i++) {
-                if (pos.x + i < gridCols) {
-                    typingQueue.push({
-                        x: pos.x + i,
-                        y: pos.y,
-                        char: pos.text[i],
-                        color: CONFIG.colors.grey
-                    });
-                }
-            }
-        }
-        
-        totalTypingPositions = typingQueue.length;
-    }
-
-    function drawCharGrid() {
-        p.push();
-        p.textAlign(p.LEFT, p.TOP);
-        
-        // Update typing animation
-        updateCharGridTyping();
-        
-        // Draw the character grid
-        for (let y = 0; y < gridRows; y++) {
-            for (let x = 0; x < gridCols; x++) {
-                let cell = charGrid[y][x];
-                let screenX = x * charWidth;
-                let screenY = y * charHeight;
-                
-                // Only draw if cell is visible and has content
-                if (screenY > -charHeight && screenY < p.height && cell.char !== ' ') {
-                    let displayChar = cell.char;
-                    let displayColor = cell.color;
-                    
-                    // Apply mouse scramble effect only to background code, not main text
-                    if (isIntroComplete) {
-                        let scrambled = applyMouseScrambleToCell(x, y, screenX, screenY);
-                        if (scrambled) {
-                            displayChar = scrambled;
-                        }
-                    }
-                    
-                    p.fill(displayColor);
-                    p.text(displayChar, screenX, screenY);
-                }
-            }
-        }
-        p.pop();
-    }
-
-    function updateCharGridTyping() {
-        if (currentTime - backgroundLastTypingTime < backgroundTypingSpeed) return;
-        
-        // Calculate how many characters to type this frame based on speed
-        let charsToType = 1;
-        if (backgroundTypingSpeed < 1) {
-            // For very fast speeds, type multiple characters per frame
-            charsToType = Math.floor(1 / backgroundTypingSpeed);
-        }
-        
-        // Type multiple characters from queue
-        for (let i = 0; i < charsToType && currentTypingPosition < typingQueue.length; i++) {
-            let nextChar = typingQueue[currentTypingPosition];
-            let x = nextChar.x;
-            let y = nextChar.y;
-            
-            if (x < gridCols && y < gridRows) {
-                charGrid[y][x].char = nextChar.char;
-                charGrid[y][x].color = nextChar.color;
-                charGrid[y][x].isTyped = true;
-            }
-            
-            currentTypingPosition++;
-        }
-        
-        backgroundLastTypingTime = currentTime;
-    }
-
-    function applyMouseScrambleToCell(x, y, screenX, screenY) {
-        let mouseX = p.mouseX;
-        let mouseY = p.mouseY;
-        let distance = p.dist(screenX, screenY, mouseX, mouseY);
-        
-        if (distance < mouseProximity) {
-            let cell = charGrid[y][x];
-            let cellKey = `${x}-${y}`;
-            
-            if (!cell.scrambleChar) {
-                cell.scrambleChar = randomScrambleChar();
-                
-                // Set timeout to revert character
-                if (cell.scrambleTimeout) {
-                    clearTimeout(cell.scrambleTimeout);
-                }
-                cell.scrambleTimeout = setTimeout(() => {
-                    cell.scrambleChar = null;
-                    cell.scrambleTimeout = null;
-                }, 300);
-            }
-            return cell.scrambleChar;
-        }
-        return null;
-    }
-
-    function handleIntroSequence(elapsed) {
-        if (introPhase === 0 && elapsed > 5000) { // Wait 5 seconds before showing title
-            // Start typing phase
-            introPhase = 1;
-            phaseStartTime = currentTime;
-            initializeSimpleTyping();
-        } else if (introPhase === 1 && elapsed > 2000) { // 2 seconds of title typing
-            // Start info typing phase
-            introPhase = 2;
-            phaseStartTime = currentTime;
-        } else if (introPhase === 2 && elapsed > 2000) { // 2 seconds of info typing
-            // Start color transition phase
-            introPhase = 3;
-            phaseStartTime = currentTime;
-        } else if (introPhase === 3 && elapsed > 1000) { // 1 second of color transition
-            // Intro complete
-            introPhase = 4;
-            isIntroComplete = true;
-            phaseStartTime = currentTime;
-        }
-        
-        // Handle typing animation
-        if (introPhase === 1) {
-            handleTitleTyping();
-        } else if (introPhase === 2) {
-            handleTitleTyping();
-            handleInfoTyping();
-        } else if (introPhase >= 3) {
-            handleTitleTyping();
-            handleInfoTyping();
-        }
-        
-        // No color transitions needed - typing directly as red
-        
-        // Draw content based on phase
-        drawIntroContent();
-    }
-
-    function initializeSimpleTyping() {
-        // Set up simple text positions
-        titleX = p.floor(gridCols * 0.2);
-        titleY = p.floor(gridRows * 0.4);
-        
-        infoLines = [
-            CONFIG.text.subtitle,
-            CONFIG.text.date,
-            CONFIG.text.address,
-            CONFIG.text.description
-        ];
-        infoStartY = p.floor(gridRows * 0.55);
-        
-        // Reset typing indices
-        titleTypingIndex = 0;
-        infoTypingIndex = 0;
-        titleText = "";
-        infoText = "";
-    }
-
-    function handleTitleTyping() {
-        if (currentTime - titleLastTypingTime > typingSpeed && titleTypingIndex < CONFIG.text.title.length) {
-            titleText += CONFIG.text.title[titleTypingIndex];
-            titleTypingIndex++;
-            titleLastTypingTime = currentTime;
-        }
-    }
-
-    function handleInfoTyping() {
-        if (currentTime - infoLastTypingTime > typingSpeed) {
-            // Build info text line by line
-            let currentLine = Math.floor(infoTypingIndex / 50); // Approximate chars per line
-            if (currentLine < infoLines.length) {
-                let lineText = infoLines[currentLine];
-                let lineIndex = infoTypingIndex % 50;
-                if (lineIndex < lineText.length) {
-                    infoText += lineText[lineIndex];
-                } else if (lineIndex === lineText.length) {
-                    infoText += "\n"; // Add newline after each line
-                }
-                infoTypingIndex++;
-            }
-            infoLastTypingTime = currentTime;
-        }
-    }
-
-    // Color transitions removed - text types directly as red/gold
     
     function drawAsciiArt() {
-        if (asciiArtPhase === 0) {
-            updateAsciiArtAnimation();
-            return;
-        }
+        if (!asciiArtText || asciiArtText.length === 0) return;
         
         asciiArtBuffer.push();
-        asciiArtBuffer.fill(CONFIG.colors.gold);
-        asciiArtBuffer.textAlign(asciiArtBuffer.CENTER, asciiArtBuffer.TOP);
-        asciiArtBuffer.textSize(fontSize * 0.6);
+        asciiArtBuffer.fill(CONFIG.colors.grey);
         asciiArtBuffer.textFont('Courier New', fontSize * 0.6);
         
-        // Center the ASCII art on screen
-        let startX = p.width / 2;
-        let startY = p.height / 2 - (asciiArtText.length * fontSize * 0.6) / 2;
+        // Center the ASCII art
+        let startX = Math.floor((cols - asciiArtText[0].length) / 2);
+        let startY = Math.floor((rows - asciiArtText.length) / 2);
         
-        // Draw ASCII art with random character visibility
-        for (let y = 0; y < asciiArtText.length; y++) {
-            let line = asciiArtText[y];
+        for (let i = 0; i < asciiArtText.length; i++) {
             let lineText = '';
-            
-            // Build line based on visible characters
-            for (let x = 0; x < line.length; x++) {
-                // Find this character's index in the random order
-                let charIndex = -1;
-                for (let i = 0; i < asciiArtRandomOrder.length; i++) {
-                    if (asciiArtRandomOrder[i].x === x && asciiArtRandomOrder[i].y === y) {
-                        charIndex = i;
-                        break;
-                    }
-                }
-                
-                // Only show character if it's marked as visible
-                if (charIndex >= 0 && asciiArtVisibleChars[charIndex]) {
-                    lineText += line[x];
-                } else {
-                    lineText += ' '; // Space for invisible characters
-                }
-            }
-            
-            if (lineText.trim().length > 0) {
-                asciiArtBuffer.text(lineText, startX, startY + y * fontSize * 0.6);
-            }
-        }
-        
-        asciiArtBuffer.pop();
-        
-        // Update ASCII art animation
-        updateAsciiArtAnimation();
-    }
-    
-    function updateAsciiArtAnimation() {
-        let currentTime = p.millis();
-        
-        if (asciiArtPhase === 0) {
-            // Start ASCII art after 3 seconds
-            if (currentTime - phaseStartTime > 3000) {
-                asciiArtPhase = 1;
-                asciiArtStartTime = currentTime;
-                asciiArtLastTypingTime = currentTime;
-            }
-        } else if (asciiArtPhase === 1) {
-            // Typing on - random characters per frame
-            if (currentTime - asciiArtLastTypingTime >= asciiArtTypingSpeed) {
-                let charsToType = Math.floor(p.random(10, 31)); // 10-30 characters per frame
-                for (let i = 0; i < charsToType && asciiArtTypingIndex < asciiArtRandomOrder.length; i++) {
-                    asciiArtVisibleChars[asciiArtTypingIndex] = true;
-                    asciiArtTypingIndex++;
-                }
-                asciiArtLastTypingTime = currentTime;
-            }
-            
-            if (asciiArtTypingIndex >= asciiArtRandomOrder.length) {
-                asciiArtPhase = 2;
-                asciiArtStartTime = currentTime;
-            }
-        } else if (asciiArtPhase === 2) {
-            // Visible phase
-            if (currentTime - asciiArtStartTime >= asciiArtVisibleDuration) {
-                asciiArtPhase = 3;
-                asciiArtStartTime = currentTime;
-                asciiArtLastTypingTime = currentTime;
-                // Reset for typing off
-                asciiArtTypingIndex = asciiArtRandomOrder.length - 1;
-            }
-        } else if (asciiArtPhase === 3) {
-            // Typing off - random characters per frame
-            if (currentTime - asciiArtLastTypingTime >= asciiArtTypingSpeed) {
-                let charsToType = Math.floor(p.random(10, 31)); // 10-30 characters per frame
-                for (let i = 0; i < charsToType && asciiArtTypingIndex >= 0; i++) {
-                    asciiArtVisibleChars[asciiArtTypingIndex] = false;
-                    asciiArtTypingIndex--;
-                }
-                asciiArtLastTypingTime = currentTime;
-            }
-            
-            if (asciiArtTypingIndex < 0) {
-                asciiArtPhase = 4; // Hidden
-            }
-        }
-    }
-
-    function drawIntroContent() {
-        // Draw title text
-        if (introPhase >= 1 && titleText.length > 0) {
-            // Use ASCII art for title
-            drawAsciiTitle(titleAsciiText, titleX, titleY, CONFIG.colors.pureRed, 1);
-        }
-        
-        // Draw info text
-        if (introPhase >= 2 && infoText.length > 0) {
-            drawSimpleText(infoText, titleX, infoStartY, CONFIG.colors.pureRed, 1);
-        }
-        
-        // Draw RSVP text
-        if (introPhase >= 3) {
-            // Show and position HTML RSVP element instead of drawing to buffer
-            if (rsvpElement) {
-                let rsvpX = titleX * charWidth;
-                let rsvpY = (infoStartY + 8) * charHeight;
-                
-                rsvpElement.style.left = rsvpX + 'px';
-                rsvpElement.style.top = rsvpY + 'px';
-                rsvpElement.style.fontSize = fontSize + 'px';
-                rsvpElement.style.display = 'block';
-            }
-        }
-    }
-    
-    function drawSimpleText(text, startX, startY, color, size) {
-        mainTextBuffer.push();
-        mainTextBuffer.fill(color);
-        mainTextBuffer.textAlign(mainTextBuffer.LEFT, mainTextBuffer.TOP);
-        mainTextBuffer.textSize(fontSize * size);
-        mainTextBuffer.textFont('Courier New', fontSize * size);
-        
-        // Draw text with black background to overwrite
-        let lines = text.split('\n');
-        for (let i = 0; i < lines.length; i++) {
-            let x = startX * charWidth;
-            let y = (startY + i * 2) * charHeight;
-            
-            // Draw black background rectangle
-            mainTextBuffer.fill(CONFIG.colors.background);
-            mainTextBuffer.noStroke();
-            mainTextBuffer.rect(x - 2, y - 2, lines[i].length * charWidth + 4, charHeight + 4);
-            
-            // Draw text
-            mainTextBuffer.fill(color);
-            mainTextBuffer.text(lines[i], x, y);
-        }
-        mainTextBuffer.pop();
-    }
-    
-    function updateTitleAsciiAnimation() {
-        let currentTime = p.millis();
-        
-        if (titleAsciiPhase === 0) {
-            // Start title ASCII art when title phase begins
-            if (introPhase >= 1) {
-                titleAsciiPhase = 1;
-                titleAsciiLastTypingTime = currentTime;
-            }
-        } else if (titleAsciiPhase === 1) {
-            // Typing on - random characters per frame
-            if (currentTime - titleAsciiLastTypingTime >= asciiArtTypingSpeed) {
-                let charsToType = Math.floor(p.random(10, 31)); // 10-30 characters per frame
-                for (let i = 0; i < charsToType && titleAsciiTypingIndex < titleAsciiRandomOrder.length; i++) {
-                    titleAsciiVisibleChars[titleAsciiTypingIndex] = true;
-                    titleAsciiTypingIndex++;
-                }
-                titleAsciiLastTypingTime = currentTime;
-            }
-            
-            if (titleAsciiTypingIndex >= titleAsciiRandomOrder.length) {
-                titleAsciiPhase = 2; // Fully visible
-            }
-        }
-    }
-    
-    function drawAsciiTitle(text, startX, startY, color, size) {
-        if (titleAsciiPhase === 0 || titleAsciiText.length === 0) {
-            updateTitleAsciiAnimation();
-            return;
-        }
-        
-        mainTextBuffer.push();
-        mainTextBuffer.fill(color);
-        mainTextBuffer.textAlign(mainTextBuffer.LEFT, mainTextBuffer.TOP);
-        mainTextBuffer.textSize(fontSize * size); // Match background code size
-        mainTextBuffer.textFont('Courier New', fontSize * size);
-        
-        // Draw ASCII art title with random character visibility
-        for (let y = 0; y < titleAsciiText.length; y++) {
-            let line = titleAsciiText[y];
-            let lineText = '';
-            
-            // Build line based on visible characters
-            for (let x = 0; x < line.length; x++) {
-                // Find this character's index in the random order
-                let charIndex = -1;
-                for (let i = 0; i < titleAsciiRandomOrder.length; i++) {
-                    if (titleAsciiRandomOrder[i].x === x && titleAsciiRandomOrder[i].y === y) {
-                        charIndex = i;
-                        break;
-                    }
-                }
-                
-                // Only show character if it's marked as visible
-                if (charIndex >= 0 && titleAsciiVisibleChars[charIndex]) {
-                    lineText += line[x];
+            for (let j = 0; j < asciiArtText[i].length; j++) {
+                if (asciiArtVisibleChars[i] && asciiArtVisibleChars[i][j]) {
+                    lineText += asciiArtText[i][j];
                 } else {
                     lineText += ' '; // Space for invisible characters
                 }
@@ -1035,7 +476,88 @@ function sketch(p) {
             
             if (lineText.trim().length > 0) {
                 let x = startX * charWidth;
-                let drawY = (startY + y) * charHeight;
+                let y = (startY + i) * charHeight;
+                asciiArtBuffer.text(lineText, x, y);
+            }
+        }
+        
+        asciiArtBuffer.pop();
+        updateAsciiArtAnimation();
+    }
+    
+    function updateAsciiArtAnimation() {
+        if (!asciiArtRandomOrder) return;
+        
+        let currentTime = millis();
+        if (asciiArtPhase === 0) { // Typing on
+            if (currentTime - asciiArtLastTypingTime > asciiArtTypingSpeed) {
+                let charsToType = Math.floor(Math.random() * 21) + 10; // 10-30 chars per frame
+                for (let i = 0; i < charsToType && asciiArtTypingIndex < asciiArtRandomOrder.length; i++) {
+                    let pos = asciiArtRandomOrder[asciiArtTypingIndex];
+                    if (!asciiArtVisibleChars[pos.y]) {
+                        asciiArtVisibleChars[pos.y] = [];
+                    }
+                    asciiArtVisibleChars[pos.y][pos.x] = true;
+                    asciiArtTypingIndex++;
+                }
+                asciiArtLastTypingTime = currentTime;
+                
+                if (asciiArtTypingIndex >= asciiArtRandomOrder.length) {
+                    asciiArtPhase = 1; // Wait
+                    asciiArtStartTime = currentTime;
+                }
+            }
+        } else if (asciiArtPhase === 1) { // Wait
+            if (currentTime - asciiArtStartTime > asciiArtVisibleDuration) {
+                asciiArtPhase = 2; // Typing off
+                asciiArtTypingIndex = asciiArtRandomOrder.length - 1;
+            }
+        } else if (asciiArtPhase === 2) { // Typing off
+            if (currentTime - asciiArtLastTypingTime > asciiArtTypingSpeed) {
+                let charsToType = Math.floor(Math.random() * 21) + 10; // 10-30 chars per frame
+                for (let i = 0; i < charsToType && asciiArtTypingIndex >= 0; i++) {
+                    let pos = asciiArtRandomOrder[asciiArtTypingIndex];
+                    if (asciiArtVisibleChars[pos.y]) {
+                        asciiArtVisibleChars[pos.y][pos.x] = false;
+                    }
+                    asciiArtTypingIndex--;
+                }
+                asciiArtLastTypingTime = currentTime;
+                
+                if (asciiArtTypingIndex < 0) {
+                    asciiArtPhase = 0; // Reset to typing on
+                    asciiArtTypingIndex = 0;
+                    asciiArtVisibleChars = [];
+                }
+            }
+        }
+    }
+    
+    function drawAsciiTitle() {
+        if (!titleAsciiText || titleAsciiText.length === 0) return;
+        
+        mainTextBuffer.push();
+        mainTextBuffer.fill(CONFIG.colors.pureRed);
+        mainTextBuffer.textFont('Courier New', fontSize * size);
+        mainTextBuffer.textSize(fontSize * size);
+        
+        // Center the ASCII art
+        let startX = Math.floor((cols - titleAsciiText[0].length) / 2);
+        let startY = Math.floor((rows - titleAsciiText.length) / 2);
+        
+        for (let i = 0; i < titleAsciiText.length; i++) {
+            let lineText = '';
+            for (let j = 0; j < titleAsciiText[i].length; j++) {
+                if (titleAsciiVisibleChars[i] && titleAsciiVisibleChars[i][j]) {
+                    lineText += titleAsciiText[i][j];
+                } else {
+                    lineText += ' '; // Space for invisible characters
+                }
+            }
+            
+            if (lineText.trim().length > 0) {
+                let x = startX * charWidth;
+                let drawY = (startY + i) * charHeight;
                 
                 // Draw black background rectangle
                 mainTextBuffer.fill(CONFIG.colors.background);
@@ -1043,7 +565,7 @@ function sketch(p) {
                 mainTextBuffer.rect(x - 2, drawY - 2, lineText.length * charWidth + 4, charHeight + 4);
                 
                 // Draw ASCII art line
-                mainTextBuffer.fill(color);
+                mainTextBuffer.fill(CONFIG.colors.pureRed);
                 mainTextBuffer.text(lineText, x, drawY);
             }
         }
@@ -1051,201 +573,129 @@ function sketch(p) {
         mainTextBuffer.pop();
         updateTitleAsciiAnimation();
     }
-
-
-    function drawSettledContent() {
-        // Draw all main text in settled state
-        if (titleText.length > 0) {
-            // Use ASCII art for title
-            drawAsciiTitle(titleAsciiText, titleX, titleY, CONFIG.colors.pureRed, 1);
-        }
+    
+    function updateTitleAsciiAnimation() {
+        if (!titleAsciiRandomOrder) return;
         
-        if (infoText.length > 0) {
-            drawSimpleText(infoText, titleX, infoStartY, CONFIG.colors.pureRed, 1);
-        }
-        
-        // Show and position HTML RSVP element
-        if (rsvpElement) {
-            let rsvpX = titleX * charWidth;
-            let rsvpY = (infoStartY + 8) * charHeight;
-            
-            rsvpElement.style.left = rsvpX + 'px';
-            rsvpElement.style.top = rsvpY + 'px';
-            rsvpElement.style.fontSize = fontSize + 'px';
-            rsvpElement.style.display = 'block';
-        }
-    }
-
-    function drawCursor() {
-        p.push();
-        p.fill(CONFIG.colors.gold);
-        p.noStroke();
-        
-        // Draw isosceles triangle pointer with sharpest point as active end
-        let cursorX = p.mouseX;
-        let cursorY = p.mouseY;
-        let baseWidth = cursorSize * 0.6;  // Shorter base for sharper triangle
-        let height = cursorSize;           // Full height
-        
-        // Create isosceles triangle pointing left with sharpest point
-        p.triangle(
-            cursorX, cursorY - baseWidth/2,     // Top right point
-            cursorX, cursorY + baseWidth/2,     // Bottom right point  
-            cursorX - height, cursorY           // Left point (sharpest)
-        );
-        
-        p.pop();
-    }
-
-    function drawFPSMonitor() {
-        // Update FPS calculation
-        frameCount++;
-        if (currentTime - lastFpsTime >= 1000) { // Update every second
-            fps = frameCount;
-            frameCount = 0;
-            lastFpsTime = currentTime;
-        }
-        
-        // Draw FPS in top left
-        p.push();
-        p.fill(CONFIG.colors.gold);
-        p.textAlign(p.LEFT, p.TOP);
-        p.textSize(12);
-        p.text(`FPS: ${fps}`, 10, 10);
-        p.pop();
-    }
-
-    function randomScrambleChar() {
-        let scrambleChars = ['#', '@', '$', '%', '&', '*', '+', '=', '~', '^'];
-        return scrambleChars[p.floor(p.random(scrambleChars.length))];
-    }
-
-    // Utility functions for future ASCII art generation
-    function setCharAt(x, y, char, color = CONFIG.colors.grey) {
-        if (x >= 0 && x < gridCols && y >= 0 && y < gridRows) {
-            charGrid[y][x].char = char;
-            charGrid[y][x].color = color;
-            charGrid[y][x].isTyped = true;
-        }
-    }
-
-    function getCharAt(x, y) {
-        if (x >= 0 && x < gridCols && y >= 0 && y < gridRows) {
-            return charGrid[y][x];
-        }
-        return null;
-    }
-
-    function clearGrid() {
-        for (let y = 0; y < gridRows; y++) {
-            for (let x = 0; x < gridCols; x++) {
-                charGrid[y][x].char = ' ';
-                charGrid[y][x].isTyped = false;
-            }
-        }
-    }
-
-    function addTextToGrid(text, startX, startY, color = CONFIG.colors.grey) {
-        for (let i = 0; i < text.length; i++) {
-            if (startX + i < gridCols && startY < gridRows) {
-                setCharAt(startX + i, startY, text[i], color);
-            }
-        }
-    }
-
-    // Future function for ASCII art from image/video
-    function generateASCIIFromImage(img, targetWidth = null, targetHeight = null) {
-        if (!img) return;
-        
-        let w = targetWidth || gridCols;
-        let h = targetHeight || gridRows;
-        
-        // ASCII character set from dark to light
-        let asciiChars = [' ', '.', ':', ';', 'o', 'x', '%', '#', '@'];
-        
-        // Sample image and convert to ASCII
-        for (let y = 0; y < h; y++) {
-            for (let x = 0; x < w; x++) {
-                let imgX = p.map(x, 0, w, 0, img.width);
-                let imgY = p.map(y, 0, h, 0, img.height);
+        let currentTime = millis();
+        if (titleAsciiPhase === 0) { // Typing on
+            if (currentTime - titleAsciiLastTypingTime > titleAsciiTypingSpeed) {
+                let charsToType = Math.floor(Math.random() * 21) + 10; // 10-30 chars per frame
+                for (let i = 0; i < charsToType && titleAsciiTypingIndex < titleAsciiRandomOrder.length; i++) {
+                    let pos = titleAsciiRandomOrder[titleAsciiTypingIndex];
+                    if (!titleAsciiVisibleChars[pos.y]) {
+                        titleAsciiVisibleChars[pos.y] = [];
+                    }
+                    titleAsciiVisibleChars[pos.y][pos.x] = true;
+                    titleAsciiTypingIndex++;
+                }
+                titleAsciiLastTypingTime = currentTime;
                 
-                let pixel = img.get(imgX, imgY);
-                let brightness = (pixel[0] + pixel[1] + pixel[2]) / 3;
-                let charIndex = p.floor(p.map(brightness, 0, 255, 0, asciiChars.length - 1));
-                
-                setCharAt(x, y, asciiChars[charIndex], CONFIG.colors.grey);
-            }
-        }
-    }
-
-    // Post-processing functions removed (disabled for performance)
-
-    function easeInOutCubic(t) {
-        return t < 0.5 ? 4 * t * t * t : 1 - p.pow(-2 * t + 2, 3) / 2;
-    }
-
-    // Mouse interaction
-    // Mouse click handling removed - RSVP is now HTML element
-
-    // Window resize handling
-    p.windowResized = function() {
-        p.resizeCanvas(p.windowWidth, p.height);
-        
-        // Recalculate grid
-        isMobile = p.windowWidth < 768;
-        fontSize = isMobile ? 16 : 18;
-        charWidth = fontSize * 0.6;
-        charHeight = fontSize * 1.2;
-        cols = p.floor(p.width / charWidth);
-        rows = p.floor(p.height / charHeight);
-        
-        // Reinitialize character grid
-        initializeCharGrid();
-        
-        // Recreate main text buffer with new dimensions
-        mainTextBuffer = p.createGraphics(p.width, p.height);
-        mainTextBuffer.clear(); // Transparent background
-        
-        // Recreate ASCII art buffer with new dimensions
-        asciiArtBuffer = p.createGraphics(p.width, p.height);
-        asciiArtBuffer.clear(); // Transparent background
-        
-        // Update RSVP element font size
-        if (rsvpElement) {
-            rsvpElement.style.fontSize = fontSize + 'px';
-        }
-        
-        // Update frame rate
-        if (isMobile) {
-            targetFrameRate = 24;
-        } else {
-            targetFrameRate = 30;
-        }
-        p.frameRate(targetFrameRate);
-    };
-
-    // Prevent context menu on right click
-    p.mousePressed = function() {
-        if (p.mouseButton === p.RIGHT) {
-            return false;
-        }
-        
-        // Handle RSVP click
-        if (isIntroComplete) {
-            let rsvpY = p.height * 0.55 + fontSize * 1.5 * 4.5;
-            let rsvpTextWidth = p.textWidth(CONFIG.text.rsvpText);
-            let rsvpX = p.width / 2;
-            
-            if (p.mouseX > rsvpX - rsvpTextWidth / 2 && 
-                p.mouseX < rsvpX + rsvpTextWidth / 2 &&
-                p.mouseY > rsvpY - fontSize / 2 && 
-                p.mouseY < rsvpY + fontSize / 2) {
-                
-                if (typeof showRSVPForm === 'function') {
-                    showRSVPForm();
+                if (titleAsciiTypingIndex >= titleAsciiRandomOrder.length) {
+                    titleAsciiPhase = 1; // Complete
                 }
             }
         }
-    };
+    }
+    
+    function drawSettledContent() {
+        // Draw main text to mainTextBuffer
+        mainTextBuffer.push();
+        mainTextBuffer.fill(CONFIG.colors.pureRed);
+        mainTextBuffer.textFont('Courier New', fontSize);
+        
+        // Draw title as ASCII art
+        drawAsciiTitle();
+        
+        // Draw event info
+        let infoY = Math.floor(rows * 0.6);
+        let infoText = [
+            CONFIG.text.subtitle,
+            CONFIG.text.date,
+            CONFIG.text.address,
+            CONFIG.text.description
+        ];
+        
+        for (let i = 0; i < infoText.length; i++) {
+            let y = infoY + i;
+            if (y < rows) {
+                let x = Math.floor(cols * 0.1);
+                mainTextBuffer.text(infoText[i], x * charWidth, y * charHeight);
+            }
+        }
+        
+        mainTextBuffer.pop();
+        
+        // Show and position RSVP element
+        if (rsvpElement) {
+            rsvpElement.style.display = 'block';
+            let rsvpX = Math.floor(cols * 0.1);
+            let rsvpY = Math.floor(rows * 0.8);
+            rsvpElement.style.left = (rsvpX * charWidth) + 'px';
+            rsvpElement.style.top = (rsvpY * charHeight) + 'px';
+        }
+    }
+    
+    function drawCursor() {
+        push();
+        fill(CONFIG.colors.gold);
+        noStroke();
+        
+        // Draw isosceles triangle pointing left
+        let cursorX = mouseX;
+        let cursorY = mouseY;
+        let size = 8;
+        
+        triangle(
+            cursorX - size, cursorY,           // Left point (sharpest)
+            cursorX, cursorY - size/2,         // Top right
+            cursorX, cursorY + size/2          // Bottom right
+        );
+        
+        pop();
+    }
+    
+    function drawFPSMonitor() {
+        push();
+        fill(CONFIG.colors.grey);
+        textFont('Courier New', 12);
+        textAlign(LEFT, TOP);
+        text(`FPS: ${fps.toFixed(1)}`, 10, 10);
+        pop();
+    }
+    
+    function updateFPS() {
+        frameCount++;
+        let currentTime = millis();
+        if (currentTime - lastFpsTime >= 1000) {
+            fps = frameCount * 1000 / (currentTime - lastFpsTime);
+            frameCount = 0;
+            lastFpsTime = currentTime;
+        }
+    }
+    
+    function p.windowResized() {
+        p.resizeCanvas(p.windowWidth, p.windowHeight);
+        initializeCharGrid();
+        initializeTypingQueue();
+        initializeSimpleTyping();
+        initializeAsciiArt();
+        initializeTitleAsciiArt();
+        
+        // Recreate buffers with new dimensions
+        mainTextBuffer = p.createGraphics(p.width, p.height);
+        asciiArtBuffer = p.createGraphics(p.width, p.height);
+        
+        // Update RSVP element position
+        if (rsvpElement) {
+            rsvpElement.style.fontSize = charHeight + 'px';
+        }
+    }
+    
+    function p.mousePressed() {
+        // Mouse press handling if needed
+    }
+    
+    // Return the p5 instance
+    return p;
 }
-
