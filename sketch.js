@@ -474,7 +474,7 @@ function sketch(p) {
     function initializeSimpleTyping() {
         // Set up simple text positions
         titleX = p.floor(gridCols * 0.2);
-        titleY = p.floor(gridRows * 0.25); // Top quarter of the page
+        titleY = p.floor(p.height * 0.15) / charHeight; // Higher up in top quarter
         
         infoLines = [
             CONFIG.text.subtitle,
@@ -482,7 +482,7 @@ function sketch(p) {
             CONFIG.text.address,
             CONFIG.text.description
         ];
-        infoStartY = p.floor(gridRows * 0.35); // Below title in top quarter
+        infoStartY = p.floor(p.height * 0.25) / charHeight; // Below title in top quarter
         
         // Reset typing indices
         titleTypingIndex = 0;
@@ -780,13 +780,14 @@ function sketch(p) {
         asciiArtBuffer.fill(CONFIG.colors.gold);
         asciiArtBuffer.textFont('Courier New', fontSize);
         
-        // Center the ASCII art horizontally (find longest line for proper centering)
+        // Center the ASCII art horizontally (calculate based on actual text width)
         let maxLineLength = 0;
         for (let line of asciiArtText) {
             maxLineLength = Math.max(maxLineLength, line.length);
         }
-        let startX = Math.floor((cols - maxLineLength) / 2);
-        let startY = Math.floor((rows - asciiArtText.length) / 2);
+        let textWidthPixels = maxLineLength * charWidth;
+        let startX = Math.floor((p.width - textWidthPixels) / 2) / charWidth;
+        let startY = Math.floor((p.height - asciiArtText.length * charHeight) / 2) / charHeight;
         
         for (let i = 0; i < asciiArtText.length; i++) {
             let lineText = '';
@@ -865,13 +866,14 @@ function sketch(p) {
         mainTextBuffer.textFont('Courier New', fontSize);
         mainTextBuffer.textSize(fontSize);
         
-        // Center the ASCII art horizontally (find longest line for proper centering)
+        // Center the ASCII art horizontally (calculate based on actual text width)
         let maxLineLength = 0;
         for (let line of titleAsciiText) {
             maxLineLength = Math.max(maxLineLength, line.length);
         }
-        let startX = Math.floor((cols - maxLineLength) / 2);
-        let startY = Math.floor(gridRows * 0.25); // Top quarter of the page
+        let textWidthPixels = maxLineLength * charWidth;
+        let startX = Math.floor((p.width - textWidthPixels) / 2) / charWidth;
+        let startY = Math.floor(p.height * 0.15) / charHeight; // Higher up in top quarter
         
         for (let i = 0; i < titleAsciiText.length; i++) {
             let lineText = '';
