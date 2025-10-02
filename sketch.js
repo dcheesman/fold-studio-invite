@@ -723,14 +723,20 @@ function sketch(p) {
     
     function drawIntroContent() {
         // Draw title text
-        if (introPhase >= 1 && titleText.length > 0) {
+        if (introPhase >= 1) {
             // Use ASCII art for title
             drawAsciiTitle();
         }
         
         // Draw info text
-        if (introPhase >= 2 && infoText.length > 0) {
-            drawSimpleText(infoText, titleX, infoStartY, CONFIG.colors.background, 1, CONFIG.colors.pureRed);
+        if (introPhase >= 2) {
+            // In phase 3, use the full info text from CONFIG
+            if (introPhase >= 3) {
+                let fullInfoText = infoLines.join('\n');
+                drawSimpleText(fullInfoText, titleX, infoStartY, CONFIG.colors.background, 1, CONFIG.colors.pureRed);
+            } else if (infoText.length > 0) {
+                drawSimpleText(infoText, titleX, infoStartY, CONFIG.colors.background, 1, CONFIG.colors.pureRed);
+            }
         }
         
         // Draw RSVP text
