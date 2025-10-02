@@ -30,9 +30,9 @@ function sketch(p) {
             description: "A night for the true believers.",
             rsvpText: "→ RSVP"
         },
-        // ASCII art will be loaded from files
+        // Title ASCII art
         titleAsciiArt: [
-            "                                      #*##*##**  *##   #**  #*##*##*    #*## *### *###                                                     ",
+            "                                    ░░░░░░░░  ░░░   ░░  ░░░░░░░░    ░░░  ░░░ ░░░░                                                  ",
             "                                         *##     *##   ##*  #*          #**# *#*# *#*#                                                     ",
             "                                         *##     ***##**#*  *##*#**#    *### #**# *#*#                                                     ",
             "                                         #*#     *##   #**  *#          *#*# #*## *###                                                     ",
@@ -126,7 +126,10 @@ function sketch(p) {
             "cudaStreamDestroy(stream);",
             "cudaFree(unified_memory);"
         ],
+        // Head ASCII art
         asciiArt: [
+            "                                                                                                    ",
+            "                                                                                                    ",
             "                                          :=>(][[](>=:                                              ",
             "                                  =(@@@@@@@@@@@@@@@@@@@@@@@@]+                                      ",
             "                              <@@@@@@@@[*-.          .-+[@@@@@@@@>                                  ",
@@ -177,7 +180,9 @@ function sketch(p) {
             "                       [@@{                                    ~@@@                                 ",
             "                      (@@%                                      <@@@.                               ",
             "                     (@@@                                        *@@@~                              ",
-            "                      (^                                           *+                               "
+            "                      (^                                           *+                               ",
+            "                                                                                                    ",
+            "                                                                                                    "
         ]
     };
 
