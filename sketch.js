@@ -398,16 +398,15 @@ function sketch(p) {
     }
     
     function initializeTitleAsciiArt() {
-            "                                                                                                    ",
-            "                                          :=>(][[](>=:                                              ",
-            "                                  =(@@@@@@@@@@@@@@@@@@@@@@@@]+                                      ",
-            "                              <@@@@@@@@[*-.          .-+[@@@@@@@@>                                  ",
-            "                          .]@@@@@#=                          ~#@@@@@)                               ",
-            "                        *@@@@@=                                  +@@@@@:                            ",
-            "                      >@@@@=                                        >@@@@.                          ",
-            "                    -@@@@-                   .:---:.                  <@@@<                         ",
-            "                   [@@@~              *@@@@@@@@@@@@@@@@@@@^             @@@}                        ",
-            "                  @@@{           .)@@@@{>:             .>{@@@@)          {@@[                       ",
+        // Use CONFIG.titleAsciiArt
+        titleAsciiText = [];
+        for (let line of CONFIG.titleAsciiArt) {
+            titleAsciiText.push(line.split(''));
+        }
+        setupTitleAsciiArtRandomOrder();
+    }
+    
+    function setupAsciiArtRandomOrder() {
             "                 @@@)          )@@@(:                       .(@@@*        @@@=                      ",
             "                #@@]         [@@}                              .%@@+      ~@@@                      ",
             "               <@@%        *@@)                                  :@@#      [@@*                     ",
