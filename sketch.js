@@ -369,12 +369,10 @@ function sketch(p) {
         
         // Draw layers in correct order (bottom to top):
         // 1. Background code (already drawn)
-        // 2. ASCII art head buffer
-        if (!isIntroComplete) {
-            asciiArtBuffer.clear();
-            drawAsciiArt();
-            p.image(asciiArtBuffer, 0, 0);
-        }
+        // 2. ASCII art head buffer (always visible, cycling animation)
+        asciiArtBuffer.clear();
+        drawAsciiArt();
+        p.image(asciiArtBuffer, 0, 0);
         
         // 3. Event info (main text buffer)
         p.image(mainTextBuffer, 0, 0);
