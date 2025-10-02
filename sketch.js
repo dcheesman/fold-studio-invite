@@ -914,31 +914,31 @@ function sketch(p) {
     }
     
     function drawCursor() {
-        push();
-        fill(CONFIG.colors.gold);
-        noStroke();
+        p.push();
+        p.fill(CONFIG.colors.gold);
+        p.noStroke();
         
         // Draw isosceles triangle pointing left
-        let cursorX = mouseX;
-        let cursorY = mouseY;
+        let cursorX = p.mouseX;
+        let cursorY = p.mouseY;
         let size = 8;
         
-        triangle(
+        p.triangle(
             cursorX - size, cursorY,           // Left point (sharpest)
             cursorX, cursorY - size/2,         // Top right
             cursorX, cursorY + size/2          // Bottom right
         );
         
-        pop();
+        p.pop();
     }
     
     function drawFPSMonitor() {
-        push();
-        fill(CONFIG.colors.grey);
-        textFont('Courier New', 12);
-        textAlign(LEFT, TOP);
-        text(`FPS: ${fps.toFixed(1)}`, 10, 10);
-        pop();
+        p.push();
+        p.fill(CONFIG.colors.grey);
+        p.textFont('Courier New', 12);
+        p.textAlign(p.LEFT, p.TOP);
+        p.text(`FPS: ${fps.toFixed(1)}`, 10, 10);
+        p.pop();
     }
     
     function updateFPS() {
