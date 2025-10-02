@@ -348,15 +348,12 @@ function sketch(p) {
                 rsvpElement.style.display = 'none';
             }
             handleIntroSequence(elapsed);
-        } else {
-            // Post-intro settled state
-            drawSettledContent();
         }
         
         // Draw main text buffer on top
         p.image(mainTextBuffer, 0, 0);
         
-        // Draw ASCII art buffer on top of everything
+        // Draw ASCII art buffer
         asciiArtBuffer.clear();
         drawAsciiArt();
         p.image(asciiArtBuffer, 0, 0);
@@ -675,14 +672,11 @@ function sketch(p) {
             // Wait for info typing to complete
             let totalInfoChars = infoLines.reduce((sum, line) => sum + line.length + 1, 0); // +1 for newline
             if (infoTypingIndex >= totalInfoChars) {
+                // Intro complete - stay in this phase
                 introPhase = 3;
+                isIntroComplete = true;
                 phaseStartTime = currentTime;
             }
-        } else if (introPhase === 3 && elapsed > 1000) { // 1 second of color transition
-            // Intro complete
-            introPhase = 4;
-            isIntroComplete = true;
-            phaseStartTime = currentTime;
         }
         
         // Handle typing animation
@@ -692,6 +686,7 @@ function sketch(p) {
             handleTitleTyping();
             handleInfoTyping();
         } else if (introPhase >= 3) {
+            // Keep everything visible in final phase
             handleTitleTyping();
             handleInfoTyping();
         }
@@ -743,12 +738,18 @@ function sketch(p) {
             // Show and position HTML RSVP element instead of drawing to buffer
             if (rsvpElement) {
                 let rsvpX = titleX * charWidth;
-                let rsvpY = (infoStartY + 8) * charHeight;
+                let rsvpY = (infoStartY + 6) * charHeight; // Position below info text
                 
                 rsvpElement.style.left = rsvpX + 'px';
                 rsvpElement.style.top = rsvpY + 'px';
                 rsvpElement.style.fontSize = fontSize + 'px';
                 rsvpElement.style.display = 'block';
+                rsvpElement.style.zIndex = '1000'; // Ensure it's on top
+            }
+        } else {
+            // Hide RSVP during intro phases
+            if (rsvpElement) {
+                rsvpElement.style.display = 'none';
             }
         }
     }
@@ -774,9 +775,9 @@ function sketch(p) {
             mainTextBuffer.noStroke();
             mainTextBuffer.rect(x - 2, y - 2, lines[i].length * charWidth + 4, charHeight + 4);
             
-            // Draw text (adjust y position to align with background)
+            // Draw text (align with background rectangle)
             mainTextBuffer.fill(color);
-            mainTextBuffer.text(lines[i], x, y + charHeight * 0.8); // Adjust vertical alignment
+            mainTextBuffer.text(lines[i], x, y + charHeight - 2); // Align with background
         }
         mainTextBuffer.pop();
     }
@@ -978,9 +979,9 @@ function sketch(p) {
             mainTextBuffer.noStroke();
             mainTextBuffer.rect(x - 2, y - 2, infoText[i].length * charWidth + 4, charHeight + 4);
             
-            // Draw black text (adjust y position to align with background)
+            // Draw black text (align with background rectangle)
             mainTextBuffer.fill(CONFIG.colors.background);
-            mainTextBuffer.text(infoText[i], x, y + charHeight * 0.8); // Adjust vertical alignment
+            mainTextBuffer.text(infoText[i], x, y + charHeight - 2); // Align with background
         }
         
         mainTextBuffer.pop();
