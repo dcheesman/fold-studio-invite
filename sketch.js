@@ -785,17 +785,17 @@ function sketch(p) {
     }
     
     function drawSimpleText(text, startX, startY, color, size, backgroundColor = null) {
-        mainTextBuffer.push();
-        mainTextBuffer.textAlign(mainTextBuffer.LEFT, mainTextBuffer.TOP);
-        mainTextBuffer.textSize(fontSize);
-        mainTextBuffer.textFont('Courier New', fontSize);
-        
         // Draw text with background
         let lines = text.split('\n');
         
         for (let i = 0; i < lines.length; i++) {
             let x = startX * charWidth;
             let y = (startY + i) * charHeight;
+            
+            mainTextBuffer.push();
+            mainTextBuffer.textAlign(mainTextBuffer.LEFT, mainTextBuffer.CENTER);
+            mainTextBuffer.textSize(fontSize);
+            mainTextBuffer.textFont('Courier New', fontSize);
             
             // Draw background rectangle
             if (backgroundColor) {
@@ -806,12 +806,13 @@ function sketch(p) {
             mainTextBuffer.noStroke();
             mainTextBuffer.rect(x - 2, y - 2, lines[i].length * charWidth + 4, charHeight + 4);
             
-            // Draw text (align with background rectangle)
+            // Draw text (centered vertically in the rectangle)
             mainTextBuffer.fill(p.color(color));
             mainTextBuffer.noStroke();
-            mainTextBuffer.text(lines[i], x, y + charHeight - 4);
+            mainTextBuffer.text(lines[i], x, y + charHeight / 2);
+            
+            mainTextBuffer.pop();
         }
-        mainTextBuffer.pop();
     }
     
     function drawAsciiArt() {
