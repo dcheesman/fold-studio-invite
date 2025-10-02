@@ -296,7 +296,7 @@ function sketch(p) {
         
         // Calculate grid system
         fontSize = isMobile ? 16 : 18;
-        charWidth = fontSize; // Monospace character width
+        charWidth = fontSize * 0.6; // Monospace character width
         charHeight = fontSize; // Line height
         cols = p.floor(p.width / charWidth);
         rows = p.floor(p.height / charHeight);
@@ -730,7 +730,7 @@ function sketch(p) {
         
         // Draw info text
         if (introPhase >= 2 && infoText.length > 0) {
-            drawSimpleText(infoText, titleX, infoStartY, CONFIG.colors.pureRed, 1);
+            drawSimpleText(infoText, titleX, infoStartY, CONFIG.colors.background, 1, CONFIG.colors.pureRed);
         }
         
         // Draw RSVP text
@@ -748,21 +748,24 @@ function sketch(p) {
         }
     }
     
-    function drawSimpleText(text, startX, startY, color, size) {
+    function drawSimpleText(text, startX, startY, color, size, backgroundColor = null) {
         mainTextBuffer.push();
-        mainTextBuffer.fill(color);
         mainTextBuffer.textAlign(mainTextBuffer.LEFT, mainTextBuffer.TOP);
         mainTextBuffer.textSize(fontSize);
         mainTextBuffer.textFont('Courier New', fontSize);
         
-        // Draw text with black background to overwrite
+        // Draw text with background
         let lines = text.split('\n');
         for (let i = 0; i < lines.length; i++) {
             let x = startX * charWidth;
             let y = (startY + i * 2) * charHeight;
             
-            // Draw black background rectangle
-            mainTextBuffer.fill(CONFIG.colors.background);
+            // Draw background rectangle
+            if (backgroundColor) {
+                mainTextBuffer.fill(backgroundColor);
+            } else {
+                mainTextBuffer.fill(CONFIG.colors.background);
+            }
             mainTextBuffer.noStroke();
             mainTextBuffer.rect(x - 2, y - 2, lines[i].length * charWidth + 4, charHeight + 4);
             
