@@ -257,7 +257,7 @@ function sketch(p) {
     let typingSpeed = 5; // ms per character (much faster)
     
     // Text positions
-    let titleX, titleY;
+    let titleX, titleY, infoX;
     let infoLines = [];
     let infoStartY;
     
@@ -497,6 +497,14 @@ function sketch(p) {
             CONFIG.text.rsvpRequest,
             CONFIG.text.closing
         ];
+        
+        // Calculate center position for info text
+        let maxLineLength = 0;
+        for (let line of infoLines) {
+            maxLineLength = Math.max(maxLineLength, line.length);
+        }
+        let infoTextWidth = maxLineLength * charWidth;
+        infoX = p.floor((p.width - infoTextWidth) / 2 / charWidth); // Center horizontally
         infoStartY = p.floor(p.height * 0.60) / charHeight; // Move up slightly from bottom third
         
         // Reset typing indices
@@ -767,9 +775,9 @@ function sketch(p) {
             // In phase 3, use the full info text from CONFIG
             if (introPhase >= 3) {
                 let fullInfoText = infoLines.join('\n');
-                drawSimpleText(fullInfoText, titleX, infoStartY, CONFIG.colors.background, 1, CONFIG.colors.pureRed);
+                drawSimpleText(fullInfoText, infoX, infoStartY, CONFIG.colors.background, 1, CONFIG.colors.pureRed);
             } else if (infoText.length > 0) {
-                drawSimpleText(infoText, titleX, infoStartY, CONFIG.colors.background, 1, CONFIG.colors.pureRed);
+                drawSimpleText(infoText, infoX, infoStartY, CONFIG.colors.background, 1, CONFIG.colors.pureRed);
             }
         }
         
@@ -777,8 +785,8 @@ function sketch(p) {
         if (introPhase >= 3) {
             // Show and position HTML RSVP element instead of drawing to buffer
             if (rsvpElement) {
-                let rsvpX = titleX * charWidth;
-                let rsvpY = (infoStartY + 6) * charHeight; // Position below info text
+                let rsvpX = infoX * charWidth; // Use same X as info text (centered)
+                let rsvpY = (infoStartY + infoLines.length + 1) * charHeight; // Position below all info text
                 
                 rsvpElement.style.left = rsvpX + 'px';
                 rsvpElement.style.top = rsvpY + 'px';
@@ -1032,10 +1040,11 @@ function sketch(p) {
         // Show and position RSVP element
         if (rsvpElement) {
             rsvpElement.style.display = 'block';
-            let rsvpX = Math.floor(cols * 0.1);
-            let rsvpY = Math.floor(rows * 0.8);
-            rsvpElement.style.left = (rsvpX * charWidth) + 'px';
-            rsvpElement.style.top = (rsvpY * charHeight) + 'px';
+            // Position RSVP below info text (centered)
+            let rsvpX = infoX * charWidth;
+            let rsvpY = (infoStartY + infoLines.length + 1) * charHeight;
+            rsvpElement.style.left = rsvpX + 'px';
+            rsvpElement.style.top = rsvpY + 'px';
         }
     }
     
