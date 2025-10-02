@@ -389,6 +389,15 @@ function sketch(p) {
     }
     
     function initializeAsciiArt() {
+        // Use CONFIG.asciiArt
+        asciiArtText = [];
+        for (let line of CONFIG.asciiArt) {
+            asciiArtText.push(line.split(''));
+        }
+        setupAsciiArtRandomOrder();
+    }
+    
+    function initializeAsciiArtOld() {
         // Head ASCII art embedded directly
         const headAsciiArt = [
             "                                                                                                    ",
@@ -456,6 +465,15 @@ function sketch(p) {
     }
     
     function initializeTitleAsciiArt() {
+        // Use CONFIG.titleAsciiArt
+        titleAsciiText = [];
+        for (let line of CONFIG.titleAsciiArt) {
+            titleAsciiText.push(line.split(''));
+        }
+        setupTitleAsciiArtRandomOrder();
+    }
+    
+    function initializeTitleAsciiArtOld() {
         // Title ASCII art embedded directly
         const titleAsciiArt = [
             "                                    ░░░░░░░░  ░░░   ░░  ░░░░░░░░    ░░░  ░░░ ░░░░                                                  ",
@@ -974,16 +992,16 @@ function sketch(p) {
             
             if (lineText.trim().length > 0) {
                 let x = startX * charWidth;
-                let y = (startY + y) * charHeight;
+                let drawY = (startY + y) * charHeight;
                 
                 // Draw black background rectangle
                 mainTextBuffer.fill(CONFIG.colors.background);
                 mainTextBuffer.noStroke();
-                mainTextBuffer.rect(x - 2, y - 2, lineText.length * charWidth + 4, charHeight + 4);
+                mainTextBuffer.rect(x - 2, drawY - 2, lineText.length * charWidth + 4, charHeight + 4);
                 
                 // Draw ASCII art line
                 mainTextBuffer.fill(color);
-                mainTextBuffer.text(lineText, x, y);
+                mainTextBuffer.text(lineText, x, drawY);
             }
         }
         
