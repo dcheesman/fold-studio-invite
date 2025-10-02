@@ -230,6 +230,7 @@ function sketch(p) {
     let titleAsciiTypingIndex = 0;
     let titleAsciiLastTypingTime = 0;
     let titleAsciiPhase = 0; // 0: not started, 1: typing on, 2: visible, 3: typing off, 4: done
+    let titleAsciiTypingSpeed = 50; // ms per character
     
     // HTML RSVP element
     let rsvpElement;
@@ -360,6 +361,9 @@ function sketch(p) {
         
         // Draw FPS monitor
         drawFPSMonitor();
+        
+        // Update FPS
+        updateFPS();
         
         // Post-processing disabled for performance
     };
@@ -518,6 +522,214 @@ function sketch(p) {
         }
     }
     
+    function drawCharGrid() {
+        p.push();
+        p.textAlign(p.LEFT, p.TOP);
+        
+        // Update typing animation
+        updateCharGridTyping();
+        
+        // Draw the character grid
+        for (let y = 0; y < gridRows; y++) {
+            for (let x = 0; x < gridCols; x++) {
+                let cell = charGrid[y][x];
+                let screenX = x * charWidth;
+                let screenY = y * charHeight;
+                
+                // Only draw if cell is visible and has content
+                if (screenY > -charHeight && screenY < p.height && cell.char !== ' ') {
+                    let displayChar = cell.char;
+                    let displayColor = cell.color;
+                    
+                    // Apply mouse scramble effect only to background code, not main text
+                    if (isIntroComplete) {
+                        let scrambled = applyMouseScrambleToCell(x, y, screenX, screenY);
+                        if (scrambled) {
+                            displayChar = scrambled;
+                        }
+                    }
+                    
+                    p.fill(displayColor);
+                    p.text(displayChar, screenX, screenY);
+                }
+            }
+        }
+        p.pop();
+    }
+    
+    function updateCharGridTyping() {
+        if (currentTime - backgroundLastTypingTime < backgroundTypingSpeed) return;
+        
+        // Calculate how many characters to type this frame based on speed
+        let charsToType = 1;
+        if (backgroundTypingSpeed < 1) {
+            // For very fast speeds, type multiple characters per frame
+            charsToType = Math.floor(1 / backgroundTypingSpeed);
+        }
+        
+        // Type multiple characters from queue
+        for (let i = 0; i < charsToType && currentTypingPosition < typingQueue.length; i++) {
+            let nextChar = typingQueue[currentTypingPosition];
+            let x = nextChar.x;
+            let y = nextChar.y;
+            
+            if (x < gridCols && y < gridRows) {
+                charGrid[y][x].char = nextChar.char;
+                charGrid[y][x].color = nextChar.color;
+                charGrid[y][x].isTyped = true;
+            }
+            
+            currentTypingPosition++;
+        }
+        
+        backgroundLastTypingTime = currentTime;
+    }
+    
+    function applyMouseScrambleToCell(x, y, screenX, screenY) {
+        let mouseX = p.mouseX;
+        let mouseY = p.mouseY;
+        let distance = p.dist(screenX, screenY, mouseX, mouseY);
+        
+        if (distance < mouseProximity) {
+            let cell = charGrid[y][x];
+            let cellKey = `${x}-${y}`;
+            
+            if (!cell.scrambleChar) {
+                cell.scrambleChar = randomScrambleChar();
+                
+                // Set timeout to revert character
+                if (cell.scrambleTimeout) {
+                    clearTimeout(cell.scrambleTimeout);
+                }
+                cell.scrambleTimeout = setTimeout(() => {
+                    cell.scrambleChar = null;
+                    cell.scrambleTimeout = null;
+                }, 300);
+            }
+            return cell.scrambleChar;
+        }
+        return null;
+    }
+    
+    function randomScrambleChar() {
+        let scrambleChars = ['#', '@', '$', '%', '&', '*', '+', '=', '~', '^'];
+        return scrambleChars[p.floor(p.random(scrambleChars.length))];
+    }
+    
+    function handleIntroSequence(elapsed) {
+        if (introPhase === 0 && elapsed > 5000) { // Wait 5 seconds before showing title
+            // Start typing phase
+            introPhase = 1;
+            phaseStartTime = currentTime;
+            initializeSimpleTyping();
+        } else if (introPhase === 1 && elapsed > 2000) { // 2 seconds of title typing
+            // Start info typing phase
+            introPhase = 2;
+            phaseStartTime = currentTime;
+        } else if (introPhase === 2 && elapsed > 2000) { // 2 seconds of info typing
+            // Start color transition phase
+            introPhase = 3;
+            phaseStartTime = currentTime;
+        } else if (introPhase === 3 && elapsed > 1000) { // 1 second of color transition
+            // Intro complete
+            introPhase = 4;
+            isIntroComplete = true;
+            phaseStartTime = currentTime;
+        }
+        
+        // Handle typing animation
+        if (introPhase === 1) {
+            handleTitleTyping();
+        } else if (introPhase === 2) {
+            handleTitleTyping();
+            handleInfoTyping();
+        } else if (introPhase >= 3) {
+            handleTitleTyping();
+            handleInfoTyping();
+        }
+        
+        // Draw content based on phase
+        drawIntroContent();
+    }
+    
+    function handleTitleTyping() {
+        if (currentTime - titleLastTypingTime > typingSpeed && titleTypingIndex < CONFIG.text.title.length) {
+            titleText += CONFIG.text.title[titleTypingIndex];
+            titleTypingIndex++;
+            titleLastTypingTime = currentTime;
+        }
+    }
+    
+    function handleInfoTyping() {
+        if (currentTime - infoLastTypingTime > typingSpeed) {
+            // Build info text line by line
+            let currentLine = Math.floor(infoTypingIndex / 50); // Approximate chars per line
+            if (currentLine < infoLines.length) {
+                let lineText = infoLines[currentLine];
+                let lineIndex = infoTypingIndex % 50;
+                if (lineIndex < lineText.length) {
+                    infoText += lineText[lineIndex];
+                } else if (lineIndex === lineText.length) {
+                    infoText += "\n"; // Add newline after each line
+                }
+                infoTypingIndex++;
+            }
+            infoLastTypingTime = currentTime;
+        }
+    }
+    
+    function drawIntroContent() {
+        // Draw title text
+        if (introPhase >= 1 && titleText.length > 0) {
+            // Use ASCII art for title
+            drawAsciiTitle();
+        }
+        
+        // Draw info text
+        if (introPhase >= 2 && infoText.length > 0) {
+            drawSimpleText(infoText, titleX, infoStartY, CONFIG.colors.pureRed, 1);
+        }
+        
+        // Draw RSVP text
+        if (introPhase >= 3) {
+            // Show and position HTML RSVP element instead of drawing to buffer
+            if (rsvpElement) {
+                let rsvpX = titleX * charWidth;
+                let rsvpY = (infoStartY + 8) * charHeight;
+                
+                rsvpElement.style.left = rsvpX + 'px';
+                rsvpElement.style.top = rsvpY + 'px';
+                rsvpElement.style.fontSize = fontSize + 'px';
+                rsvpElement.style.display = 'block';
+            }
+        }
+    }
+    
+    function drawSimpleText(text, startX, startY, color, size) {
+        mainTextBuffer.push();
+        mainTextBuffer.fill(color);
+        mainTextBuffer.textAlign(mainTextBuffer.LEFT, mainTextBuffer.TOP);
+        mainTextBuffer.textSize(fontSize * size);
+        mainTextBuffer.textFont('Courier New', fontSize * size);
+        
+        // Draw text with black background to overwrite
+        let lines = text.split('\n');
+        for (let i = 0; i < lines.length; i++) {
+            let x = startX * charWidth;
+            let y = (startY + i * 2) * charHeight;
+            
+            // Draw black background rectangle
+            mainTextBuffer.fill(CONFIG.colors.background);
+            mainTextBuffer.noStroke();
+            mainTextBuffer.rect(x - 2, y - 2, lines[i].length * charWidth + 4, charHeight + 4);
+            
+            // Draw text
+            mainTextBuffer.fill(color);
+            mainTextBuffer.text(lines[i], x, y);
+        }
+        mainTextBuffer.pop();
+    }
+    
     function drawAsciiArt() {
         if (!asciiArtText || asciiArtText.length === 0) return;
         
@@ -553,7 +765,7 @@ function sketch(p) {
     function updateAsciiArtAnimation() {
         if (!asciiArtRandomOrder) return;
         
-        let currentTime = millis();
+        let currentTime = p.millis();
         if (asciiArtPhase === 0) { // Typing on
             if (currentTime - asciiArtLastTypingTime > asciiArtTypingSpeed) {
                 let charsToType = Math.floor(Math.random() * 21) + 10; // 10-30 chars per frame
@@ -603,8 +815,8 @@ function sketch(p) {
         
         mainTextBuffer.push();
         mainTextBuffer.fill(CONFIG.colors.pureRed);
-        mainTextBuffer.textFont('Courier New', fontSize * size);
-        mainTextBuffer.textSize(fontSize * size);
+        mainTextBuffer.textFont('Courier New', fontSize);
+        mainTextBuffer.textSize(fontSize);
         
         // Center the ASCII art
         let startX = Math.floor((cols - titleAsciiText[0].length) / 2);
@@ -642,7 +854,7 @@ function sketch(p) {
     function updateTitleAsciiAnimation() {
         if (!titleAsciiRandomOrder) return;
         
-        let currentTime = millis();
+        let currentTime = p.millis();
         if (titleAsciiPhase === 0) { // Typing on
             if (currentTime - titleAsciiLastTypingTime > titleAsciiTypingSpeed) {
                 let charsToType = Math.floor(Math.random() * 21) + 10; // 10-30 chars per frame
@@ -731,7 +943,7 @@ function sketch(p) {
     
     function updateFPS() {
         frameCount++;
-        let currentTime = millis();
+        let currentTime = p.millis();
         if (currentTime - lastFpsTime >= 1000) {
             fps = frameCount * 1000 / (currentTime - lastFpsTime);
             frameCount = 0;
