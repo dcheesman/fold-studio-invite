@@ -784,6 +784,8 @@ function sketch(p) {
     }
     
     function drawSimpleText(text, startX, startY, color, size, backgroundColor = null) {
+        console.log(`drawSimpleText: text="${text}", color=${color}, backgroundColor=${backgroundColor}`);
+        
         mainTextBuffer.push();
         mainTextBuffer.textAlign(mainTextBuffer.LEFT, mainTextBuffer.TOP);
         mainTextBuffer.textSize(fontSize);
@@ -796,16 +798,21 @@ function sketch(p) {
             let x = startX * charWidth;
             let y = (startY + i) * charHeight; // Fixed: removed the * 2 multiplier
             
+            console.log(`Drawing line ${i}: "${lines[i]}", x=${x}, y=${y}, width=${lines[i].length * charWidth}`);
+            
             // Draw background rectangle
             if (backgroundColor) {
+                console.log(`Drawing background with color: ${backgroundColor}`);
                 mainTextBuffer.fill(backgroundColor);
             } else {
+                console.log(`Drawing background with default color: ${CONFIG.colors.background}`);
                 mainTextBuffer.fill(CONFIG.colors.background);
             }
             mainTextBuffer.noStroke();
             mainTextBuffer.rect(x - 2, y - 2, lines[i].length * charWidth + 4, charHeight + 4);
             
             // Draw text (align with background rectangle)
+            console.log(`Drawing text with color: ${color}`);
             mainTextBuffer.fill(color);
             mainTextBuffer.text(lines[i], x, y + charHeight - 4); // Better vertical centering
         }
