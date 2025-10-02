@@ -339,25 +339,31 @@ function sketch(p) {
         // Draw character grid (background can write anywhere)
         drawCharGrid();
         
-        // Clear main text buffer
-        mainTextBuffer.clear();
-        
         // Handle intro sequence phases and main text (on separate buffer)
         if (!isIntroComplete) {
+            // Clear main text buffer before drawing new content
+            mainTextBuffer.clear();
+            
             // Hide RSVP element during intro phases
             if (rsvpElement && introPhase < 3) {
                 rsvpElement.style.display = 'none';
             }
             handleIntroSequence(elapsed);
+        } else {
+            // In settled state, clear and redraw main text buffer
+            mainTextBuffer.clear();
+            drawIntroContent();
         }
         
         // Draw main text buffer on top
         p.image(mainTextBuffer, 0, 0);
         
-        // Draw ASCII art buffer
-        asciiArtBuffer.clear();
-        drawAsciiArt();
-        p.image(asciiArtBuffer, 0, 0);
+        // Draw ASCII art buffer (only during intro phases)
+        if (!isIntroComplete) {
+            asciiArtBuffer.clear();
+            drawAsciiArt();
+            p.image(asciiArtBuffer, 0, 0);
+        }
         
         // Draw cursor
         drawCursor();
