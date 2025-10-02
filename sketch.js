@@ -782,18 +782,18 @@ function sketch(p) {
         mainTextBuffer.push();
         mainTextBuffer.fill(color);
         mainTextBuffer.textAlign(mainTextBuffer.LEFT, mainTextBuffer.TOP);
-        mainTextBuffer.textSize(fontSize * size * 0.3); // Much smaller for ASCII art
-        mainTextBuffer.textFont('Courier New', fontSize * size * 0.3);
+        mainTextBuffer.textSize(fontSize * size); // Match background code size
+        mainTextBuffer.textFont('Courier New', fontSize * size);
         
         // Draw ASCII art title
         for (let i = 0; i < text.length; i++) {
             let x = startX * charWidth;
-            let y = (startY + i) * charHeight * 0.3;
+            let y = (startY + i) * charHeight; // Match background code line spacing
             
             // Draw black background rectangle
             mainTextBuffer.fill(CONFIG.colors.background);
             mainTextBuffer.noStroke();
-            mainTextBuffer.rect(x - 2, y - 2, text[i].length * charWidth * 0.3 + 4, charHeight * 0.3 + 4);
+            mainTextBuffer.rect(x - 2, y - 2, text[i].length * charWidth + 4, charHeight + 4);
             
             // Draw ASCII art line
             mainTextBuffer.fill(color);
