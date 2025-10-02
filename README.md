@@ -63,10 +63,10 @@ Adjust the intro sequence timing:
 
 ```javascript
 timing: {
-    introDuration: 10000, // Total intro duration (10 seconds)
+    introDuration: 12000, // Total intro duration (12 seconds)
     scrollPhase: 5000,    // Background typing phase (5 seconds)
     typingPhase: 2000,    // Title typing phase (2 seconds)
-    infoPhase: 2000,      // Event info phase (2 seconds)
+    infoPhase: 4000,      // Event info phase (4 seconds)
     rsvpPhase: 1000       // RSVP phase (1 second)
 }
 ```
@@ -77,10 +77,15 @@ Modify the displayed text and background phrases:
 ```javascript
 text: {
     title: "THE FOLD",
-    subtitle: "Studio Grand Opening",
-    date: "October 24, 2025",
-    address: "[Address TBD]",
-    description: "A night for the true believers.",
+    subtitle: "YOU ARE INVITED",
+    date: "To a celebration",
+    address: "8 years of The Fold",
+    description: "at their new office",
+    location: "located at 40w 100n Provo",
+    time: "6:30pm - 9:30pm on the 23rd of October",
+    refreshments: "drinks and refreshments provided",
+    rsvpRequest: "please rsvp",
+    closing: "we're looking forward to your initiation",
     rsvpText: "→ RSVP"
 }
 ```
