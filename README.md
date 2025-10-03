@@ -19,22 +19,74 @@ An immersive event landing page with a retro-future 70s terminal computer aesthe
 
 ## Quick Start
 
-1. **Open `index.html`** in a web browser
-2. **Configure Airtable** (optional):
-   - Create an Airtable base with a table named "RSVPs"
-   - Add fields: Name (single line text), PlusOne (checkbox), Timestamp (created time)
-   - Generate an API key from https://airtable.com/create/tokens
-   - Update the `AIRTABLE_CONFIG` object in `index.html` with your credentials
+### Local Development
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/dcheesman/fold-studio-invite.git
+   cd fold-studio-invite
+   ```
+
+2. **Set up configuration:**
+   ```bash
+   cp config.example.js config.js
+   # Edit config.js with your Airtable credentials
+   ```
+
+3. **Open `index.html`** in a web browser
+
+### Production Deployment (Vercel)
+1. **Fork or clone** this repository
+2. **Connect to Vercel:**
+   - Go to [vercel.com](https://vercel.com)
+   - Import your GitHub repository
+   - Set framework to "Other" or "Static Site"
+3. **Add environment variables:**
+   - `AIRTABLE_BASE_ID`: Your Airtable base ID
+   - `AIRTABLE_API_KEY`: Your Airtable API key
+4. **Deploy!** - Vercel will auto-deploy on every push to `main`
+
+### Airtable Setup
+- Create an Airtable base with a table named "RSVPs"
+- Add fields: Name (single line text), "Bringing Plus One" (checkbox), "Date/Time" (created time)
+- Generate an API key from https://airtable.com/create/tokens
+- Add credentials to `config.js` (local) or Vercel environment variables (production)
 
 ## File Structure
 
 ```
-├── index.html          # Main HTML file with p5.js setup
-├── sketch.js           # p5.js canvas implementation
-├── config.js           # Configuration file (optional)
-├── .cursorrules        # Project specifications and guidelines
-└── README.md           # This file
+├── index.html              # Main HTML file with p5.js setup
+├── sketch.js               # p5.js canvas implementation
+├── config.js               # Configuration file (gitignored)
+├── config.example.js       # Configuration template
+├── .gitignore              # Git ignore rules
+├── .cursorrules            # Project specifications and guidelines
+├── head.txt                # ASCII art for head image
+├── the_fold.txt            # ASCII art for "THE FOLD" title
+└── README.md               # This file
 ```
+
+## Deployment
+
+### Automatic Deployment
+- **GitHub:** `https://github.com/dcheesman/fold-studio-invite`
+- **Vercel:** Auto-deploys on every push to `main` branch
+- **Live URL:** Check Vercel dashboard for deployment URL
+
+### Manual Deployment
+1. Make changes locally
+2. Test thoroughly
+3. Commit and push to `main`:
+   ```bash
+   git add .
+   git commit -m "feat: Description of changes"
+   git push origin main
+   ```
+4. Vercel automatically deploys within 1-2 minutes
+
+### Environment Variables (Production)
+Set these in your Vercel dashboard:
+- `AIRTABLE_BASE_ID`: `appCqw66jSnW2SnDC`
+- `AIRTABLE_API_KEY`: Your Airtable personal access token
 
 ## Configuration
 

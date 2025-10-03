@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "name": "fold-studio-invite",
+  "builds": [
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "AIRTABLE_BASE_ID": "@airtable_base_id",
+    "AIRTABLE_API_KEY": "@airtable_api_key"
+  }
+}

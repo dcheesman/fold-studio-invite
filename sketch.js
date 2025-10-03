@@ -29,11 +29,11 @@ function sketch(p) {
             date: "To a celebration",
             address: "8 years of The Fold",
             description: "at their new office",
-            location: "LOCATION .....: 40w 100n Provo",
-            time: "TIME .........: 6:30pm - 9:30pm on the 23rd of October",
-            refreshments: "REFRESHMENTS .: drinks and refreshments provided",
-            rsvpRequest: "RSVP .........: please rsvp",
-            closing: ">>> we're looking forward to your initiation <<<",
+            location: "40w 100n Provo",
+            time: "6:30pm - 9:30pm on the 23rd of October",
+            refreshments: "drinks and refreshments provided",
+            rsvpRequest: "please rsvp",
+            closing: "we're looking forward to your initiation",
             rsvpText: "→ RSVP"
         },
         // Title ASCII art

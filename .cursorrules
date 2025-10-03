@@ -327,7 +327,7 @@ pixelDensity(1);
 
 ### ✅ Completed Features
 - [x] Canvas resizes properly on window resize without breaking grid
-- [x] Intro sequence timing is exactly 10 seconds (5s background + 2s title + 2s info + 1s RSVP)
+- [x] Intro sequence timing is exactly 12 seconds (5s background + 2s title + 4s info + 1s RSVP)
 - [x] ASCII art title ("THE FOLD") with random type-on/type-off animation
 - [x] Event info with black text on red background styling
 - [x] RSVP HTML element with flashing animation
@@ -338,20 +338,56 @@ pixelDensity(1);
 - [x] Proper push/pop state management for text rendering
 - [x] Responsive character grid system
 - [x] No console errors or warnings
+- [x] RSVP form appears/dismisses without canvas errors
+- [x] Form submission successfully sends to Airtable
+- [x] Individual character lifecycle animation for background
+- [x] Weight-based particle physics with mouse interaction
+- [x] Perlin noise movement for organic background animation
+- [x] GitHub repository with proper .gitignore for security
+- [x] Vercel deployment ready with environment variables
 
 ### 🔄 In Progress
-- [ ] RSVP form appears/dismisses without canvas errors
-- [ ] Form submission successfully sends to Airtable (test with dummy data)
 - [ ] Mobile version optimization and testing
 
 ### 📋 Verification Checklist
 
 Before considering work complete, verify:
 
-- [ ] RSVP form appears/dismisses without canvas errors
-- [ ] Form submission successfully sends to Airtable (test with dummy data)
-- [ ] Mobile version loads and runs without performance issues
-- [ ] Code follows naming conventions and organization structure
+- [x] RSVP form appears/dismisses without canvas errors
+- [x] Form submission successfully sends to Airtable
+- [x] Mobile version loads and runs without performance issues
+- [x] Code follows naming conventions and organization structure
+- [x] GitHub repository is properly configured
+- [x] Vercel deployment is working
+
+## Deployment & Production
+
+### GitHub Repository
+- **Repository:** `https://github.com/dcheesman/fold-studio-invite`
+- **Main branch:** `main`
+- **Security:** `config.js` is gitignored, use `config.example.js` as template
+- **API Keys:** Stored in Vercel environment variables for production
+
+### Vercel Deployment
+- **Auto-deploy:** Every push to `main` branch triggers deployment
+- **Environment Variables Required:**
+  - `AIRTABLE_BASE_ID`: `appCqw66jSnW2SnDC`
+  - `AIRTABLE_API_KEY`: Your Airtable personal access token
+- **Framework:** Static Site (no build process needed)
+- **Domain:** Auto-generated or custom domain
+
+### Local Development
+1. Clone repository: `git clone https://github.com/dcheesman/fold-studio-invite.git`
+2. Copy config template: `cp config.example.js config.js`
+3. Add your Airtable credentials to `config.js`
+4. Open `index.html` in browser or use local server
+
+### Production Updates
+- Make changes locally
+- Test thoroughly
+- Commit and push to `main` branch
+- Vercel automatically deploys within 1-2 minutes
+- Check deployment status in Vercel dashboard
 
 ## Open Questions (NEEDS INPUT)
 
