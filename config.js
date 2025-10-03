@@ -2,8 +2,8 @@
 // Safe values for production deployment
 
 const AIRTABLE_CONFIG = {
-    // Your Airtable Base ID (found in your base URL)
-    baseId: 'appCqw66jSnW2SnDC',
+    // Your Airtable Base ID (set by Vercel environment variables in production)
+    baseId: 'YOUR_BASE_ID_HERE',
     
     // Your Airtable API Key (set by Vercel environment variables in production)
     apiKey: 'YOUR_API_KEY_HERE',

@@ -88,7 +88,7 @@ Set these in your Vercel dashboard:
 - `AIRTABLE_BASE_ID`: `appCqw66jSnW2SnDC`
 - `AIRTABLE_API_KEY`: Your Airtable personal access token
 
-**Note:** The build process automatically injects these environment variables into `config.js` during deployment, so the RSVP form will work with real Airtable integration in production.
+**Note:** The build process automatically injects both `AIRTABLE_BASE_ID` and `AIRTABLE_API_KEY` from environment variables into `config.js` during deployment, so the RSVP form will work with real Airtable integration in production.
 
 ## Configuration
 
