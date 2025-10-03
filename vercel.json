@@ -1,7 +1,7 @@
 {
   "version": 2,
   "name": "fold-studio-invite",
-  "buildCommand": "node -e \"const fs=require('fs'); let config=fs.readFileSync('config.js','utf8'); config=config.replace('YOUR_API_KEY_HERE', process.env.AIRTABLE_API_KEY || 'YOUR_API_KEY_HERE'); config=config.replace('YOUR_BASE_ID_HERE', process.env.AIRTABLE_BASE_ID || 'YOUR_BASE_ID_HERE'); fs.writeFileSync('config.js', config);\"",
+  "buildCommand": "node build-config.js",
   "builds": [
     {
       "src": "**/*",
