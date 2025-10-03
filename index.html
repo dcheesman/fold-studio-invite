@@ -381,6 +381,13 @@
         }
 
         async function submitToAirtable(name, plusOne) {
+            console.log('Submitting to Airtable:', {
+                url: AIRTABLE_CONFIG.url,
+                baseId: AIRTABLE_CONFIG.baseId,
+                tableName: AIRTABLE_CONFIG.tableName,
+                apiKey: AIRTABLE_CONFIG.apiKey.substring(0, 10) + '...' // Only show first 10 chars for security
+            });
+            
             const response = await fetch(AIRTABLE_CONFIG.url, {
                 method: 'POST',
                 headers: {
