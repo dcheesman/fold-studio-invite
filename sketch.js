@@ -267,7 +267,7 @@ function sketch(p) {
     // Color transitions (removed - text types directly as red/gold)
     
     // Mouse interaction
-    let mouseProximity = 80; // pixels
+    let mouseProximity = 160; // pixels
     let scrambledChars = {};
     let scrambleTimeouts = {};
     
@@ -280,7 +280,12 @@ function sketch(p) {
     let particleWeights = []; // Store weights for each background character
     let baseGrey = '#4a4a4a'; // Base grey color
     let brightGrey = '#8a8a8a'; // Brighter grey for weighted particles
-    let mouseRepelStrength = 0.3; // How much particles are repelled by mouse
+    let mouseRepelStrength = 0.9; // How much particles are repelled by mouse
+    
+    // Retro ASCII ornamentation
+    let ornamentChars = ['◊', '♦', '▲', '▼', '◄', '►', '◈', '◉', '◯', '◌', '◍', '◎', '◐', '◑', '◒', '◓', '◔', '◕', '◖', '◗', '◘', '◙', '◚', '◛', '◜', '◝', '◞', '◟', '◠', '◡', '◢', '◣', '◤', '◥', '◦', '◧', '◨', '◩', '◪', '◫', '◬', '◭', '◮', '◯', '◰', '◱', '◲', '◳', '◴', '◵', '◶', '◷', '◸', '◹', '◺', '◻', '◼', '◽', '◾', '◿', '☀', '☁', '☂', '☃', '☄', '★', '☆', '☇', '☈', '☉', '☊', '☋', '☌', '☍', '☎', '☏', '☐', '☑', '☒', '☓', '☔', '☕', '☖', '☗', '☘', '☙', '☚', '☛', '☜', '☝', '☞', '☟', '☠', '☡', '☢', '☣', '☤', '☥', '☦', '☧', '☨', '☩', '☪', '☫', '☬', '☭', '☮', '☯', '☰', '☱', '☲', '☳', '☴', '☵', '☶', '☷', '☸', '☹', '☺', '☻', '☼', '☽', '☾', '☿', '♀', '♂', '♁', '♃', '♄', '♅', '♆', '♇', '♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓', '♔', '♕', '♖', '♗', '♘', '♙', '♚', '♛', '♜', '♝', '♞', '♟', '♠', '♡', '♢', '♣', '♤', '♥', '♦', '♧', '♨', '♩', '♪', '♫', '♬', '♭', '♮', '♯', '♰', '♱', '♲', '♳', '♴', '♵', '♶', '♷', '♸', '♹', '♺', '♻', '♼', '♽', '♾', '♿', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅', '⚆', '⚇', '⚈', '⚉', '⚊', '⚋', '⚌', '⚍', '⚎', '⚏', '⚐', '⚑', '⚒', '⚓', '⚔', '⚕', '⚖', '⚗', '⚘', '⚙', '⚚', '⚛', '⚜', '⚝', '⚞', '⚟', '⚠', '⚡', '⚢', '⚣', '⚤', '⚥', '⚦', '⚧', '⚨', '⚩', '⚪', '⚫', '⚬', '⚭', '⚮', '⚯', '⚰', '⚱', '⚲', '⚳', '⚴', '⚵', '⚶', '⚷', '⚸', '⚹', '⚺', '⚻', '⚼', '⚽', '⚾', '⚿', '⛀', '⛁', '⛂', '⛃', '⛄', '⛅', '⛆', '⛇', '⛈', '⛉', '⛊', '⛋', '⛌', '⛍', '⛎', '⛏', '⛐', '⛑', '⛒', '⛓', '⛔', '⛕', '⛖', '⛗', '⛘', '⛙', '⛚', '⛛', '⛜', '⛝', '⛞', '⛟', '⛠', '⛡', '⛢', '⛣', '⛤', '⛥', '⛦', '⛧', '⛨', '⛩', '⛪', '⛫', '⛬', '⛭', '⛮', '⛯', '⛰', '⛱', '⛲', '⛳', '⛴', '⛵', '⛶', '⛷', '⛸', '⛹', '⛺', '⛻', '⛼', '⛽', '⛾', '⛿', '✀', '✁', '✂', '✃', '✄', '✅', '✆', '✇', '✈', '✉', '✊', '✋', '✌', '✍', '✎', '✏', '✐', '✑', '✒', '✓', '✔', '✕', '✖', '✗', '✘', '✙', '✚', '✛', '✜', '✝', '✞', '✟', '✠', '✡', '✢', '✣', '✤', '✥', '✦', '✧', '✨', '✩', '✪', '✫', '✬', '✭', '✮', '✯', '✰', '✱', '✲', '✳', '✴', '✵', '✶', '✷', '✸', '✹', '✺', '✻', '✼', '✽', '✾', '✿', '❀', '❁', '❂', '❃', '❄', '❅', '❆', '❇', '❈', '❉', '❊', '❋', '❌', '❍', '❎', '❏', '❐', '❑', '❒', '❓', '❔', '❕', '❖', '❗', '❘', '❙', '❚', '❛', '❜', '❝', '❞', '❟', '❠', '❡', '❢', '❣', '❤', '❥', '❦', '❧', '❨', '❩', '❪', '❫', '❬', '❭', '❮', '❯', '❰', '❱', '❲', '❳', '❴', '❵', '❶', '❷', '❸', '❹', '❺', '❻', '❼', '❽', '❾', '❿', '➀', '➁', '➂', '➃', '➄', '➅', '➆', '➇', '➈', '➉', '➊', '➋', '➌', '➍', '➎', '➏', '➐', '➑', '➒', '➓', '➔', '➕', '➖', '➗', '➘', '➙', '➚', '➛', '➜', '➝', '➞', '➟', '➠', '➡', '➢', '➣', '➤', '➥', '➦', '➧', '➨', '➩', '➪', '➫', '➬', '➭', '➮', '➯', '➰', '➱', '➲', '➳', '➴', '➵', '➶', '➷', '➸', '➹', '➺', '➻', '➼', '➽', '➾', '➿'];
+    let ornamentPositions = []; // Store ornament positions
+    let ornamentDensity = 0.02; // How many ornaments per grid cell
     
     // Post-processing (disabled for performance)
     // let scanlineOffset = 0;
@@ -603,12 +608,10 @@ function sketch(p) {
                     let displayChar = backgroundText[y][x];
                     let weight = particleWeights[y] && particleWeights[y][x] ? particleWeights[y][x] : 0.5;
                     
-                    // Apply mouse scramble effect only to background code, not main text
-                    if (isIntroComplete) {
-                        let scrambled = applyMouseScrambleToCell(x, y, screenX, screenY);
-                        if (scrambled) {
-                            displayChar = scrambled;
-                        }
+                    // Apply mouse scramble effect to background code (works from phase 0)
+                    let scrambled = applyMouseScrambleToCell(x, y, screenX, screenY);
+                    if (scrambled) {
+                        displayChar = scrambled;
                     }
                     
                     // Add organic noise movement to background characters
@@ -617,21 +620,26 @@ function sketch(p) {
                     let offsetX = noiseX * noiseStrength * charWidth;  // Scale by character width
                     let offsetY = noiseY * noiseStrength * charHeight; // Scale by character height
                     
-                    // Add mouse repulsion effect
-                    if (isIntroComplete) {
-                        let mouseX = p.mouseX;
-                        let mouseY = p.mouseY;
-                        let distance = p.dist(screenX + offsetX, screenY + offsetY, mouseX, mouseY);
-                        let repelRadius = mouseProximity * 2; // Larger repulsion radius
+                    // Add mouse repulsion effect and size scaling (works from phase 0)
+                    let mouseX = p.mouseX;
+                    let mouseY = p.mouseY;
+                    let distance = p.dist(screenX + offsetX, screenY + offsetY, mouseX, mouseY);
+                    let repelRadius = mouseProximity * 2; // Larger repulsion radius
+                    let sizeScale = 1.0; // Default size
+                    
+                    if (distance < repelRadius && distance > 0) {
+                        let repelForce = (repelRadius - distance) / repelRadius;
+                        let repelX = (screenX + offsetX - mouseX) / distance;
+                        let repelY = (screenY + offsetY - mouseY) / distance;
                         
-                        if (distance < repelRadius && distance > 0) {
-                            let repelForce = (repelRadius - distance) / repelRadius;
-                            let repelX = (screenX + offsetX - mouseX) / distance;
-                            let repelY = (screenY + offsetY - mouseY) / distance;
-                            
-                            offsetX += repelX * repelForce * mouseRepelStrength * weight * charWidth;
-                            offsetY += repelY * repelForce * mouseRepelStrength * weight * charHeight;
-                        }
+                        // Apply repulsion
+                        offsetX += repelX * repelForce * mouseRepelStrength * weight * charWidth;
+                        offsetY += repelY * repelForce * mouseRepelStrength * weight * charHeight;
+                        
+                        // Calculate size scaling based on distance and weight
+                        let maxScale = 2.0; // Maximum 2x size
+                        let sizeForce = (repelRadius - distance) / repelRadius;
+                        sizeScale = 1.0 + (sizeForce * (maxScale - 1.0) * weight);
                     }
                     
                     // Set color based on weight (heavier = brighter)
@@ -639,8 +647,13 @@ function sketch(p) {
                     let currentColor = p.lerpColor(p.color(baseGrey), p.color(brightGrey), colorIntensity);
                     p.fill(currentColor);
                     
-                    // Draw character with noise offset and mouse repulsion
+                    // Apply size scaling
+                    p.push();
+                    p.textSize(fontSize * sizeScale);
+                    
+                    // Draw character with noise offset, mouse repulsion, and size scaling
                     p.text(displayChar, screenX + offsetX, screenY + offsetY);
+                    p.pop();
                 }
             }
         }
