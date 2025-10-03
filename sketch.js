@@ -273,7 +273,8 @@ function sketch(p) {
     
     // Background noise movement
     let noiseScale = 0.01; // Controls noise frequency
-    let noiseStrength = 2; // Max pixels of movement
+    let noiseStrength = 5; // Multiplier for character dimensions (5x = ~30-40px movement)
+    let noiseSpeed = 0.005; // Speed of time-based animation
     
     // Post-processing (disabled for performance)
     // let scanlineOffset = 0;
@@ -600,11 +601,11 @@ function sketch(p) {
                         }
                     }
                     
-                    // Add subtle noise movement to background characters
-                    let noiseX = p.noise(x * noiseScale, y * noiseScale, p.frameCount * 0.01) - 0.5;
-                    let noiseY = p.noise(x * noiseScale + 100, y * noiseScale + 100, p.frameCount * 0.01) - 0.5;
-                    let offsetX = noiseX * noiseStrength;
-                    let offsetY = noiseY * noiseStrength;
+                    // Add organic noise movement to background characters
+                    let noiseX = p.noise(x * noiseScale, y * noiseScale, p.frameCount * noiseSpeed) - 0.5;
+                    let noiseY = p.noise(x * noiseScale + 100, y * noiseScale + 100, p.frameCount * noiseSpeed) - 0.5;
+                    let offsetX = noiseX * noiseStrength * charWidth;  // Scale by character width
+                    let offsetY = noiseY * noiseStrength * charHeight; // Scale by character height
                     
                     // Draw character with noise offset
                     p.text(displayChar, screenX + offsetX, screenY + offsetY);
