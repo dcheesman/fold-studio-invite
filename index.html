@@ -238,6 +238,11 @@
             </div>
             
             <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
                 <div class="checkbox-group">
                     <input type="checkbox" id="plusOne" name="plusOne">
                     <label for="plusOne">Plus One?</label>
@@ -348,6 +353,7 @@
             document.getElementById('rsvp-overlay').classList.remove('visible');
             document.getElementById('confirmation').classList.remove('visible');
             document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
             document.getElementById('plusOne').checked = false;
             
             // Restore submit button for next use
@@ -364,12 +370,25 @@
 
         async function submitRSVP() {
             const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
             const plusOne = document.getElementById('plusOne').checked;
             const submitBtn = document.querySelector('.submit-btn');
             const confirmation = document.getElementById('confirmation');
 
             if (!name) {
                 alert('Please enter your name');
+                return;
+            }
+
+            if (!email) {
+                alert('Please enter your email address');
+                return;
+            }
+
+            // Basic email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address');
                 return;
             }
 
@@ -397,7 +416,7 @@
                 } else {
                     // Real Airtable submission
                     console.log('✅ Using real Airtable integration');
-                    await submitToAirtable(name, plusOne);
+                    await submitToAirtable(name, email, plusOne);
                 }
                 
                 confirmation.classList.add('visible');
@@ -419,14 +438,14 @@
             }
         }
 
-        async function submitToAirtable(name, plusOne) {
+        async function submitToAirtable(name, email, plusOne) {
             console.log('Submitting to Airtable:', {
                 url: AIRTABLE_CONFIG.url,
                 baseId: AIRTABLE_CONFIG.baseId,
                 tableName: AIRTABLE_CONFIG.tableName,
                 apiKey: AIRTABLE_CONFIG.apiKey.substring(0, 10) + '...' // Only show first 10 chars for security
             });
-            
+
             const response = await fetch(AIRTABLE_CONFIG.url, {
                 method: 'POST',
                 headers: {
@@ -437,6 +456,7 @@
                     records: [{
                         fields: {
                             Name: name,
+                            Email: email,
                             "Bringing Plus One": plusOne,
                             "Date/Time": new Date().toISOString()
                         }
