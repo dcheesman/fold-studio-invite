@@ -1,5 +1,5 @@
 # Environment and config files
-# config.js - Keep this for production deployment (contains safe placeholder values)
+# config.js - Not needed, using API endpoint instead
 
 # Node modules (if you add any later)
 node_modules/
