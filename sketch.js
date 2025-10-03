@@ -279,11 +279,11 @@ function sketch(p) {
     // Particle weights and physics
     let particleWeights = []; // Store weights for each background character
     let baseGrey = '#4a4a4a'; // Base grey color
-    let brightGrey = '#8a8a8a'; // Brighter grey for weighted particles
-    let mouseRepelStrength = 0.9; // How much particles are repelled by mouse
+    let brightGrey = '#8f8f8f'; // Brighter grey for weighted particles
+    let mouseRepelStrength = 2.0; // How much particles are repelled by mouse
     
-    // Retro ASCII ornamentation
-    let ornamentChars = ['◊', '♦', '▲', '▼', '◄', '►', '◈', '◉', '◯', '◌', '◍', '◎', '◐', '◑', '◒', '◓', '◔', '◕', '◖', '◗', '◘', '◙', '◚', '◛', '◜', '◝', '◞', '◟', '◠', '◡', '◢', '◣', '◤', '◥', '◦', '◧', '◨', '◩', '◪', '◫', '◬', '◭', '◮', '◯', '◰', '◱', '◲', '◳', '◴', '◵', '◶', '◷', '◸', '◹', '◺', '◻', '◼', '◽', '◾', '◿', '☀', '☁', '☂', '☃', '☄', '★', '☆', '☇', '☈', '☉', '☊', '☋', '☌', '☍', '☎', '☏', '☐', '☑', '☒', '☓', '☔', '☕', '☖', '☗', '☘', '☙', '☚', '☛', '☜', '☝', '☞', '☟', '☠', '☡', '☢', '☣', '☤', '☥', '☦', '☧', '☨', '☩', '☪', '☫', '☬', '☭', '☮', '☯', '☰', '☱', '☲', '☳', '☴', '☵', '☶', '☷', '☸', '☹', '☺', '☻', '☼', '☽', '☾', '☿', '♀', '♂', '♁', '♃', '♄', '♅', '♆', '♇', '♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓', '♔', '♕', '♖', '♗', '♘', '♙', '♚', '♛', '♜', '♝', '♞', '♟', '♠', '♡', '♢', '♣', '♤', '♥', '♦', '♧', '♨', '♩', '♪', '♫', '♬', '♭', '♮', '♯', '♰', '♱', '♲', '♳', '♴', '♵', '♶', '♷', '♸', '♹', '♺', '♻', '♼', '♽', '♾', '♿', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅', '⚆', '⚇', '⚈', '⚉', '⚊', '⚋', '⚌', '⚍', '⚎', '⚏', '⚐', '⚑', '⚒', '⚓', '⚔', '⚕', '⚖', '⚗', '⚘', '⚙', '⚚', '⚛', '⚜', '⚝', '⚞', '⚟', '⚠', '⚡', '⚢', '⚣', '⚤', '⚥', '⚦', '⚧', '⚨', '⚩', '⚪', '⚫', '⚬', '⚭', '⚮', '⚯', '⚰', '⚱', '⚲', '⚳', '⚴', '⚵', '⚶', '⚷', '⚸', '⚹', '⚺', '⚻', '⚼', '⚽', '⚾', '⚿', '⛀', '⛁', '⛂', '⛃', '⛄', '⛅', '⛆', '⛇', '⛈', '⛉', '⛊', '⛋', '⛌', '⛍', '⛎', '⛏', '⛐', '⛑', '⛒', '⛓', '⛔', '⛕', '⛖', '⛗', '⛘', '⛙', '⛚', '⛛', '⛜', '⛝', '⛞', '⛟', '⛠', '⛡', '⛢', '⛣', '⛤', '⛥', '⛦', '⛧', '⛨', '⛩', '⛪', '⛫', '⛬', '⛭', '⛮', '⛯', '⛰', '⛱', '⛲', '⛳', '⛴', '⛵', '⛶', '⛷', '⛸', '⛹', '⛺', '⛻', '⛼', '⛽', '⛾', '⛿', '✀', '✁', '✂', '✃', '✄', '✅', '✆', '✇', '✈', '✉', '✊', '✋', '✌', '✍', '✎', '✏', '✐', '✑', '✒', '✓', '✔', '✕', '✖', '✗', '✘', '✙', '✚', '✛', '✜', '✝', '✞', '✟', '✠', '✡', '✢', '✣', '✤', '✥', '✦', '✧', '✨', '✩', '✪', '✫', '✬', '✭', '✮', '✯', '✰', '✱', '✲', '✳', '✴', '✵', '✶', '✷', '✸', '✹', '✺', '✻', '✼', '✽', '✾', '✿', '❀', '❁', '❂', '❃', '❄', '❅', '❆', '❇', '❈', '❉', '❊', '❋', '❌', '❍', '❎', '❏', '❐', '❑', '❒', '❓', '❔', '❕', '❖', '❗', '❘', '❙', '❚', '❛', '❜', '❝', '❞', '❟', '❠', '❡', '❢', '❣', '❤', '❥', '❦', '❧', '❨', '❩', '❪', '❫', '❬', '❭', '❮', '❯', '❰', '❱', '❲', '❳', '❴', '❵', '❶', '❷', '❸', '❹', '❺', '❻', '❼', '❽', '❾', '❿', '➀', '➁', '➂', '➃', '➄', '➅', '➆', '➇', '➈', '➉', '➊', '➋', '➌', '➍', '➎', '➏', '➐', '➑', '➒', '➓', '➔', '➕', '➖', '➗', '➘', '➙', '➚', '➛', '➜', '➝', '➞', '➟', '➠', '➡', '➢', '➣', '➤', '➥', '➦', '➧', '➨', '➩', '➪', '➫', '➬', '➭', '➮', '➯', '➰', '➱', '➲', '➳', '➴', '➵', '➶', '➷', '➸', '➹', '➺', '➻', '➼', '➽', '➾', '➿'];
+    // Retro ASCII ornamentation - spy console style
+    let spyOrnaments = ['◊', '♦', '▲', '▼', '◄', '►', '◈', '◉', '◯', '◌', '◍', '◎', '◐', '◑', '◒', '◓', '◔', '◕', '◖', '◗', '◘', '◙', '◚', '◛', '◜', '◝', '◞', '◟', '◠', '◡', '◢', '◣', '◤', '◥', '◦', '◧', '◨', '◩', '◪', '◫', '◬', '◭', '◮', '◯', '◰', '◱', '◲', '◳', '◴', '◵', '◶', '◷', '◸', '◹', '◺', '◻', '◼', '◽', '◾', '◿', '☀', '☁', '☂', '☃', '☄', '★', '☆', '☇', '☈', '☉', '☊', '☋', '☌', '☍', '☎', '☏', '☐', '☑', '☒', '☓', '☔', '☕', '☖', '☗', '☘', '☙', '☚', '☛', '☜', '☝', '☞', '☟', '☠', '☡', '☢', '☣', '☤', '☥', '☦', '☧', '☨', '☩', '☪', '☫', '☬', '☭', '☮', '☯', '☰', '☱', '☲', '☳', '☴', '☵', '☶', '☷', '☸', '☹', '☺', '☻', '☼', '☽', '☾', '☿', '♀', '♂', '♁', '♃', '♄', '♅', '♆', '♇', '♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓', '♔', '♕', '♖', '♗', '♘', '♙', '♚', '♛', '♜', '♝', '♞', '♟', '♠', '♡', '♢', '♣', '♤', '♥', '♦', '♧', '♨', '♩', '♪', '♫', '♬', '♭', '♮', '♯', '♰', '♱', '♲', '♳', '♴', '♵', '♶', '♷', '♸', '♹', '♺', '♻', '♼', '♽', '♾', '♿', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅', '⚆', '⚇', '⚈', '⚉', '⚊', '⚋', '⚌', '⚍', '⚎', '⚏', '⚐', '⚑', '⚒', '⚓', '⚔', '⚕', '⚖', '⚗', '⚘', '⚙', '⚚', '⚛', '⚜', '⚝', '⚞', '⚟', '⚠', '⚡', '⚢', '⚣', '⚤', '⚥', '⚦', '⚧', '⚨', '⚩', '⚪', '⚫', '⚬', '⚭', '⚮', '⚯', '⚰', '⚱', '⚲', '⚳', '⚴', '⚵', '⚶', '⚷', '⚸', '⚹', '⚺', '⚻', '⚼', '⚽', '⚾', '⚿', '⛀', '⛁', '⛂', '⛃', '⛄', '⛅', '⛆', '⛇', '⛈', '⛉', '⛊', '⛋', '⛌', '⛍', '⛎', '⛏', '⛐', '⛑', '⛒', '⛓', '⛔', '⛕', '⛖', '⛗', '⛘', '⛙', '⛚', '⛛', '⛜', '⛝', '⛞', '⛟', '⛠', '⛡', '⛢', '⛣', '⛤', '⛥', '⛦', '⛧', '⛨', '⛩', '⛪', '⛫', '⛬', '⛭', '⛮', '⛯', '⛰', '⛱', '⛲', '⛳', '⛴', '⛵', '⛶', '⛷', '⛸', '⛹', '⛺', '⛻', '⛼', '⛽', '⛾', '⛿', '✀', '✁', '✂', '✃', '✄', '✅', '✆', '✇', '✈', '✉', '✊', '✋', '✌', '✍', '✎', '✏', '✐', '✑', '✒', '✓', '✔', '✕', '✖', '✗', '✘', '✙', '✚', '✛', '✜', '✝', '✞', '✟', '✠', '✡', '✢', '✣', '✤', '✥', '✦', '✧', '✨', '✩', '✪', '✫', '✬', '✭', '✮', '✯', '✰', '✱', '✲', '✳', '✴', '✵', '✶', '✷', '✸', '✹', '✺', '✻', '✼', '✽', '✾', '✿', '❀', '❁', '❂', '❃', '❄', '❅', '❆', '❇', '❈', '❉', '❊', '❋', '❌', '❍', '❎', '❏', '❐', '❑', '❒', '❓', '❔', '❕', '❖', '❗', '❘', '❙', '❚', '❛', '❜', '❝', '❞', '❟', '❠', '❡', '❢', '❣', '❤', '❥', '❦', '❧', '❨', '❩', '❪', '❫', '❬', '❭', '❮', '❯', '❰', '❱', '❲', '❳', '❴', '❵', '❶', '❷', '❸', '❹', '❺', '❻', '❼', '❽', '❾', '❿', '➀', '➁', '➂', '➃', '➄', '➅', '➆', '➇', '➈', '➉', '➊', '➋', '➌', '➍', '➎', '➏', '➐', '➑', '➒', '➓', '➔', '➕', '➖', '➗', '➘', '➙', '➚', '➛', '➜', '➝', '➞', '➟', '➠', '➡', '➢', '➣', '➤', '➥', '➦', '➧', '➨', '➩', '➪', '➫', '➬', '➭', '➮', '➯', '➰', '➱', '➲', '➳', '➴', '➵', '➶', '➷', '➸', '➹', '➺', '➻', '➼', '➽', '➾', '➿'];
     let ornamentPositions = []; // Store ornament positions
     let ornamentDensity = 0.02; // How many ornaments per grid cell
     
@@ -399,6 +399,9 @@ function sketch(p) {
             drawAsciiTitle();
             p.image(titleAsciiBuffer, 0, 0);
         }
+        
+        // Draw spy console ornaments
+        drawSpyConsoleOrnaments();
         
         // Draw cursor
         drawCursor();
@@ -637,7 +640,7 @@ function sketch(p) {
                         offsetY += repelY * repelForce * mouseRepelStrength * weight * charHeight;
                         
                         // Calculate size scaling based on distance and weight
-                        let maxScale = 2.0; // Maximum 2x size
+                        let maxScale = 1.4; // Maximum 2x size
                         let sizeForce = (repelRadius - distance) / repelRadius;
                         sizeScale = 1.0 + (sizeForce * (maxScale - 1.0) * weight);
                     }
@@ -1140,6 +1143,77 @@ function sketch(p) {
         p.textFont('Courier New', 12);
         p.textAlign(p.LEFT, p.TOP);
         p.text(`FPS: ${fps.toFixed(1)}`, 10, 10);
+        p.pop();
+    }
+    
+    function drawSpyConsoleOrnaments() {
+        p.push();
+        p.fill(CONFIG.colors.gold);
+        p.textFont('Courier New', fontSize);
+        p.textAlign(p.CENTER, p.CENTER);
+        
+        // Draw corner ornaments
+        let cornerSize = 3;
+        let margin = 20;
+        
+        // Top-left corner
+        p.text('◊', margin, margin);
+        p.text('♦', margin + charWidth, margin);
+        p.text('▲', margin, margin + charHeight);
+        
+        // Top-right corner
+        p.text('◊', p.width - margin, margin);
+        p.text('♦', p.width - margin - charWidth, margin);
+        p.text('▲', p.width - margin, margin + charHeight);
+        
+        // Bottom-left corner
+        p.text('◊', margin, p.height - margin);
+        p.text('♦', margin + charWidth, p.height - margin);
+        p.text('▲', margin, p.height - margin - charHeight);
+        
+        // Bottom-right corner
+        p.text('◊', p.width - margin, p.height - margin);
+        p.text('♦', p.width - margin - charWidth, p.height - margin);
+        p.text('▲', p.width - margin, p.height - margin - charHeight);
+        
+        // Draw border ornaments
+        let borderSpacing = 60;
+        for (let x = margin + borderSpacing; x < p.width - margin; x += borderSpacing) {
+            // Top border
+            p.text('◈', x, margin);
+            // Bottom border
+            p.text('◈', x, p.height - margin);
+        }
+        
+        for (let y = margin + borderSpacing; y < p.height - margin; y += borderSpacing) {
+            // Left border
+            p.text('◈', margin, y);
+            // Right border
+            p.text('◈', p.width - margin, y);
+        }
+        
+        // Draw spy-themed symbols around the content
+        let contentArea = {
+            left: p.width * 0.1,
+            right: p.width * 0.9,
+            top: p.height * 0.1,
+            bottom: p.height * 0.9
+        };
+        
+        // Add random spy symbols in the content area
+        for (let i = 0; i < 15; i++) {
+            let x = p.random(contentArea.left, contentArea.right);
+            let y = p.random(contentArea.top, contentArea.bottom);
+            let symbol = spyOrnaments[p.floor(p.random(spyOrnaments.length))];
+            
+            // Make symbols semi-transparent and smaller
+            p.push();
+            p.fill(CONFIG.colors.gold, 100); // Semi-transparent
+            p.textSize(fontSize * 0.7);
+            p.text(symbol, x, y);
+            p.pop();
+        }
+        
         p.pop();
     }
     
