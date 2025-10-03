@@ -271,6 +271,10 @@ function sketch(p) {
     let scrambledChars = {};
     let scrambleTimeouts = {};
     
+    // Background noise movement
+    let noiseScale = 0.01; // Controls noise frequency
+    let noiseStrength = 2; // Max pixels of movement
+    
     // Post-processing (disabled for performance)
     // let scanlineOffset = 0;
     // let enableBloom = false;
@@ -596,7 +600,14 @@ function sketch(p) {
                         }
                     }
                     
-                    p.text(displayChar, screenX, screenY);
+                    // Add subtle noise movement to background characters
+                    let noiseX = p.noise(x * noiseScale, y * noiseScale, p.frameCount * 0.01) - 0.5;
+                    let noiseY = p.noise(x * noiseScale + 100, y * noiseScale + 100, p.frameCount * 0.01) - 0.5;
+                    let offsetX = noiseX * noiseStrength;
+                    let offsetY = noiseY * noiseStrength;
+                    
+                    // Draw character with noise offset
+                    p.text(displayChar, screenX + offsetX, screenY + offsetY);
                 }
             }
         }
