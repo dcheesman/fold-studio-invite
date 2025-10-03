@@ -825,14 +825,12 @@ function sketch(p) {
     function handleIntroSequence(elapsed) {
         if (introPhase === 0 && elapsed > 5000) { // Wait 5 seconds before showing title
             // Start typing phase
-            console.log("Transitioning to Phase 1 - Title typing");
             introPhase = 1;
             phaseStartTime = currentTime;
             initializeSimpleTyping();
         } else if (introPhase === 1) {
             // Wait for title typing to complete
             if (titleTypingIndex >= CONFIG.text.title.length) {
-                console.log("Transitioning to Phase 2 - Info typing");
                 introPhase = 2;
                 phaseStartTime = currentTime;
             }
@@ -841,7 +839,6 @@ function sketch(p) {
             let totalInfoChars = infoLines.reduce((sum, line) => sum + line.length + 1, 0); // +1 for newline
             if (infoTypingIndex >= totalInfoChars) {
                 // Intro complete - stay in this phase
-                console.log("Transitioning to Phase 3 - Complete");
                 introPhase = 3;
                 isIntroComplete = true;
                 phaseStartTime = currentTime;
