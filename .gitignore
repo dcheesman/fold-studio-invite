@@ -1,5 +1,5 @@
 # Environment and config files
-config.js
+# config.js - Keep this for production deployment (contains safe placeholder values)
 
 # Node modules (if you add any later)
 node_modules/

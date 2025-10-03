@@ -360,7 +360,8 @@
 
             try {
                 // Check if Airtable is configured
-                if (!AIRTABLE_CONFIG.baseId || !AIRTABLE_CONFIG.apiKey || 
+                if (typeof AIRTABLE_CONFIG === 'undefined' || 
+                    !AIRTABLE_CONFIG.baseId || !AIRTABLE_CONFIG.apiKey || 
                     AIRTABLE_CONFIG.baseId === 'YOUR_BASE_ID_HERE' || 
                     AIRTABLE_CONFIG.apiKey === 'YOUR_API_KEY_HERE') {
                     // Fallback: simulate successful submission
