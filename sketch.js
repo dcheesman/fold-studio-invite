@@ -267,7 +267,7 @@ function sketch(p) {
     // Color transitions (removed - text types directly as red/gold)
     
     // Mouse interaction
-    let mouseProximity = 160; // pixels
+    let mouseProximity = 100; // pixels
     let scrambledChars = {};
     let scrambleTimeouts = {};
     
@@ -615,8 +615,11 @@ function sketch(p) {
                     }
                     
                     // Add organic noise movement to background characters
-                    let noiseX = p.noise(x * noiseScale, y * noiseScale, p.frameCount * noiseSpeed) - 0.5;
-                    let noiseY = p.noise(x * noiseScale + 100, y * noiseScale + 100, p.frameCount * noiseSpeed) - 0.5;
+                    // Use unique time offsets for each character to break synchronization
+                    let timeOffsetX = x * 0.1 + y * 0.07; // Unique offset based on position
+                    let timeOffsetY = x * 0.13 + y * 0.11; // Different offset for Y to create independent movement
+                    let noiseX = p.noise(x * noiseScale, y * noiseScale, p.frameCount * noiseSpeed + timeOffsetX) - 0.5;
+                    let noiseY = p.noise(x * noiseScale + 100, y * noiseScale + 100, p.frameCount * noiseSpeed + timeOffsetY) - 0.5;
                     let offsetX = noiseX * noiseStrength * charWidth;  // Scale by character width
                     let offsetY = noiseY * noiseStrength * charHeight; // Scale by character height
                     
@@ -637,7 +640,7 @@ function sketch(p) {
                         offsetY += repelY * repelForce * mouseRepelStrength * weight * charHeight;
                         
                         // Calculate size scaling based on distance and weight
-                        let maxScale = 2.0; // Maximum 2x size
+                        let maxScale = 1.4; // Maximum 2x size
                         let sizeForce = (repelRadius - distance) / repelRadius;
                         sizeScale = 1.0 + (sizeForce * (maxScale - 1.0) * weight);
                     }
