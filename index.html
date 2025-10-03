@@ -359,6 +359,15 @@
             submitBtn.textContent = 'SUBMITTING...';
 
             try {
+                // Debug: Log the current config
+                console.log('🔍 AIRTABLE_CONFIG debug:', {
+                    defined: typeof AIRTABLE_CONFIG !== 'undefined',
+                    baseId: AIRTABLE_CONFIG?.baseId,
+                    apiKey: AIRTABLE_CONFIG?.apiKey?.substring(0, 10) + '...',
+                    baseIdPlaceholder: AIRTABLE_CONFIG?.baseId === 'YOUR_BASE_ID_HERE',
+                    apiKeyPlaceholder: AIRTABLE_CONFIG?.apiKey === 'YOUR_API_KEY_HERE'
+                });
+
                 // Check if Airtable is configured
                 if (typeof AIRTABLE_CONFIG === 'undefined' || 
                     !AIRTABLE_CONFIG.baseId || !AIRTABLE_CONFIG.apiKey || 
@@ -369,6 +378,7 @@
                     await new Promise(resolve => setTimeout(resolve, 1000));
                 } else {
                     // Real Airtable submission
+                    console.log('✅ Using real Airtable integration');
                     await submitToAirtable(name, plusOne);
                 }
                 
