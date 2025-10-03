@@ -331,6 +331,13 @@
             document.getElementById('confirmation').classList.remove('visible');
             document.getElementById('name').value = '';
             document.getElementById('plusOne').checked = false;
+            
+            // Restore submit button for next use
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.style.display = 'block';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'SUBMIT';
+            
             rsvpFormVisible = false;
             if (p5Instance) {
                 p5Instance.loop(); // Resume animation
@@ -365,6 +372,9 @@
                 }
                 
                 confirmation.classList.add('visible');
+                
+                // Hide submit button to prevent multiple submissions
+                submitBtn.style.display = 'none';
                 
                 // Auto-close after 3 seconds
                 setTimeout(() => {
