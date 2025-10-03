@@ -218,6 +218,14 @@ function sketch(p) {
     let backgroundTypingOffDuration = 2000; // 2 seconds to type off
     let backgroundText = []; // Store the background text as 2D array
     
+    // Individual character lifecycle system
+    let characterLifecycles = []; // Store individual character timing
+    let characterCycleDuration = 8000; // Total cycle time (on + visible + off)
+    let characterTypingOnDuration = 1500; // Individual character typing on time
+    let characterVisibleDuration = 4000; // Individual character visible time
+    let characterTypingOffDuration = 1500; // Individual character typing off time
+    let characterFadeDuration = 500; // Fade in/out time
+    
     // Main text buffer (separate layer)
     let mainTextBuffer;
     
@@ -443,12 +451,21 @@ function sketch(p) {
         // Initialize background text as 2D array
         backgroundText = [];
         particleWeights = []; // Initialize particle weights
+        characterLifecycles = []; // Initialize character lifecycles
         for (let y = 0; y < gridRows; y++) {
             backgroundText[y] = [];
             particleWeights[y] = [];
+            characterLifecycles[y] = [];
             for (let x = 0; x < gridCols; x++) {
                 backgroundText[y][x] = ' ';
                 particleWeights[y][x] = p.random(0.1, 1.0); // Random weight between 0.1 and 1.0
+                
+                // Initialize individual character lifecycle
+                characterLifecycles[y][x] = {
+                    phase: 0, // 0: typing on, 1: visible, 2: typing off, 3: hidden
+                    startTime: p.random(0, characterCycleDuration), // Random start time
+                    opacity: 0
+                };
             }
         }
         
@@ -601,10 +618,14 @@ function sketch(p) {
         p.fill(CONFIG.colors.grey);
         p.textFont('Courier New', fontSize);
         
-        // Draw characters that are visible
+        // Draw characters that are visible (using individual lifecycles)
         for (let y = 0; y < gridRows; y++) {
             for (let x = 0; x < gridCols; x++) {
-                if (backgroundVisibleChars[y] && backgroundVisibleChars[y][x]) {
+                // Check both old system and new individual lifecycle system
+                let isVisible = (backgroundVisibleChars[y] && backgroundVisibleChars[y][x]) || 
+                               (characterLifecycles[y] && characterLifecycles[y][x] && characterLifecycles[y][x].opacity > 0);
+                
+                if (isVisible) {
                     let screenX = x * charWidth;
                     let screenY = y * charHeight;
                     let displayChar = backgroundText[y][x];
@@ -647,10 +668,17 @@ function sketch(p) {
                         sizeScale = 1.0 + (sizeForce * (maxScale - 1.0) * weight);
                     }
                     
-                    // Set color based on weight (heavier = brighter)
+                    // Set color based on weight (heavier = brighter) and opacity
                     let colorIntensity = p.lerp(0, 1, weight);
                     let currentColor = p.lerpColor(p.color(baseGrey), p.color(brightGrey), colorIntensity);
-                    p.fill(currentColor);
+                    
+                    // Apply opacity from individual lifecycle
+                    let opacity = 1;
+                    if (characterLifecycles[y] && characterLifecycles[y][x]) {
+                        opacity = characterLifecycles[y][x].opacity;
+                    }
+                    
+                    p.fill(p.red(currentColor), p.green(currentColor), p.blue(currentColor), opacity * 255);
                     
                     // Apply size scaling
                     p.push();
@@ -665,6 +693,7 @@ function sketch(p) {
         
         // Update typing animation
         updateCharGridTyping();
+        updateIndividualCharacterLifecycles();
         p.pop();
     }
     
@@ -715,6 +744,38 @@ function sketch(p) {
                         const j = Math.floor(Math.random() * (i + 1));
                         [backgroundRandomOrder[i], backgroundRandomOrder[j]] = [backgroundRandomOrder[j], backgroundRandomOrder[i]];
                     }
+                }
+            }
+        }
+    }
+    
+    function updateIndividualCharacterLifecycles() {
+        let currentTime = p.millis();
+        
+        for (let y = 0; y < gridRows; y++) {
+            for (let x = 0; x < gridCols; x++) {
+                if (!characterLifecycles[y] || !characterLifecycles[y][x]) continue;
+                
+                let char = characterLifecycles[y][x];
+                let cycleTime = (currentTime - char.startTime) % characterCycleDuration;
+                
+                if (cycleTime < characterTypingOnDuration) {
+                    // Typing on phase
+                    char.phase = 0;
+                    char.opacity = p.map(cycleTime, 0, characterTypingOnDuration, 0, 1);
+                } else if (cycleTime < characterTypingOnDuration + characterVisibleDuration) {
+                    // Visible phase
+                    char.phase = 1;
+                    char.opacity = 1;
+                } else if (cycleTime < characterTypingOnDuration + characterVisibleDuration + characterTypingOffDuration) {
+                    // Typing off phase
+                    char.phase = 2;
+                    let offTime = cycleTime - characterTypingOnDuration - characterVisibleDuration;
+                    char.opacity = p.map(offTime, 0, characterTypingOffDuration, 1, 0);
+                } else {
+                    // Hidden phase
+                    char.phase = 3;
+                    char.opacity = 0;
                 }
             }
         }
