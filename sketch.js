@@ -272,9 +272,15 @@ function sketch(p) {
     let scrambleTimeouts = {};
     
     // Background noise movement
-    let noiseScale = 0.01; // Controls noise frequency
+    let noiseScale = 0.09; // Controls noise frequency
     let noiseStrength = 5; // Multiplier for character dimensions (5x = ~30-40px movement)
-    let noiseSpeed = 0.005; // Speed of time-based animation
+    let noiseSpeed = 0.01; // Speed of time-based animation
+    
+    // Particle weights and physics
+    let particleWeights = []; // Store weights for each background character
+    let baseGrey = '#4a4a4a'; // Base grey color
+    let brightGrey = '#8a8a8a'; // Brighter grey for weighted particles
+    let mouseRepelStrength = 0.3; // How much particles are repelled by mouse
     
     // Post-processing (disabled for performance)
     // let scanlineOffset = 0;
@@ -431,10 +437,13 @@ function sketch(p) {
     function initializeTypingQueue() {
         // Initialize background text as 2D array
         backgroundText = [];
+        particleWeights = []; // Initialize particle weights
         for (let y = 0; y < gridRows; y++) {
             backgroundText[y] = [];
+            particleWeights[y] = [];
             for (let x = 0; x < gridCols; x++) {
                 backgroundText[y][x] = ' ';
+                particleWeights[y][x] = p.random(0.1, 1.0); // Random weight between 0.1 and 1.0
             }
         }
         
@@ -592,6 +601,7 @@ function sketch(p) {
                     let screenX = x * charWidth;
                     let screenY = y * charHeight;
                     let displayChar = backgroundText[y][x];
+                    let weight = particleWeights[y] && particleWeights[y][x] ? particleWeights[y][x] : 0.5;
                     
                     // Apply mouse scramble effect only to background code, not main text
                     if (isIntroComplete) {
@@ -607,7 +617,29 @@ function sketch(p) {
                     let offsetX = noiseX * noiseStrength * charWidth;  // Scale by character width
                     let offsetY = noiseY * noiseStrength * charHeight; // Scale by character height
                     
-                    // Draw character with noise offset
+                    // Add mouse repulsion effect
+                    if (isIntroComplete) {
+                        let mouseX = p.mouseX;
+                        let mouseY = p.mouseY;
+                        let distance = p.dist(screenX + offsetX, screenY + offsetY, mouseX, mouseY);
+                        let repelRadius = mouseProximity * 2; // Larger repulsion radius
+                        
+                        if (distance < repelRadius && distance > 0) {
+                            let repelForce = (repelRadius - distance) / repelRadius;
+                            let repelX = (screenX + offsetX - mouseX) / distance;
+                            let repelY = (screenY + offsetY - mouseY) / distance;
+                            
+                            offsetX += repelX * repelForce * mouseRepelStrength * weight * charWidth;
+                            offsetY += repelY * repelForce * mouseRepelStrength * weight * charHeight;
+                        }
+                    }
+                    
+                    // Set color based on weight (heavier = brighter)
+                    let colorIntensity = p.lerp(0, 1, weight);
+                    let currentColor = p.lerpColor(p.color(baseGrey), p.color(brightGrey), colorIntensity);
+                    p.fill(currentColor);
+                    
+                    // Draw character with noise offset and mouse repulsion
                     p.text(displayChar, screenX + offsetX, screenY + offsetY);
                 }
             }
@@ -675,7 +707,11 @@ function sketch(p) {
         let mouseY = p.mouseY;
         let distance = p.dist(screenX, screenY, mouseX, mouseY);
         
-        if (distance < mouseProximity) {
+        // Get particle weight and calculate threshold
+        let weight = particleWeights[y] && particleWeights[y][x] ? particleWeights[y][x] : 0.5;
+        let threshold = mouseProximity * weight; // Heavier particles have larger scramble radius
+        
+        if (distance < threshold) {
             let cellKey = `${x}-${y}`;
             
             // Initialize scramble tracking if needed
