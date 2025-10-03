@@ -25,15 +25,15 @@ function sketch(p) {
         },
         text: {
             title: "THE FOLD",
-            subtitle: "YOU ARE INVITED",
+            subtitle: ">>> YOU ARE INVITED <<<",
             date: "To a celebration",
             address: "8 years of The Fold",
             description: "at their new office",
-            location: "located at 40w 100n Provo",
-            time: "6:30pm - 9:30pm on the 23rd of October",
-            refreshments: "drinks and refreshments provided",
-            rsvpRequest: "please rsvp",
-            closing: "we're looking forward to your initiation",
+            location: "LOCATION .....: located at 40w 100n Provo",
+            time: "TIME .........: 6:30pm - 9:30pm on the 23rd of October",
+            refreshments: "REFRESHMENTS .: drinks and refreshments provided",
+            rsvpRequest: "RSVP .........: please rsvp",
+            closing: ">>> we're looking forward to your initiation <<<",
             rsvpText: "→ RSVP"
         },
         // Title ASCII art
@@ -523,10 +523,12 @@ function sketch(p) {
             CONFIG.text.date,
             CONFIG.text.address,
             CONFIG.text.description,
+            "", // Empty line before location
             CONFIG.text.location,
             CONFIG.text.time,
             CONFIG.text.refreshments,
             CONFIG.text.rsvpRequest,
+            "", // Empty line before closing
             CONFIG.text.closing
         ];
         
@@ -537,7 +539,7 @@ function sketch(p) {
         }
         let infoTextWidth = maxLineLength * charWidth;
         infoX = p.floor((p.width - infoTextWidth) / 2 / charWidth); // Center horizontally
-        infoStartY = p.floor(p.height * 0.60) / charHeight; // Move up slightly from bottom third
+        infoStartY = p.floor(p.height * 0.55) / charHeight; // Move up more to prevent RSVP overlap
         
         // Reset typing indices
         titleTypingIndex = 0;
