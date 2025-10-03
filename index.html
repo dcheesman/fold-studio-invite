@@ -406,7 +406,14 @@
             });
 
             if (!response.ok) {
-                throw new Error(`Airtable API error: ${response.status} ${response.statusText}`);
+                // Get detailed error information from Airtable
+                const errorData = await response.json().catch(() => ({}));
+                console.error('Airtable API Error Details:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    error: errorData
+                });
+                throw new Error(`Airtable API error: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
             }
 
             return await response.json();
