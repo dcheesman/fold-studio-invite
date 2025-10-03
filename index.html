@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>The Fold Studio Grand Opening</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
     <style>
@@ -17,6 +17,9 @@
             overflow: hidden;
             font-family: 'Courier New', Courier, monospace;
             cursor: none;
+            /* Prevent pull-to-refresh on mobile */
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
         }
         
         canvas {
@@ -48,6 +51,21 @@
             line-height: 1.4;
             max-width: 400px;
             width: 90%;
+            /* Mobile-specific improvements */
+            max-height: 90vh;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        /* Mobile-specific modal positioning */
+        @media (max-width: 768px) {
+            #rsvp-overlay {
+                top: 10vh;
+                transform: translate(-50%, 0);
+                max-height: 80vh;
+                padding: 15px;
+                font-size: 14px;
+            }
         }
 
         #rsvp-overlay.visible {
@@ -445,6 +463,27 @@
             if (e.key === 'Escape' && rsvpFormVisible) {
                 closeRSVPForm();
             }
+        });
+
+        // Prevent pull-to-refresh on mobile
+        let startY = 0;
+        document.addEventListener('touchstart', function(e) {
+            startY = e.touches[0].clientY;
+        }, { passive: true });
+
+        document.addEventListener('touchmove', function(e) {
+            const currentY = e.touches[0].clientY;
+            const deltaY = currentY - startY;
+            
+            // Prevent pull-to-refresh when scrolling up from the top
+            if (window.scrollY === 0 && deltaY > 0) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // Prevent context menu on long press
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
         });
 
         // Initialize when page loads
