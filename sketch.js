@@ -407,13 +407,13 @@ function sketch(p) {
         
         // Apply wide offset-based bloom effect to head ASCII art
         if (enableBloom) {
-            // Draw single wide layer with lighter orange color for subtle bloom
+            // Draw single wide layer with extremely transparent orange for subtle bloom
             p.push();
-            p.tint(200, 120, 0, 100); // Lighter orange with medium opacity
+            p.tint(180, 100, 0, 20); // Extremely low opacity (~8%) with even lighter color
             
-            // Draw in a wide radius with sparse offsets to avoid accumulation
-            for (let x = -12; x <= 12; x += 4) {
-                for (let y = -12; y <= 12; y += 4) {
+            // Draw in a wide radius with extremely sparse offsets to avoid accumulation
+            for (let x = -18; x <= 18; x += 6) {
+                for (let y = -18; y <= 18; y += 6) {
                     if (x !== 0 || y !== 0) {
                         p.image(asciiArtBuffer, x, y);
                     }
