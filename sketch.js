@@ -320,7 +320,7 @@ function sketch(p) {
         isMobile = p.windowWidth < 768;
         if (isMobile) {
             targetFrameRate = 24;
-            enableBloom = false; // Disable bloom on mobile for performance
+            enableBloom = true; // Enable simple 8-directional bloom on mobile
         } else {
             targetFrameRate = 30;
             enableBloom = true;
@@ -403,21 +403,42 @@ function sketch(p) {
         asciiArtBuffer.clear();
         drawAsciiArt();
         
-        // Apply wide offset-based bloom effect to head ASCII art
+        // Apply bloom effect to head ASCII art
         if (enableBloom) {
-            // Draw single wide layer with extremely transparent orange for subtle bloom
-            p.push();
-            p.tint(180, 100, 0, 20); // Extremely low opacity (~8%) with even lighter color
-            
-            // Draw in a wide radius with extremely sparse offsets to avoid accumulation
-            for (let x = -18; x <= 18; x += 6) {
-                for (let y = -18; y <= 18; y += 6) {
-                    if (x !== 0 || y !== 0) {
-                        p.image(asciiArtBuffer, x, y);
+            if (isMobile) {
+                // Mobile: Simple 8-directional offset (very performant)
+                p.push();
+                p.tint(180, 100, 0, 30); // Low opacity orange
+                
+                // Calculate offset (1 pixel short of full character width/height)
+                let offsetX = charWidth - 1;
+                let offsetY = charHeight - 1;
+                
+                // Draw 8 copies in cardinal and diagonal directions
+                p.image(asciiArtBuffer, -offsetX, -offsetY); // Top-left
+                p.image(asciiArtBuffer, 0, -offsetY);        // Top
+                p.image(asciiArtBuffer, offsetX, -offsetY);  // Top-right
+                p.image(asciiArtBuffer, -offsetX, 0);        // Left
+                p.image(asciiArtBuffer, offsetX, 0);         // Right
+                p.image(asciiArtBuffer, -offsetX, offsetY);  // Bottom-left
+                p.image(asciiArtBuffer, 0, offsetY);         // Bottom
+                p.image(asciiArtBuffer, offsetX, offsetY);   // Bottom-right
+                p.pop();
+            } else {
+                // Desktop: Wide sparse offset approach
+                p.push();
+                p.tint(180, 100, 0, 20); // Extremely low opacity (~8%) with even lighter color
+                
+                // Draw in a wide radius with extremely sparse offsets to avoid accumulation
+                for (let x = -18; x <= 18; x += 6) {
+                    for (let y = -18; y <= 18; y += 6) {
+                        if (x !== 0 || y !== 0) {
+                            p.image(asciiArtBuffer, x, y);
+                        }
                     }
                 }
+                p.pop();
             }
-            p.pop();
             
             // Draw sharp version on top
             p.image(asciiArtBuffer, 0, 0);
