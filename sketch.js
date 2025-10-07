@@ -408,7 +408,7 @@ function sketch(p) {
             if (isMobile) {
                 // Mobile: Simple 8-directional offset (very performant)
                 p.push();
-                p.tint(180, 100, 0, 30); // Low opacity orange
+                p.tint(180, 100, 0, 50); // Slightly higher opacity orange (~20%)
                 
                 // Calculate offset (1 pixel short of full character width/height)
                 let offsetX = charWidth - 1;
