@@ -300,7 +300,7 @@ function sketch(p) {
     // Post-processing (disabled for performance)
     // let scanlineOffset = 0;
     let enableBloom = true; // Enable bloom effect on ASCII art
-    let glowIntensity = 3.0; // Glow intensity multiplier (0.0 = no glow, 2.0 = double glow)
+    let glowIntensity = 5.0; // Glow intensity multiplier (0.0 = no glow, 2.0 = double glow)
     // let enableScanlines = false;
     // let enableBlur = false;
     
@@ -412,15 +412,17 @@ function sketch(p) {
             smallBloomBuffer.image(asciiArtBuffer, 0, 0, p.width, p.height, 0, 0, p.width/4, p.height/4);
             
             // 2. Apply blur to small buffer (much faster)
-            smallBloomBuffer.filter('blur', 3); // Blur on 1/4 size = 16x fewer pixels
+            smallBloomBuffer.filter('blur', 8); // Strong blur for maximum effect
             
             // 3. Scale back up to full size bloom buffer
             bloomBuffer.clear();
             bloomBuffer.image(smallBloomBuffer, 0, 0, p.width/4, p.height/4, 0, 0, p.width, p.height);
             
-            // 4. Draw the bloom with orange tint
+            // 4. Draw the bloom with orange tint (MAXIMUM VISIBILITY)
             p.push();
-            p.tint(255, 170, 0, 200); // Orange with good opacity
+            p.tint(255, 170, 0, 255); // Full opacity orange
+            p.image(bloomBuffer, 0, 0);
+            p.tint(255, 170, 0, 255); // Draw it twice for extra intensity
             p.image(bloomBuffer, 0, 0);
             p.pop();
             
