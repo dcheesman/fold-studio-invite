@@ -298,7 +298,7 @@ function sketch(p) {
     // Post-processing (disabled for performance)
     // let scanlineOffset = 0;
     let enableBloom = true; // Enable bloom effect on ASCII art
-    let glowIntensity = 1.0; // Glow intensity multiplier (0.0 = no glow, 2.0 = double glow)
+    let glowIntensity = 1.5; // Glow intensity multiplier (0.0 = no glow, 2.0 = double glow)
     // let enableScanlines = false;
     // let enableBlur = false;
     
@@ -401,12 +401,13 @@ function sketch(p) {
         // Apply manual glow effect to head ASCII art
         if (enableBloom) {
             // Draw multiple copies with different opacities for glow
+            // Use orange color for the glow to match the ASCII art
             p.push();
-            p.tint(255, 255, 255, 20 * glowIntensity); // Very faint
+            p.tint(255, 170, 0, 30 * glowIntensity); // Very faint orange
             p.image(asciiArtBuffer, 0, 0);
-            p.tint(255, 255, 255, 40 * glowIntensity); // Medium
+            p.tint(255, 170, 0, 60 * glowIntensity); // Medium orange
             p.image(asciiArtBuffer, 0, 0);
-            p.tint(255, 255, 255, 60 * glowIntensity); // Strong
+            p.tint(255, 170, 0, 90 * glowIntensity); // Strong orange
             p.image(asciiArtBuffer, 0, 0);
             p.pop();
             
@@ -424,12 +425,13 @@ function sketch(p) {
             // Apply manual glow effect by drawing multiple copies
             if (enableBloom) {
                 // Draw multiple copies with different opacities for glow
+                // Use red color for the glow to match the title
                 p.push();
-                p.tint(255, 255, 255, 30 * glowIntensity); // Very faint
+                p.tint(255, 0, 0, 30 * glowIntensity); // Very faint red
                 p.image(titleAsciiBuffer, 0, 0);
-                p.tint(255, 255, 255, 60 * glowIntensity); // Medium
+                p.tint(255, 0, 0, 60 * glowIntensity); // Medium red
                 p.image(titleAsciiBuffer, 0, 0);
-                p.tint(255, 255, 255, 90 * glowIntensity); // Strong
+                p.tint(255, 0, 0, 90 * glowIntensity); // Strong red
                 p.image(titleAsciiBuffer, 0, 0);
                 p.pop();
                 
