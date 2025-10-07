@@ -228,6 +228,7 @@ function sketch(p) {
     
     // Main text buffer (separate layer)
     let mainTextBuffer;
+    let bloomBuffer; // Buffer for bloom effect
     
     // ASCII art buffer (between background and main text)
     let asciiArtBuffer;
@@ -348,6 +349,10 @@ function sketch(p) {
         
         // Initialize title ASCII art buffer
         titleAsciiBuffer = p.createGraphics(p.width, p.height);
+        
+        // Initialize bloom buffer
+        bloomBuffer = p.createGraphics(p.width, p.height);
+        
         asciiArtBuffer.clear(); // Transparent background
         initializeAsciiArt();
         initializeTitleAsciiArt();
@@ -398,19 +403,19 @@ function sketch(p) {
         asciiArtBuffer.clear();
         drawAsciiArt();
         
-        // Apply manual glow effect to head ASCII art
+        // Apply bloom effect to head ASCII art
         if (enableBloom) {
-            // Draw multiple copies with slight offsets and high opacity for visible glow
+            // Copy the sharp ASCII art to bloom buffer
+            bloomBuffer.clear();
+            bloomBuffer.image(asciiArtBuffer, 0, 0);
+            
+            // Apply blur filter to bloom buffer
+            bloomBuffer.filter('blur', 8); // Strong blur for diffused effect
+            
+            // Draw the blurred version with orange tint
             p.push();
-            p.tint(255, 170, 0, 255); // Full opacity orange
-            p.image(asciiArtBuffer, -2, -2); // Offset top-left
-            p.image(asciiArtBuffer, 2, -2);  // Offset top-right
-            p.image(asciiArtBuffer, -2, 2);  // Offset bottom-left
-            p.image(asciiArtBuffer, 2, 2);   // Offset bottom-right
-            p.image(asciiArtBuffer, 0, -2);  // Offset top
-            p.image(asciiArtBuffer, 0, 2);   // Offset bottom
-            p.image(asciiArtBuffer, -2, 0);  // Offset left
-            p.image(asciiArtBuffer, 2, 0);   // Offset right
+            p.tint(255, 170, 0, 180); // Orange with good opacity
+            p.image(bloomBuffer, 0, 0);
             p.pop();
             
             // Draw sharp version on top
@@ -1271,6 +1276,7 @@ function sketch(p) {
         mainTextBuffer = p.createGraphics(p.width, p.height);
         asciiArtBuffer = p.createGraphics(p.width, p.height);
         titleAsciiBuffer = p.createGraphics(p.width, p.height);
+        bloomBuffer = p.createGraphics(p.width, p.height);
         
         // Update RSVP element position
         if (rsvpElement) {
