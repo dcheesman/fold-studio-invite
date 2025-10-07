@@ -228,8 +228,7 @@ function sketch(p) {
     
     // Main text buffer (separate layer)
     let mainTextBuffer;
-    let bloomBuffer; // Buffer for bloom effect
-    let smallBloomBuffer; // Small buffer for efficient blur
+    let bloomBuffer; // Buffer for bloom effect (currently unused)
     
     // ASCII art buffer (between background and main text)
     let asciiArtBuffer;
@@ -321,7 +320,7 @@ function sketch(p) {
         isMobile = p.windowWidth < 768;
         if (isMobile) {
             targetFrameRate = 24;
-            enableBloom = true; // Enable bloom on mobile - it's lightweight now
+            enableBloom = false; // Disable bloom on mobile for performance
         } else {
             targetFrameRate = 30;
             enableBloom = true;
@@ -351,9 +350,8 @@ function sketch(p) {
         // Initialize title ASCII art buffer
         titleAsciiBuffer = p.createGraphics(p.width, p.height);
         
-        // Initialize bloom buffers
+        // Initialize bloom buffer (currently unused)
         bloomBuffer = p.createGraphics(p.width, p.height);
-        smallBloomBuffer = p.createGraphics(p.width/8, p.height/8); // 1/8 size for wider bloom
         
         asciiArtBuffer.clear(); // Transparent background
         initializeAsciiArt();
@@ -1280,7 +1278,6 @@ function sketch(p) {
         asciiArtBuffer = p.createGraphics(p.width, p.height);
         titleAsciiBuffer = p.createGraphics(p.width, p.height);
         bloomBuffer = p.createGraphics(p.width, p.height);
-        smallBloomBuffer = p.createGraphics(p.width/8, p.height/8); // 1/8 size for wider bloom
         
         // Update RSVP element position
         if (rsvpElement) {
