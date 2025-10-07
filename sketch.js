@@ -321,7 +321,7 @@ function sketch(p) {
         isMobile = p.windowWidth < 768;
         if (isMobile) {
             targetFrameRate = 24;
-            enableBloom = false;
+            enableBloom = true; // Enable bloom on mobile - it's lightweight now
         } else {
             targetFrameRate = 30;
             enableBloom = true;
