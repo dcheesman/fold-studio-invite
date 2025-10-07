@@ -405,28 +405,24 @@ function sketch(p) {
         asciiArtBuffer.clear();
         drawAsciiArt();
         
-        // Apply efficient bloom effect to head ASCII art
+        // Apply DRAMATIC offset-based glow effect to head ASCII art
         if (enableBloom) {
-            // 1. Copy ASCII art to small buffer (1/4 size)
-            smallBloomBuffer.clear();
-            smallBloomBuffer.image(asciiArtBuffer, 0, 0, p.width, p.height, 0, 0, p.width/4, p.height/4);
-            
-            // 2. Apply blur to small buffer (much faster)
-            smallBloomBuffer.filter('blur', 8); // Strong blur for maximum effect
-            
-            // 3. Scale back up to full size bloom buffer
-            bloomBuffer.clear();
-            bloomBuffer.image(smallBloomBuffer, 0, 0, p.width/4, p.height/4, 0, 0, p.width, p.height);
-            
-            // 4. Draw the bloom with orange tint (MAXIMUM VISIBILITY)
+            console.log("BLOOM: Drawing dramatic glow effect"); // Debug log
+            // Draw MANY offset copies with orange tint for maximum visibility
             p.push();
-            p.tint(255, 170, 0, 255); // Full opacity orange
-            p.image(bloomBuffer, 0, 0);
-            p.tint(255, 170, 0, 255); // Draw it twice for extra intensity
-            p.image(bloomBuffer, 0, 0);
+            p.tint(255, 170, 0, 255); // Full orange
+            
+            // Draw in a large radius around the original
+            for (let x = -8; x <= 8; x += 2) {
+                for (let y = -8; y <= 8; y += 2) {
+                    if (x !== 0 || y !== 0) { // Don't draw at center
+                        p.image(asciiArtBuffer, x, y);
+                    }
+                }
+            }
             p.pop();
             
-            // 5. Draw sharp version on top
+            // Draw sharp version on top
             p.image(asciiArtBuffer, 0, 0);
         } else {
             p.image(asciiArtBuffer, 0, 0);
