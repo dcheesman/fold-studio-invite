@@ -396,12 +396,26 @@ function sketch(p) {
         // 2. ASCII art head buffer (always visible, cycling animation)
         asciiArtBuffer.clear();
         drawAsciiArt();
+        
+        // Apply subtle bloom effect if enabled
+        if (enableBloom) {
+            asciiArtBuffer.filter(p.BLUR, 0.3);
+            asciiArtBuffer.filter(p.BRIGHTNESS, 1.05);
+        }
+        
         p.image(asciiArtBuffer, 0, 0);
         
-        // 3. Title ASCII art buffer
+        // 3. Title ASCII art buffer with bloom effect
         if (introPhase >= 1) {
             titleAsciiBuffer.clear();
             drawAsciiTitle();
+            
+            // Apply subtle bloom effect if enabled
+            if (enableBloom) {
+                titleAsciiBuffer.filter(p.BLUR, 0.5);
+                titleAsciiBuffer.filter(p.BRIGHTNESS, 1.1);
+            }
+            
             p.image(titleAsciiBuffer, 0, 0);
         }
         
