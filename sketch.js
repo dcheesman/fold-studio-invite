@@ -405,28 +405,34 @@ function sketch(p) {
         asciiArtBuffer.clear();
         drawAsciiArt();
         
-        // Apply wide bloom effect to head ASCII art
+        // Apply wide offset-based bloom effect to head ASCII art
         if (enableBloom) {
-            // 1. Copy ASCII art to tiny buffer (1/8 size) for maximum spread
-            smallBloomBuffer.clear();
-            smallBloomBuffer.image(asciiArtBuffer, 0, 0, p.width, p.height, 0, 0, p.width/8, p.height/8);
-            
-            // 2. Apply strong blur to tiny buffer (creates wide spread when scaled up)
-            smallBloomBuffer.filter('blur', 6); // Stronger blur for more visible effect
-            
-            // 3. Scale back up to full size bloom buffer
-            bloomBuffer.clear();
-            bloomBuffer.image(smallBloomBuffer, 0, 0, p.width/8, p.height/8, 0, 0, p.width, p.height);
-            
-            // 4. Draw the wide bloom with orange tint (more visible)
+            // Draw multiple offset copies with orange tint for wide bloom
             p.push();
-            p.tint(255, 170, 0, 255); // Full opacity orange
-            p.image(bloomBuffer, 0, 0);
-            p.tint(255, 170, 0, 200); // Draw twice for extra intensity
-            p.image(bloomBuffer, 0, 0);
+            p.tint(255, 170, 0, 255); // Full orange
+            
+            // Draw in a wide radius with multiple layers for smooth bloom
+            // Inner layer (closer offsets)
+            for (let x = -3; x <= 3; x += 1) {
+                for (let y = -3; y <= 3; y += 1) {
+                    if (x !== 0 || y !== 0) {
+                        p.image(asciiArtBuffer, x, y);
+                    }
+                }
+            }
+            
+            // Outer layer (farther offsets) with reduced opacity
+            p.tint(255, 170, 0, 150);
+            for (let x = -6; x <= 6; x += 2) {
+                for (let y = -6; y <= 6; y += 2) {
+                    if (Math.abs(x) > 3 || Math.abs(y) > 3) { // Only outer ring
+                        p.image(asciiArtBuffer, x, y);
+                    }
+                }
+            }
             p.pop();
             
-            // 5. Draw sharp version on top
+            // Draw sharp version on top
             p.image(asciiArtBuffer, 0, 0);
         } else {
             p.image(asciiArtBuffer, 0, 0);
