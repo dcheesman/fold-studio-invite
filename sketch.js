@@ -300,7 +300,7 @@ function sketch(p) {
     // Post-processing (disabled for performance)
     // let scanlineOffset = 0;
     let enableBloom = true; // Enable bloom effect on ASCII art
-    let glowIntensity = 5.0; // Glow intensity multiplier (0.0 = no glow, 2.0 = double glow)
+    let glowIntensity = 2.0; // Glow intensity multiplier (0.0 = no glow, 2.0 = double glow)
     // let enableScanlines = false;
     // let enableBlur = false;
     
@@ -353,7 +353,7 @@ function sketch(p) {
         
         // Initialize bloom buffers
         bloomBuffer = p.createGraphics(p.width, p.height);
-        smallBloomBuffer = p.createGraphics(p.width/4, p.height/4); // 1/4 size for efficiency
+        smallBloomBuffer = p.createGraphics(p.width/8, p.height/8); // 1/8 size for wider bloom
         
         asciiArtBuffer.clear(); // Transparent background
         initializeAsciiArt();
@@ -405,24 +405,26 @@ function sketch(p) {
         asciiArtBuffer.clear();
         drawAsciiArt();
         
-        // Apply DRAMATIC offset-based glow effect to head ASCII art
+        // Apply wide bloom effect to head ASCII art
         if (enableBloom) {
-            console.log("BLOOM: Drawing dramatic glow effect"); // Debug log
-            // Draw MANY offset copies with orange tint for maximum visibility
-            p.push();
-            p.tint(255, 170, 0, 255); // Full orange
+            // 1. Copy ASCII art to tiny buffer (1/8 size) for maximum spread
+            smallBloomBuffer.clear();
+            smallBloomBuffer.image(asciiArtBuffer, 0, 0, p.width, p.height, 0, 0, p.width/8, p.height/8);
             
-            // Draw in a large radius around the original
-            for (let x = -8; x <= 8; x += 2) {
-                for (let y = -8; y <= 8; y += 2) {
-                    if (x !== 0 || y !== 0) { // Don't draw at center
-                        p.image(asciiArtBuffer, x, y);
-                    }
-                }
-            }
+            // 2. Apply strong blur to tiny buffer (creates wide spread when scaled up)
+            smallBloomBuffer.filter('blur', 4); // Blur on 1/8 size = 64x fewer pixels
+            
+            // 3. Scale back up to full size bloom buffer
+            bloomBuffer.clear();
+            bloomBuffer.image(smallBloomBuffer, 0, 0, p.width/8, p.height/8, 0, 0, p.width, p.height);
+            
+            // 4. Draw the wide bloom with orange tint
+            p.push();
+            p.tint(255, 170, 0, 180); // Orange with good opacity
+            p.image(bloomBuffer, 0, 0);
             p.pop();
             
-            // Draw sharp version on top
+            // 5. Draw sharp version on top
             p.image(asciiArtBuffer, 0, 0);
         } else {
             p.image(asciiArtBuffer, 0, 0);
@@ -1281,7 +1283,7 @@ function sketch(p) {
         asciiArtBuffer = p.createGraphics(p.width, p.height);
         titleAsciiBuffer = p.createGraphics(p.width, p.height);
         bloomBuffer = p.createGraphics(p.width, p.height);
-        smallBloomBuffer = p.createGraphics(p.width/4, p.height/4); // 1/4 size for efficiency
+        smallBloomBuffer = p.createGraphics(p.width/8, p.height/8); // 1/8 size for wider bloom
         
         // Update RSVP element position
         if (rsvpElement) {
