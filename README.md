@@ -58,6 +58,14 @@ An immersive event landing page with a retro-future 70s terminal computer aesthe
 ├── sketch.js               # p5.js canvas implementation
 ├── config.js               # Configuration file (gitignored)
 ├── config.example.js       # Configuration template
+├── favicon_io/             # Favicon files and web manifest
+│   ├── favicon.ico         # Main favicon
+│   ├── favicon-16x16.png   # 16x16 favicon
+│   ├── favicon-32x32.png   # 32x32 favicon
+│   ├── apple-touch-icon.png # Apple touch icon
+│   ├── android-chrome-192x192.png # Android icon
+│   ├── android-chrome-512x512.png # Android icon
+│   └── site.webmanifest    # Web app manifest
 ├── .gitignore              # Git ignore rules
 ├── .cursorrules            # Project specifications and guidelines
 ├── head.txt                # ASCII art for head image
