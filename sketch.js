@@ -300,7 +300,7 @@ function sketch(p) {
     // Post-processing (disabled for performance)
     // let scanlineOffset = 0;
     let enableBloom = true; // Enable bloom effect on ASCII art
-    let glowIntensity = 1.5; // Glow intensity multiplier (0.0 = no glow, 2.0 = double glow)
+    let glowIntensity = 1.0; // Glow intensity multiplier (0.0 = no glow, 2.0 = double glow)
     // let enableScanlines = false;
     // let enableBlur = false;
     
@@ -407,25 +407,35 @@ function sketch(p) {
         
         // Apply wide offset-based bloom effect to head ASCII art
         if (enableBloom) {
-            // Draw multiple offset copies with orange tint for subtle bloom
+            // Draw multiple offset copies with orange tint for very subtle, wide bloom
             p.push();
-            p.tint(255, 170, 0, 80); // Subtle orange
+            p.tint(255, 170, 0, 50); // Very subtle orange
             
             // Draw in a wide radius with multiple layers for smooth bloom
-            // Inner layer (closer offsets)
-            for (let x = -3; x <= 3; x += 1) {
-                for (let y = -3; y <= 3; y += 1) {
+            // Inner layer (closer offsets) - reduced opacity
+            for (let x = -2; x <= 2; x += 1) {
+                for (let y = -2; y <= 2; y += 1) {
                     if (x !== 0 || y !== 0) {
                         p.image(asciiArtBuffer, x, y);
                     }
                 }
             }
             
-            // Outer layer (farther offsets) with even more reduced opacity
-            p.tint(255, 170, 0, 40);
-            for (let x = -6; x <= 6; x += 2) {
-                for (let y = -6; y <= 6; y += 2) {
-                    if (Math.abs(x) > 3 || Math.abs(y) > 3) { // Only outer ring
+            // Middle layer (medium offsets)
+            p.tint(255, 170, 0, 30);
+            for (let x = -5; x <= 5; x += 1) {
+                for (let y = -5; y <= 5; y += 1) {
+                    if (Math.abs(x) > 2 || Math.abs(y) > 2) { // Only middle ring
+                        p.image(asciiArtBuffer, x, y);
+                    }
+                }
+            }
+            
+            // Outer layer (farthest offsets) with very low opacity for wide spread
+            p.tint(255, 170, 0, 15);
+            for (let x = -8; x <= 8; x += 2) {
+                for (let y = -8; y <= 8; y += 2) {
+                    if (Math.abs(x) > 5 || Math.abs(y) > 5) { // Only outer ring
                         p.image(asciiArtBuffer, x, y);
                     }
                 }
