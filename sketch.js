@@ -298,7 +298,7 @@ function sketch(p) {
     // Post-processing (disabled for performance)
     // let scanlineOffset = 0;
     let enableBloom = true; // Enable bloom effect on ASCII art
-    let glowIntensity = 1.5; // Glow intensity multiplier (0.0 = no glow, 2.0 = double glow)
+    let glowIntensity = 3.0; // Glow intensity multiplier (0.0 = no glow, 2.0 = double glow)
     // let enableScanlines = false;
     // let enableBlur = false;
     
@@ -400,15 +400,17 @@ function sketch(p) {
         
         // Apply manual glow effect to head ASCII art
         if (enableBloom) {
-            // Draw multiple copies with different opacities for glow
-            // Use orange color for the glow to match the ASCII art
+            // Draw multiple copies with slight offsets and high opacity for visible glow
             p.push();
-            p.tint(255, 170, 0, 30 * glowIntensity); // Very faint orange
-            p.image(asciiArtBuffer, 0, 0);
-            p.tint(255, 170, 0, 60 * glowIntensity); // Medium orange
-            p.image(asciiArtBuffer, 0, 0);
-            p.tint(255, 170, 0, 90 * glowIntensity); // Strong orange
-            p.image(asciiArtBuffer, 0, 0);
+            p.tint(255, 170, 0, 255); // Full opacity orange
+            p.image(asciiArtBuffer, -2, -2); // Offset top-left
+            p.image(asciiArtBuffer, 2, -2);  // Offset top-right
+            p.image(asciiArtBuffer, -2, 2);  // Offset bottom-left
+            p.image(asciiArtBuffer, 2, 2);   // Offset bottom-right
+            p.image(asciiArtBuffer, 0, -2);  // Offset top
+            p.image(asciiArtBuffer, 0, 2);   // Offset bottom
+            p.image(asciiArtBuffer, -2, 0);  // Offset left
+            p.image(asciiArtBuffer, 2, 0);   // Offset right
             p.pop();
             
             // Draw sharp version on top
@@ -422,24 +424,8 @@ function sketch(p) {
             titleAsciiBuffer.clear();
             drawAsciiTitle();
             
-            // Apply manual glow effect by drawing multiple copies
-            if (enableBloom) {
-                // Draw multiple copies with different opacities for glow
-                // Use red color for the glow to match the title
-                p.push();
-                p.tint(255, 0, 0, 30 * glowIntensity); // Very faint red
-                p.image(titleAsciiBuffer, 0, 0);
-                p.tint(255, 0, 0, 60 * glowIntensity); // Medium red
-                p.image(titleAsciiBuffer, 0, 0);
-                p.tint(255, 0, 0, 90 * glowIntensity); // Strong red
-                p.image(titleAsciiBuffer, 0, 0);
-                p.pop();
-                
-                // Draw sharp version on top
-                p.image(titleAsciiBuffer, 0, 0);
-            } else {
-                p.image(titleAsciiBuffer, 0, 0);
-            }
+            // No glow effect for title - just draw it clean
+            p.image(titleAsciiBuffer, 0, 0);
         }
         
         // 4. Event info (main text buffer) - now on top of title
