@@ -421,6 +421,10 @@ function sketch(p) {
     };
 
     function initializeCharGrid() {
+        // Recalculate grid dimensions based on current canvas size
+        cols = p.floor(p.width / charWidth);
+        rows = p.floor(p.height / charHeight);
+        
         // Initialize character grid
         gridCols = cols;
         gridRows = rows;
@@ -1227,6 +1231,13 @@ function sketch(p) {
     
     p.windowResized = function() {
         p.resizeCanvas(p.windowWidth, p.windowHeight);
+        
+        // Recalculate character dimensions
+        fontSize = Math.max(12, Math.min(16, p.width / 80)); // Responsive font size
+        charWidth = fontSize * 0.6; // Monospace character width
+        charHeight = fontSize; // Line height
+        
+        // Reinitialize all systems with new dimensions
         initializeCharGrid();
         initializeTypingQueue();
         initializeSimpleTyping();
