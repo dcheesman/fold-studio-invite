@@ -297,7 +297,8 @@ function sketch(p) {
     
     // Post-processing (disabled for performance)
     // let scanlineOffset = 0;
-    // let enableBloom = false;
+    let enableBloom = true; // Enable bloom effect on ASCII art
+    let glowIntensity = 1.0; // Glow intensity multiplier (0.0 = no glow, 2.0 = double glow)
     // let enableScanlines = false;
     // let enableBlur = false;
     
@@ -397,13 +398,46 @@ function sketch(p) {
         asciiArtBuffer.clear();
         drawAsciiArt();
         
-        p.image(asciiArtBuffer, 0, 0);
+        // Apply manual glow effect to head ASCII art
+        if (enableBloom) {
+            // Draw multiple copies with different opacities for glow
+            p.push();
+            p.tint(255, 255, 255, 20 * glowIntensity); // Very faint
+            p.image(asciiArtBuffer, 0, 0);
+            p.tint(255, 255, 255, 40 * glowIntensity); // Medium
+            p.image(asciiArtBuffer, 0, 0);
+            p.tint(255, 255, 255, 60 * glowIntensity); // Strong
+            p.image(asciiArtBuffer, 0, 0);
+            p.pop();
+            
+            // Draw sharp version on top
+            p.image(asciiArtBuffer, 0, 0);
+        } else {
+            p.image(asciiArtBuffer, 0, 0);
+        }
         
-        // 3. Title ASCII art buffer
+        // 3. Title ASCII art buffer with manual glow effect
         if (introPhase >= 1) {
             titleAsciiBuffer.clear();
             drawAsciiTitle();
-            p.image(titleAsciiBuffer, 0, 0);
+            
+            // Apply manual glow effect by drawing multiple copies
+            if (enableBloom) {
+                // Draw multiple copies with different opacities for glow
+                p.push();
+                p.tint(255, 255, 255, 30 * glowIntensity); // Very faint
+                p.image(titleAsciiBuffer, 0, 0);
+                p.tint(255, 255, 255, 60 * glowIntensity); // Medium
+                p.image(titleAsciiBuffer, 0, 0);
+                p.tint(255, 255, 255, 90 * glowIntensity); // Strong
+                p.image(titleAsciiBuffer, 0, 0);
+                p.pop();
+                
+                // Draw sharp version on top
+                p.image(titleAsciiBuffer, 0, 0);
+            } else {
+                p.image(titleAsciiBuffer, 0, 0);
+            }
         }
         
         // 4. Event info (main text buffer) - now on top of title
