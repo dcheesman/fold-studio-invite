@@ -300,7 +300,7 @@ function sketch(p) {
     // Post-processing (disabled for performance)
     // let scanlineOffset = 0;
     let enableBloom = true; // Enable bloom effect on ASCII art
-    let glowIntensity = 4.0; // Glow intensity multiplier (0.0 = no glow, 2.0 = double glow)
+    let glowIntensity = 1.5; // Glow intensity multiplier (0.0 = no glow, 2.0 = double glow)
     // let enableScanlines = false;
     // let enableBlur = false;
     
@@ -407,9 +407,9 @@ function sketch(p) {
         
         // Apply wide offset-based bloom effect to head ASCII art
         if (enableBloom) {
-            // Draw multiple offset copies with orange tint for wide bloom
+            // Draw multiple offset copies with orange tint for subtle bloom
             p.push();
-            p.tint(255, 170, 0, 255); // Full orange
+            p.tint(255, 170, 0, 80); // Subtle orange
             
             // Draw in a wide radius with multiple layers for smooth bloom
             // Inner layer (closer offsets)
@@ -421,8 +421,8 @@ function sketch(p) {
                 }
             }
             
-            // Outer layer (farther offsets) with reduced opacity
-            p.tint(255, 170, 0, 150);
+            // Outer layer (farther offsets) with even more reduced opacity
+            p.tint(255, 170, 0, 40);
             for (let x = -6; x <= 6; x += 2) {
                 for (let y = -6; y <= 6; y += 2) {
                     if (Math.abs(x) > 3 || Math.abs(y) > 3) { // Only outer ring
