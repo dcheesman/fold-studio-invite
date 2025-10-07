@@ -397,25 +397,12 @@ function sketch(p) {
         asciiArtBuffer.clear();
         drawAsciiArt();
         
-        // Apply subtle bloom effect if enabled
-        if (enableBloom) {
-            asciiArtBuffer.filter('blur', 0.3);
-            asciiArtBuffer.filter('brightness', 1.05);
-        }
-        
         p.image(asciiArtBuffer, 0, 0);
         
-        // 3. Title ASCII art buffer with bloom effect
+        // 3. Title ASCII art buffer
         if (introPhase >= 1) {
             titleAsciiBuffer.clear();
             drawAsciiTitle();
-            
-            // Apply subtle bloom effect if enabled
-            if (enableBloom) {
-                titleAsciiBuffer.filter('blur', 0.5);
-                titleAsciiBuffer.filter('brightness', 1.1);
-            }
-            
             p.image(titleAsciiBuffer, 0, 0);
         }
         
