@@ -407,35 +407,14 @@ function sketch(p) {
         
         // Apply wide offset-based bloom effect to head ASCII art
         if (enableBloom) {
-            // Draw multiple offset copies with orange tint for very subtle, wide bloom
+            // Draw single wide layer with lighter orange color for subtle bloom
             p.push();
-            p.tint(255, 170, 0, 38); // ~15% opacity (255 * 0.15)
+            p.tint(200, 120, 0, 100); // Lighter orange with medium opacity
             
-            // Draw in a wide radius with multiple layers for smooth bloom
-            // Inner layer (closer offsets) - 15% opacity
-            for (let x = -2; x <= 2; x += 1) {
-                for (let y = -2; y <= 2; y += 1) {
+            // Draw in a wide radius with sparse offsets to avoid accumulation
+            for (let x = -12; x <= 12; x += 4) {
+                for (let y = -12; y <= 12; y += 4) {
                     if (x !== 0 || y !== 0) {
-                        p.image(asciiArtBuffer, x, y);
-                    }
-                }
-            }
-            
-            // Middle layer (medium offsets) - 15% opacity
-            p.tint(255, 170, 0, 38);
-            for (let x = -5; x <= 5; x += 1) {
-                for (let y = -5; y <= 5; y += 1) {
-                    if (Math.abs(x) > 2 || Math.abs(y) > 2) { // Only middle ring
-                        p.image(asciiArtBuffer, x, y);
-                    }
-                }
-            }
-            
-            // Outer layer (farthest offsets) - 15% opacity for wide spread
-            p.tint(255, 170, 0, 38);
-            for (let x = -8; x <= 8; x += 2) {
-                for (let y = -8; y <= 8; y += 2) {
-                    if (Math.abs(x) > 5 || Math.abs(y) > 5) { // Only outer ring
                         p.image(asciiArtBuffer, x, y);
                     }
                 }
