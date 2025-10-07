@@ -399,8 +399,8 @@ function sketch(p) {
         
         // Apply subtle bloom effect if enabled
         if (enableBloom) {
-            asciiArtBuffer.filter(p.BLUR, 0.3);
-            asciiArtBuffer.filter(p.BRIGHTNESS, 1.05);
+            asciiArtBuffer.filter('blur', 0.3);
+            asciiArtBuffer.filter('brightness', 1.05);
         }
         
         p.image(asciiArtBuffer, 0, 0);
@@ -412,8 +412,8 @@ function sketch(p) {
             
             // Apply subtle bloom effect if enabled
             if (enableBloom) {
-                titleAsciiBuffer.filter(p.BLUR, 0.5);
-                titleAsciiBuffer.filter(p.BRIGHTNESS, 1.1);
+                titleAsciiBuffer.filter('blur', 0.5);
+                titleAsciiBuffer.filter('brightness', 1.1);
             }
             
             p.image(titleAsciiBuffer, 0, 0);
