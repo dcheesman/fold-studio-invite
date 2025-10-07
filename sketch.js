@@ -398,15 +398,15 @@ function sketch(p) {
         drawAsciiArt();
         p.image(asciiArtBuffer, 0, 0);
         
-        // 3. Event info (main text buffer)
-        p.image(mainTextBuffer, 0, 0);
-        
-        // 4. Title ASCII art buffer (above event info)
+        // 3. Title ASCII art buffer
         if (introPhase >= 1) {
             titleAsciiBuffer.clear();
             drawAsciiTitle();
             p.image(titleAsciiBuffer, 0, 0);
         }
+        
+        // 4. Event info (main text buffer) - now on top of title
+        p.image(mainTextBuffer, 0, 0);
         
         // Draw cursor
         drawCursor();
@@ -1062,8 +1062,17 @@ function sketch(p) {
             maxLineLength = Math.max(maxLineLength, line.length);
         }
         
-        // Calculate scale factor to fit within 90% of page width
-        let maxWidthPixels = p.width * 0.9;
+        // Calculate scale factor to fit within top third of screen on wide displays
+        // On wide screens, limit width to keep title in top third
+        let maxWidthPixels;
+        if (p.width > 1200) {
+            // For wide screens, limit to 60% of width to keep in top third
+            maxWidthPixels = p.width * 0.6;
+        } else {
+            // For normal screens, use 90% of width
+            maxWidthPixels = p.width * 0.9;
+        }
+        
         let originalWidthPixels = maxLineLength * charWidth;
         let scaleFactor = Math.min(1, maxWidthPixels / originalWidthPixels);
         
@@ -1074,7 +1083,7 @@ function sketch(p) {
         
         // Center the scaled ASCII art
         let startX = (p.width - scaledTextWidth) / 2;
-        let startY = p.height * 0.15; // Higher up in top quarter
+        let startY = p.height * 0.12; // Higher up in top third
         
         // Set scaled font size
         titleAsciiBuffer.textSize(fontSize * scaleFactor);
