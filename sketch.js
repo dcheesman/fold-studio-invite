@@ -1046,16 +1046,10 @@ function sketch(p) {
         // Draw text with background
         let lines = text.split('\n');
         
-        // Debug logging
-        if (isFridayPage && backgroundColor) {
-            console.log('Friday page drawSimpleText called:', { text, startX, startY, color, backgroundColor, lines });
-        }
-        
         // Use larger font size for Friday page event info
         let textFontSize = fontSize;
         if (isFridayPage && backgroundColor) {
             textFontSize = fontSize * 2.5; // 2.5x bigger for Friday page event info
-            console.log('Using larger font size:', textFontSize);
         }
         
         for (let i = 0; i < lines.length; i++) {
@@ -1078,17 +1072,6 @@ function sketch(p) {
                 x = blockStartX; // All lines start at the same x position (left-justified within block)
                 y = (startY + i - 5) * charHeight * 2.5; // Move up by 5 lines and match 2.5x font size
                 
-                console.log('Friday page positioning:', { 
-                    line: lines[i], 
-                    maxLineLength, 
-                    blockWidth, 
-                    blockStartX, 
-                    x, 
-                    y, 
-                    pWidth: p.width,
-                    startY,
-                    i
-                });
             }
             
             mainTextBuffer.push();
