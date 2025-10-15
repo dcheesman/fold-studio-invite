@@ -17,7 +17,23 @@
       "dest": "/api/$1"
     },
     {
-      "src": "/(.*\\.(js|css|txt|json))",
+      "src": "/friday.html",
+      "dest": "/friday.html"
+    },
+    {
+      "src": "/simple-recorder.html",
+      "dest": "/simple-recorder.html"
+    },
+    {
+      "src": "/record.html",
+      "dest": "/record.html"
+    },
+    {
+      "src": "/local-recorder.html",
+      "dest": "/local-recorder.html"
+    },
+    {
+      "src": "/(.*\\.(js|css|txt|json|png|jpg|jpeg|gif|ico|svg|webp))",
       "dest": "/$1"
     },
     {
