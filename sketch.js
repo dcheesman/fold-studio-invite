@@ -371,11 +371,7 @@ function sketch(p) {
         p.frameRate(RECORDING.enabled ? RECORDING.frameRate : targetFrameRate);
         
         // Calculate grid system
-        if (isFridayPage) {
-            fontSize = isMobile ? 40 : 45; // Much larger font for Friday page (2.5x bigger)
-        } else {
-            fontSize = isMobile ? 16 : 18; // Normal font for main page
-        }
+        fontSize = isMobile ? 16 : 18; // Normal font size for all text
         charWidth = fontSize * 0.6; // Monospace character width
         charHeight = fontSize; // Line height
         cols = p.floor(p.width / charWidth);
@@ -1050,14 +1046,20 @@ function sketch(p) {
         // Draw text with background
         let lines = text.split('\n');
         
+        // Use larger font size for Friday page event info
+        let textFontSize = fontSize;
+        if (isFridayPage && backgroundColor === CONFIG.colors.pureRed) {
+            textFontSize = fontSize * 2.5; // 2.5x bigger for Friday page event info
+        }
+        
         for (let i = 0; i < lines.length; i++) {
             let x = startX * charWidth;
             let y = (startY + i) * charHeight;
             
             mainTextBuffer.push();
             mainTextBuffer.textAlign(mainTextBuffer.LEFT, mainTextBuffer.CENTER);
-            mainTextBuffer.textSize(fontSize);
-            mainTextBuffer.textFont('Courier New', fontSize);
+            mainTextBuffer.textSize(textFontSize);
+            mainTextBuffer.textFont('Courier New', textFontSize);
             
             // Draw background rectangle
             if (backgroundColor) {
@@ -1066,7 +1068,15 @@ function sketch(p) {
                 mainTextBuffer.fill(p.color(CONFIG.colors.background));
             }
             mainTextBuffer.noStroke();
-            mainTextBuffer.rect(x - 2, y - 2, lines[i].length * charWidth + 4, charHeight + 4);
+            
+            // Adjust rectangle size for larger text
+            let rectWidth = lines[i].length * charWidth + 4;
+            let rectHeight = charHeight + 4;
+            if (isFridayPage && backgroundColor === CONFIG.colors.pureRed) {
+                rectWidth = lines[i].length * charWidth * 2.5 + 4;
+                rectHeight = charHeight * 2.5 + 4;
+            }
+            mainTextBuffer.rect(x - 2, y - 2, rectWidth, rectHeight);
             
             // Draw text (centered vertically in the rectangle)
             mainTextBuffer.fill(p.color(color));
@@ -1346,11 +1356,7 @@ function sketch(p) {
         p.resizeCanvas(p.windowWidth, p.windowHeight);
         
         // Recalculate character dimensions
-        if (isFridayPage) {
-            fontSize = Math.max(32, Math.min(45, p.width / 30)); // Much larger responsive font size for Friday page (2.5x bigger)
-        } else {
-            fontSize = Math.max(12, Math.min(16, p.width / 80)); // Normal responsive font size
-        }
+        fontSize = Math.max(12, Math.min(16, p.width / 80)); // Normal responsive font size
         charWidth = fontSize * 0.6; // Monospace character width
         charHeight = fontSize; // Line height
         
