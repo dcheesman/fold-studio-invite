@@ -1058,9 +1058,8 @@ function sketch(p) {
             
             // Adjust positioning for larger text on Friday page
             if (isFridayPage && backgroundColor === CONFIG.colors.pureRed) {
-                // Center the larger text properly
-                let textWidth = lines[i].length * charWidth * 2.5;
-                x = (p.width - textWidth) / 2; // Center horizontally
+                // Use the original grid positioning but with larger spacing
+                x = startX * charWidth;
                 y = (startY + i) * charHeight * 2.5; // Scale vertical spacing
             }
             
