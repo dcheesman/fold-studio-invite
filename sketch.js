@@ -1061,7 +1061,7 @@ function sketch(p) {
                 // Center the text horizontally while keeping it left-justified
                 let textWidth = lines[i].length * charWidth * 2.5;
                 x = (p.width - textWidth) / 2; // Center horizontally
-                y = (startY + i) * charHeight * 1.5; // Add some vertical spacing for larger font
+                y = (startY + i - 5) * charHeight * 2.5; // Move up by 5 lines and match 2.5x font size
             }
             
             mainTextBuffer.push();
