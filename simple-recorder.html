@@ -104,7 +104,7 @@
     </div>
     
     <div id="preview-container">
-        <iframe id="preview-iframe" src="friday.html" width="800" height="600"></iframe>
+        <iframe id="preview-iframe" src="https://fold-studio-invite.vercel.app/friday.html" width="800" height="600"></iframe>
     </div>
     
     <div class="status" id="status">
@@ -138,8 +138,13 @@
         <p><strong>For Vertical (1080x1920):</strong></p>
         <p><code>ffmpeg -framerate 30 -i frame_%04d.png -c:v libx264 -pix_fmt yuv420p -s 1080x1920 fold-vertical.mp4</code></p>
         
+        <h3>Important: Use Deployed Version</h3>
+        <p><strong>For frame capture to work:</strong> Use the deployed version at:</p>
+        <p><code>https://fold-studio-invite.vercel.app/simple-recorder.html</code></p>
+        <p>Local files (file://) have CORS restrictions that prevent frame capture.</p>
+        
         <h3>Alternative: Use Screen Recording Software</h3>
-        <p>If frame capture doesn't work well, you can also:</p>
+        <p>If frame capture still doesn't work, you can also:</p>
         <ol>
             <li>Use OBS Studio (free) to record your screen</li>
             <li>Set the recording area to the iframe above</li>
