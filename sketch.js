@@ -2,6 +2,9 @@
 // Retro-future 70s terminal computer aesthetic
 
 function sketch(p) {
+    // Detect which page we're on
+    const isFridayPage = window.location.pathname.includes('friday.html');
+    
     // Configuration
     const CONFIG = {
         colors: {
@@ -23,7 +26,16 @@ function sketch(p) {
             infoPhase: 4000,      // 7-11s: event info (extended for more text)
             rsvpPhase: 1000       // 11-12s: RSVP
         },
-        text: {
+        text: isFridayPage ? {
+            // Friday page content
+            title: "THE FOLD",
+            subtitle: "OPENHOUSE",
+            date: "FRIDAY, OCT 24TH",
+            address: "40 W 100 N PROVO",
+            description: "A night for the true believers.",
+            rsvpText: "→ RSVP"
+        } : {
+            // Main page content
             title: "THE FOLD",
             subtitle: ">>> YOU ARE INVITED <<<",
             date: "To a celebration",
