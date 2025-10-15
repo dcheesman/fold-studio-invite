@@ -372,7 +372,7 @@ function sketch(p) {
         
         // Calculate grid system
         if (isFridayPage) {
-            fontSize = isMobile ? 20 : 24; // Larger font for Friday page
+            fontSize = isMobile ? 40 : 45; // Much larger font for Friday page (2.5x bigger)
         } else {
             fontSize = isMobile ? 16 : 18; // Normal font for main page
         }
@@ -1347,7 +1347,7 @@ function sketch(p) {
         
         // Recalculate character dimensions
         if (isFridayPage) {
-            fontSize = Math.max(16, Math.min(24, p.width / 60)); // Larger responsive font size for Friday page
+            fontSize = Math.max(32, Math.min(45, p.width / 30)); // Much larger responsive font size for Friday page (2.5x bigger)
         } else {
             fontSize = Math.max(12, Math.min(16, p.width / 80)); // Normal responsive font size
         }
