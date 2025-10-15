@@ -16,10 +16,14 @@
       "src": "/api/(.*)",
       "dest": "/api/$1"
     },
-    {
-      "src": "/friday.html",
-      "dest": "/friday.html"
-    },
+        {
+            "src": "/friday.html",
+            "dest": "/friday.html"
+        },
+        {
+            "src": "/friday-css.html",
+            "dest": "/friday-css.html"
+        },
     {
       "src": "/simple-recorder.html",
       "dest": "/simple-recorder.html"

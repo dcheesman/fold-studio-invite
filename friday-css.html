@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>INVITATION</title>
+    
+    <!-- Meta tags for social sharing -->
+    <meta property="og:title" content="INVITATION">
+    <meta property="og:description" content="An invitation awaits...">
+    <meta property="og:image" content="/favicon_io/android-chrome-512x512.png">
+    <meta property="og:url" content="https://fold-studio-invite.vercel.app/friday-css.html">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card meta tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="INVITATION">
+    <meta name="twitter:description" content="An invitation awaits...">
+    <meta name="twitter:image" content="/favicon_io/android-chrome-512x512.png">
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="/favicon_io/site.webmanifest">
+    <link rel="shortcut icon" href="/favicon_io/favicon.ico">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000000;
+            overflow: hidden;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: none;
+            /* Prevent pull-to-refresh on mobile */
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        canvas {
+            cursor: none;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+        }
+
+        /* Friday page event info - HTML/CSS version */
+        #friday-event-info {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 45px; /* 2.5x larger than normal */
+            line-height: 1.2;
+            text-align: left;
+            opacity: 0;
+            animation: typewriterFadeIn 8s ease-in-out forwards;
+            animation-delay: 7s; /* Start after ASCII art is done */
+        }
+
+        #friday-event-info .event-line {
+            display: block;
+            color: #000000;
+            background: #ff0000;
+            padding: 8px 12px;
+            margin: 4px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            border: none;
+            animation: typewriter 2s steps(20) forwards;
+            opacity: 0;
+        }
+
+        #friday-event-info .event-line:nth-child(1) {
+            animation-delay: 7s;
+        }
+
+        #friday-event-info .event-line:nth-child(2) {
+            animation-delay: 8.5s;
+        }
+
+        #friday-event-info .event-line:nth-child(3) {
+            animation-delay: 10s;
+        }
+
+        @keyframes typewriter {
+            0% {
+                width: 0;
+                opacity: 1;
+            }
+            100% {
+                width: 100%;
+                opacity: 1;
+            }
+        }
+
+        @keyframes typewriterFadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            #friday-event-info {
+                font-size: 36px; /* Slightly smaller on mobile */
+                padding: 0 20px;
+            }
+            
+            #friday-event-info .event-line {
+                padding: 6px 10px;
+                margin: 3px 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #friday-event-info {
+                font-size: 28px; /* Even smaller on very small screens */
+                padding: 0 15px;
+            }
+            
+            #friday-event-info .event-line {
+                padding: 4px 8px;
+                margin: 2px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <!-- Friday page event info - HTML/CSS version -->
+    <div id="friday-event-info">
+        <div class="event-line">OPENHOUSE</div>
+        <div class="event-line">FRIDAY, OCT 24TH</div>
+        <div class="event-line">40 W 100 N PROVO</div>
+    </div>
+
+    <script>
+        // Configuration for Friday page - simplified
+        const CONFIG = {
+            colors: {
+                background: '#000000',
+                nearBlack: '#1a1a1a',
+                grey: '#4a4a4a',
+                lightGrey: '#6a6a6a',
+                red: '#ff0033',
+                darkRed: '#cc0000',
+                pureRed: '#ff0000',
+                gold: '#ffaa00',
+                lightGold: '#ff8800'
+            },
+            timing: {
+                introDuration: 5000,
+                scrollPhase: 2000,
+                typingPhase: 2000,
+                infoPhase: 1000
+            },
+            text: {
+                title: "THE FOLD",
+                subtitle: "OPENHOUSE",
+                date: "FRIDAY, OCT 24TH",
+                address: "40 W 100 N PROVO",
+                description: "",
+                rsvpText: ""
+            },
+            backgroundText: [
+                "// Initialize neural network parameters",
+                "constexpr auto MAX_ITERATIONS = 1000000;",
+                "std::vector<std::unique_ptr<Layer>> network_layers;",
+                "// Configure backpropagation algorithm",
+                "auto learning_rate = 0.001f;",
+                "auto momentum = 0.9f;",
+                "// Memory allocation for tensor operations",
+                "cudaMalloc(&d_weights, sizeof(float) * weight_count);",
+                "// Error handling and validation",
+                "if (error_code != CUDA_SUCCESS) {",
+                "    throw std::runtime_error(\"CUDA allocation failed\");",
+                "}",
+                "// Matrix multiplication kernel",
+                "__global__ void matmul_kernel(float* A, float* B, float* C) {",
+                "    int idx = blockIdx.x * blockDim.x + threadIdx.x;",
+                "    if (idx < N) {",
+                "        C[idx] = A[idx] * B[idx];",
+                "    }",
+                "}",
+                "// Synchronize device memory",
+                "cudaDeviceSynchronize();",
+                "// Check for memory leaks",
+                "assert(allocated_memory == 0);",
+                "// Performance profiling",
+                "auto start_time = std::chrono::high_resolution_clock::now();",
+                "// Process input data pipeline",
+                "for (auto& batch : training_data) {",
+                "    forward_pass(batch);",
+                "    compute_loss(batch);",
+                "    backward_pass(batch);",
+                "    update_weights();",
+                "}",
+                "// Cleanup resources",
+                "cudaFree(d_weights);",
+                "// Final validation",
+                "validate_model_accuracy();"
+            ]
+        };
+
+        let p5Instance;
+
+        // Initialize p5.js in instance mode
+        function initP5() {
+            console.log('initP5 called for Friday CSS page');
+            if (typeof sketch === 'function') {
+                p5Instance = new p5(sketch, 'canvas-container');
+            } else {
+                console.error('sketch function not found');
+            }
+        }
+
+        // Prevent pull-to-refresh on mobile
+        let startY = 0;
+        document.addEventListener('touchstart', function(e) {
+            startY = e.touches[0].clientY;
+        }, { passive: true });
+
+        document.addEventListener('touchmove', function(e) {
+            const currentY = e.touches[0].clientY;
+            const deltaY = currentY - startY;
+            
+            // Prevent pull-to-refresh when scrolling up from the top
+            if (window.scrollY === 0 && deltaY > 0) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // Prevent context menu on long press
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        // Initialize when page loads
+        window.addEventListener('load', function() {
+            // Small delay to ensure sketch.js is loaded
+            setTimeout(initP5, 100);
+        });
+    </script>
+    <script src="sketch.js"></script>
+</body>
+</html>

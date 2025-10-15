@@ -4,6 +4,7 @@
 function sketch(p) {
     // Detect which page we're on
     const isFridayPage = window.location.pathname.includes('friday.html');
+    const isFridayCSSPage = window.location.pathname.includes('friday-css.html');
     
     // Video recording settings
     const RECORDING = {
@@ -37,7 +38,7 @@ function sketch(p) {
             rsvpPhase: 1000       // 11-12s: RSVP
         },
         text: (() => {
-            const textConfig = isFridayPage ? {
+            const textConfig = (isFridayPage || isFridayCSSPage) ? {
                 // Friday page content - simplified
                 title: "THE FOLD",
                 subtitle: "OPENHOUSE",
@@ -639,6 +640,9 @@ function sketch(p) {
                 CONFIG.text.date || "",
                 CONFIG.text.address || ""
             ];
+        } else if (isFridayCSSPage) {
+            // Skip event info rendering on CSS page - it's handled by HTML/CSS
+            infoLines = [];
         } else {
             // Main page - show all content
             infoLines = [
@@ -1021,7 +1025,7 @@ function sketch(p) {
         // Draw RSVP text
         if (introPhase >= 3) {
             // Show and position HTML RSVP element instead of drawing to buffer (only on main page)
-            if (rsvpElement && !isFridayPage) {
+            if (rsvpElement && !isFridayPage && !isFridayCSSPage) {
                 let rsvpX = infoX * charWidth; // Use same X as info text (centered)
                 let rsvpY = (infoStartY + infoLines.length + 1) * charHeight; // Position below all info text
                 
@@ -1030,8 +1034,8 @@ function sketch(p) {
                 rsvpElement.style.fontSize = fontSize + 'px';
                 rsvpElement.style.display = 'block';
                 rsvpElement.style.zIndex = '1000'; // Ensure it's on top
-            } else if (rsvpElement && isFridayPage) {
-                // Hide RSVP on Friday page
+            } else if (rsvpElement && (isFridayPage || isFridayCSSPage)) {
+                // Hide RSVP on Friday pages
                 rsvpElement.style.display = 'none';
             }
         } else {
@@ -1336,15 +1340,15 @@ function sketch(p) {
         mainTextBuffer.pop();
         
         // Show and position RSVP element (only on main page)
-        if (rsvpElement && !isFridayPage) {
+        if (rsvpElement && !isFridayPage && !isFridayCSSPage) {
             rsvpElement.style.display = 'block';
             // Position RSVP below info text (centered)
             let rsvpX = infoX * charWidth;
             let rsvpY = (infoStartY + infoLines.length + 1) * charHeight;
             rsvpElement.style.left = rsvpX + 'px';
             rsvpElement.style.top = rsvpY + 'px';
-        } else if (rsvpElement && isFridayPage) {
-            // Hide RSVP on Friday page
+        } else if (rsvpElement && (isFridayPage || isFridayCSSPage)) {
+            // Hide RSVP on Friday pages
             rsvpElement.style.display = 'none';
         }
     }
