@@ -1058,8 +1058,8 @@ function sketch(p) {
         // Draw text with background
         let lines = text.split('\n');
         
-        if (isFridayPage && backgroundColor) {
-            console.log('Friday page drawSimpleText called:', { text, startX, startY, color, backgroundColor, lines });
+        if (isFridayPage) {
+            console.log('Friday page drawSimpleText called:', { text, startX, startY, color, backgroundColor, lines, hasBackgroundColor: !!backgroundColor });
         }
         
         // Use larger font size for Friday page event info
