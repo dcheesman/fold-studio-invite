@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Recording - The Fold</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        body {
+            background: #000000;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .controls {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        button {
+            background: #ffaa00;
+            color: #000000;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        
+        button:hover {
+            background: #ff8800;
+        }
+        
+        button:disabled {
+            background: #666666;
+            cursor: not-allowed;
+        }
+        
+        .info {
+            margin-top: 20px;
+            text-align: center;
+            max-width: 600px;
+        }
+        
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            background: #1a1a1a;
+            border: 1px solid #ffaa00;
+            border-radius: 3px;
+        }
+        
+        #canvas-container {
+            border: 2px solid #ffaa00;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>THE FOLD - Video Recording</h1>
+    
+    <div class="controls">
+        <button onclick="startSquareRecording()">Record Square (1080x1080)</button>
+        <button onclick="startVerticalRecording()">Record Vertical (1080x1920)</button>
+        <button onclick="stopRecording()" disabled id="stopBtn">Stop Recording</button>
+    </div>
+    
+    <div id="canvas-container"></div>
+    
+    <div class="info">
+        <h3>Recording Instructions:</h3>
+        <p>1. Click "Record Square" for Instagram posts (1080x1080)</p>
+        <p>2. Click "Record Vertical" for TikTok/Stories (1080x1920)</p>
+        <p>3. Recording will automatically stop after 30 seconds</p>
+        <p>4. Use your browser's developer tools to download the video</p>
+        <p>5. The video will be high quality at 30fps</p>
+        
+        <div class="status" id="status">
+            Ready to record. Choose an aspect ratio above.
+        </div>
+    </div>
+
+    <script>
+        let p5Instance;
+        let isRecording = false;
+        
+        // Override the recording functions to update UI
+        function startSquareRecording() {
+            if (window.startSquareRecording) {
+                window.startSquareRecording();
+                updateUI(true, 'Recording square video (1080x1080)...');
+            }
+        }
+        
+        function startVerticalRecording() {
+            if (window.startVerticalRecording) {
+                window.startVerticalRecording();
+                updateUI(true, 'Recording vertical video (1080x1920)...');
+            }
+        }
+        
+        function stopRecording() {
+            if (window.stopRecording) {
+                window.stopRecording();
+                updateUI(false, 'Recording stopped. Check browser downloads.');
+            }
+        }
+        
+        function updateUI(recording, message) {
+            isRecording = recording;
+            document.getElementById('stopBtn').disabled = !recording;
+            document.getElementById('status').textContent = message;
+        }
+        
+        // Initialize p5.js
+        function initP5() {
+            if (typeof sketch === 'function') {
+                p5Instance = new p5(sketch, 'canvas-container');
+            } else {
+                console.error('sketch function not found');
+            }
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', function() {
+            setTimeout(initP5, 100);
+        });
+    </script>
+    <script src="sketch.js"></script>
+</body>
+</html>

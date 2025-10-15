@@ -5,6 +5,16 @@ function sketch(p) {
     // Detect which page we're on
     const isFridayPage = window.location.pathname.includes('friday.html');
     
+    // Video recording settings
+    const RECORDING = {
+        enabled: false,
+        duration: 30000, // 30 seconds in milliseconds
+        startTime: 0,
+        canvas: null,
+        aspectRatio: 'square', // 'square' or 'vertical'
+        frameRate: 30
+    };
+    
     // Configuration
     const CONFIG = {
         colors: {
@@ -346,9 +356,19 @@ function sketch(p) {
             enableBloom = true;
         }
         
-        p.createCanvas(p.windowWidth, p.windowHeight);
+        // Set up canvas based on recording mode
+        if (RECORDING.enabled) {
+            if (RECORDING.aspectRatio === 'square') {
+                p.createCanvas(1080, 1080); // Square for Instagram
+            } else if (RECORDING.aspectRatio === 'vertical') {
+                p.createCanvas(1080, 1920); // 9:16 for TikTok/Instagram Stories
+            }
+        } else {
+            p.createCanvas(p.windowWidth, p.windowHeight);
+        }
+        
         p.pixelDensity(1); // Better performance on retina displays
-        p.frameRate(targetFrameRate);
+        p.frameRate(RECORDING.enabled ? RECORDING.frameRate : targetFrameRate);
         
         // Calculate grid system
         fontSize = isMobile ? 16 : 18;
@@ -392,6 +412,9 @@ function sketch(p) {
     };
 
     p.draw = function() {
+        // Check recording duration
+        checkRecordingDuration();
+        
         currentTime = p.millis();
         let elapsed = currentTime - phaseStartTime;
         
@@ -1345,6 +1368,66 @@ function sketch(p) {
     p.mousePressed = function() {
         // Mouse press handling if needed
     };
+    
+    // Video recording functions
+    let mediaRecorder;
+    let recordedChunks = [];
+    
+    function startRecording(aspectRatio) {
+        RECORDING.enabled = true;
+        RECORDING.aspectRatio = aspectRatio;
+        RECORDING.startTime = p.millis();
+        
+        // Recreate canvas with recording dimensions
+        p.remove(); // Remove existing canvas
+        p.setup(); // Recreate with new dimensions
+        
+        // Set up MediaRecorder
+        const canvas = p.canvas;
+        const stream = canvas.captureStream(30); // 30fps
+        mediaRecorder = new MediaRecorder(stream, {
+            mimeType: 'video/webm;codecs=vp9'
+        });
+        
+        recordedChunks = [];
+        mediaRecorder.ondataavailable = function(event) {
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
+            }
+        };
+        
+        mediaRecorder.onstop = function() {
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `fold-${aspectRatio}-${Date.now()}.webm`;
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+        
+        mediaRecorder.start();
+        console.log(`Started recording ${aspectRatio} video (${p.width}x${p.height})`);
+    }
+    
+    function stopRecording() {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+        }
+        RECORDING.enabled = false;
+        console.log('Recording stopped');
+    }
+    
+    function checkRecordingDuration() {
+        if (RECORDING.enabled && p.millis() - RECORDING.startTime >= RECORDING.duration) {
+            stopRecording();
+        }
+    }
+    
+    // Global functions for external control
+    window.startSquareRecording = () => startRecording('square');
+    window.startVerticalRecording = () => startRecording('vertical');
+    window.stopRecording = stopRecording;
     
     // Return the p5 instance
     return p;
