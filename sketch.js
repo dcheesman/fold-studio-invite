@@ -4,7 +4,6 @@
 function sketch(p) {
     // Detect which page we're on
     const isFridayPage = window.location.pathname.includes('friday.html');
-    console.log('Page detection:', { pathname: window.location.pathname, isFridayPage });
     
     // Configuration
     const CONFIG = {
@@ -55,7 +54,6 @@ function sketch(p) {
                 closing: "we're looking forward to your initiation",
                 rsvpText: "→ RSVP"
             };
-            console.log('Using text config:', textConfig);
             return textConfig;
         })(),
         // Title ASCII art
