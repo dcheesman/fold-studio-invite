@@ -1062,6 +1062,17 @@ function sketch(p) {
                 let textWidth = lines[i].length * charWidth * 2.5;
                 x = (p.width - textWidth) / 2; // Center horizontally
                 y = (startY + i) * charHeight * 2.5; // Scale vertical spacing to match larger font
+                console.log('Friday page event info positioning:', { 
+                    line: lines[i], 
+                    textWidth, 
+                    x, 
+                    y, 
+                    pWidth: p.width,
+                    charWidth,
+                    charHeight,
+                    startY,
+                    i
+                });
             }
             
             mainTextBuffer.push();
