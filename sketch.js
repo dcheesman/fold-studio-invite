@@ -1083,6 +1083,8 @@ function sketch(p) {
                 // Position each line within the centered block
                 x = blockStartX; // All lines start at the same x position (left-justified within block)
                 y = (startY + i) * charHeight * 2.5; // Scale vertical spacing to match larger font
+                
+                console.log(`Line ${i}: "${lines[i]}" -> x: ${x}, y: ${y}, blockStartX: ${blockStartX}, blockWidth: ${blockWidth}, p.width: ${p.width}`);
             }
             
             mainTextBuffer.push();
