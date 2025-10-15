@@ -4,6 +4,7 @@
 function sketch(p) {
     // Detect which page we're on
     const isFridayPage = window.location.pathname.includes('friday.html');
+    console.log('Page detection:', { pathname: window.location.pathname, isFridayPage });
     
     // Configuration
     const CONFIG = {
@@ -26,28 +27,32 @@ function sketch(p) {
             infoPhase: 4000,      // 7-11s: event info (extended for more text)
             rsvpPhase: 1000       // 11-12s: RSVP
         },
-        text: isFridayPage ? {
-            // Friday page content
-            title: "THE FOLD",
-            subtitle: "OPENHOUSE",
-            date: "FRIDAY, OCT 24TH",
-            address: "40 W 100 N PROVO",
-            description: "A night for the true believers.",
-            rsvpText: "→ RSVP"
-        } : {
-            // Main page content
-            title: "THE FOLD",
-            subtitle: ">>> YOU ARE INVITED <<<",
-            date: "To a celebration",
-            address: "8 years of The Fold",
-            description: "at their new office",
-            location: "40w 100n Provo",
-            time: "6:30pm - 9:30pm on the 23rd of October",
-            refreshments: "drinks and refreshments provided",
-            rsvpRequest: "please rsvp",
-            closing: "we're looking forward to your initiation",
-            rsvpText: "→ RSVP"
-        },
+        text: (() => {
+            const textConfig = isFridayPage ? {
+                // Friday page content
+                title: "THE FOLD",
+                subtitle: "OPENHOUSE",
+                date: "FRIDAY, OCT 24TH",
+                address: "40 W 100 N PROVO",
+                description: "A night for the true believers.",
+                rsvpText: "→ RSVP"
+            } : {
+                // Main page content
+                title: "THE FOLD",
+                subtitle: ">>> YOU ARE INVITED <<<",
+                date: "To a celebration",
+                address: "8 years of The Fold",
+                description: "at their new office",
+                location: "40w 100n Provo",
+                time: "6:30pm - 9:30pm on the 23rd of October",
+                refreshments: "drinks and refreshments provided",
+                rsvpRequest: "please rsvp",
+                closing: "we're looking forward to your initiation",
+                rsvpText: "→ RSVP"
+            };
+            console.log('Using text config:', textConfig);
+            return textConfig;
+        })(),
         // Title ASCII art
         titleAsciiArt: [
             "                                ▒▓▓▓▓▓▓▒   ▓▓   ▓█▓  ▓▓▓▓▓▓▓▒    ▓█▓  ▓█▓  ▓██                                               ",
