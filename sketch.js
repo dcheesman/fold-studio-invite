@@ -1056,6 +1056,14 @@ function sketch(p) {
             let x = startX * charWidth;
             let y = (startY + i) * charHeight;
             
+            // Adjust positioning for larger text on Friday page
+            if (isFridayPage && backgroundColor === CONFIG.colors.pureRed) {
+                // Center the larger text properly
+                let textWidth = lines[i].length * charWidth * 2.5;
+                x = (p.width - textWidth) / 2; // Center horizontally
+                y = (startY + i) * charHeight * 2.5; // Scale vertical spacing
+            }
+            
             mainTextBuffer.push();
             mainTextBuffer.textAlign(mainTextBuffer.LEFT, mainTextBuffer.CENTER);
             mainTextBuffer.textSize(textFontSize);
@@ -1081,7 +1089,7 @@ function sketch(p) {
             // Draw text (centered vertically in the rectangle)
             mainTextBuffer.fill(p.color(color));
             mainTextBuffer.noStroke();
-            mainTextBuffer.text(lines[i], x, y + charHeight / 2);
+            mainTextBuffer.text(lines[i], x, y + (isFridayPage && backgroundColor === CONFIG.colors.pureRed ? charHeight * 2.5 / 2 : charHeight / 2));
             
             mainTextBuffer.pop();
         }
