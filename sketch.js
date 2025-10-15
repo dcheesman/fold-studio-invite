@@ -1073,19 +1073,23 @@ function sketch(p) {
             let x = startX * charWidth;
             let y = (startY + i) * charHeight;
             
-            // Adjust positioning for larger text on Friday page
-            if (isFridayPage && backgroundColor) {
-                // Simple approach: center the text block horizontally, left-justify within block
-                let maxLineLength = 16; // "FRIDAY, OCT 24TH" is the longest line
-                let blockWidth = maxLineLength * charWidth * 2.5;
-                let blockStartX = (p.width - blockWidth) / 2;
-                
-                // Position each line within the centered block
-                x = blockStartX; // All lines start at the same x position (left-justified within block)
-                y = (startY + i) * charHeight * 2.5; // Scale vertical spacing to match larger font
-                
-                console.log(`Line ${i}: "${lines[i]}" -> x: ${x}, y: ${y}, blockStartX: ${blockStartX}, blockWidth: ${blockWidth}, p.width: ${p.width}`);
-            }
+           // Adjust positioning for larger text on Friday page
+           if (isFridayPage && backgroundColor) {
+               // Simple approach: center the text block horizontally, left-justify within block
+               let maxLineLength = 16; // "FRIDAY, OCT 24TH" is the longest line
+               let blockWidth = maxLineLength * charWidth * 2.5;
+               let blockStartX = (p.width - blockWidth) / 2;
+               
+               // Center the text block vertically on the page
+               let totalTextHeight = lines.length * charHeight * 2.5;
+               let blockStartY = (p.height - totalTextHeight) / 2;
+               
+               // Position each line within the centered block
+               x = blockStartX; // All lines start at the same x position (left-justified within block)
+               y = blockStartY + (i * charHeight * 2.5); // Scale vertical spacing to match larger font
+               
+               console.log(`Line ${i}: "${lines[i]}" -> x: ${x}, y: ${y}, blockStartX: ${blockStartX}, blockWidth: ${blockWidth}, p.width: ${p.width}, p.height: ${p.height}, blockStartY: ${blockStartY}`);
+           }
             
             mainTextBuffer.push();
             mainTextBuffer.textAlign(mainTextBuffer.LEFT, mainTextBuffer.CENTER);
