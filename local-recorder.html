@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Video Recorder - The Fold</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        body {
+            background: #000000;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .controls {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        button {
+            background: #ffaa00;
+            color: #000000;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background: #ff8800;
+        }
+        
+        button:disabled {
+            background: #666666;
+            cursor: not-allowed;
+        }
+        
+        .info {
+            margin-top: 20px;
+            text-align: center;
+            max-width: 800px;
+        }
+        
+        .status {
+            margin-top: 10px;
+            padding: 15px;
+            background: #1a1a1a;
+            border: 2px solid #ffaa00;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        #canvas-container {
+            border: 3px solid #ffaa00;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .download-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #1a1a1a;
+            border: 2px solid #ff0033;
+            border-radius: 5px;
+        }
+        
+        .download-section h3 {
+            color: #ff0033;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>THE FOLD - Local Video Recorder</h1>
+    
+    <div class="controls">
+        <button onclick="startSquareRecording()" id="squareBtn">Record Square (1080x1080)</button>
+        <button onclick="startVerticalRecording()" id="verticalBtn">Record Vertical (1080x1920)</button>
+        <button onclick="stopRecording()" id="stopBtn" disabled>Stop Recording</button>
+        <button onclick="resetCanvas()" id="resetBtn">Reset</button>
+    </div>
+    
+    <div id="canvas-container"></div>
+    
+    <div class="status" id="status">
+        Ready to record. Choose an aspect ratio above.
+    </div>
+    
+    <div class="download-section" id="downloadSection" style="display: none;">
+        <h3>Recording Complete!</h3>
+        <p>Your video frames have been captured. Click the download button below to get a ZIP file with all frames.</p>
+        <button onclick="downloadFrames()" id="downloadBtn">Download Frames ZIP</button>
+        <p><strong>Note:</strong> You'll need to convert these frames to video using software like FFmpeg, After Effects, or online converters.</p>
+    </div>
+
+    <div class="info">
+        <h3>Instructions:</h3>
+        <p>1. Click "Record Square" or "Record Vertical" to start</p>
+        <p>2. Wait for the animation to complete (about 12 seconds)</p>
+        <p>3. Click "Stop Recording" when done</p>
+        <p>4. Download the ZIP file with all frames</p>
+        <p>5. Convert frames to video using your preferred software</p>
+        
+        <h3>Frame Conversion Commands:</h3>
+        <p><strong>FFmpeg (recommended):</strong></p>
+        <p><code>ffmpeg -framerate 30 -i frame_%04d.png -c:v libx264 -pix_fmt yuv420p output.mp4</code></p>
+        
+        <p><strong>For Square (1080x1080):</strong></p>
+        <p><code>ffmpeg -framerate 30 -i frame_%04d.png -c:v libx264 -pix_fmt yuv420p -s 1080x1080 fold-square.mp4</code></p>
+        
+        <p><strong>For Vertical (1080x1920):</strong></p>
+        <p><code>ffmpeg -framerate 30 -i frame_%04d.png -c:v libx264 -pix_fmt yuv420p -s 1080x1920 fold-vertical.mp4</code></p>
+    </div>
+
+    <script>
+        let p5Instance;
+        let isRecording = false;
+        let currentAspectRatio = '';
+        let frameCount = 0;
+        let frames = [];
+        let recordingStartTime = 0;
+        
+        // Configuration for Friday page
+        const CONFIG = {
+            colors: {
+                background: '#000000',
+                nearBlack: '#1a1a1a',
+                grey: '#4a4a4a',
+                lightGrey: '#6a6a6a',
+                red: '#ff0033',
+                darkRed: '#cc0000',
+                pureRed: '#ff0000',
+                gold: '#ffaa00',
+                lightGold: '#ff8800',
+                white: '#ffffff'
+            },
+            timing: {
+                introDuration: 12000,
+                scrollPhase: 5000,
+                typingPhase: 2000,
+                infoPhase: 4000,
+                rsvpPhase: 1000
+            },
+            text: {
+                title: "THE FOLD",
+                subtitle: "OPENHOUSE",
+                date: "FRIDAY, OCT 24TH",
+                address: "40 W 100 N PROVO",
+                description: "",
+                location: "",
+                time: "",
+                refreshments: "",
+                rsvpRequest: "",
+                closing: "",
+                rsvpText: ""
+            }
+        };
+        
+        function startSquareRecording() {
+            startRecording('square', 1080, 1080);
+        }
+        
+        function startVerticalRecording() {
+            startRecording('vertical', 1080, 1920);
+        }
+        
+        function startRecording(aspectRatio, width, height) {
+            isRecording = true;
+            currentAspectRatio = aspectRatio;
+            frameCount = 0;
+            frames = [];
+            recordingStartTime = Date.now();
+            
+            // Update UI
+            document.getElementById('squareBtn').disabled = true;
+            document.getElementById('verticalBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('resetBtn').disabled = true;
+            document.getElementById('status').textContent = `Recording ${aspectRatio} video (${width}x${height})...`;
+            document.getElementById('downloadSection').style.display = 'none';
+            
+            // Recreate p5 instance with new dimensions
+            if (p5Instance) {
+                p5Instance.remove();
+            }
+            
+            // Create new p5 instance with recording dimensions
+            p5Instance = new p5(createSketch(width, height), 'canvas-container');
+            
+            console.log(`Started recording ${aspectRatio} video (${width}x${height})`);
+        }
+        
+        function stopRecording() {
+            isRecording = false;
+            
+            // Update UI
+            document.getElementById('squareBtn').disabled = false;
+            document.getElementById('verticalBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('resetBtn').disabled = false;
+            document.getElementById('status').textContent = `Recording stopped. Captured ${frameCount} frames.`;
+            document.getElementById('downloadSection').style.display = 'block';
+            
+            console.log(`Recording stopped. Captured ${frameCount} frames.`);
+        }
+        
+        function resetCanvas() {
+            if (p5Instance) {
+                p5Instance.remove();
+            }
+            
+            // Reset UI
+            document.getElementById('squareBtn').disabled = false;
+            document.getElementById('verticalBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('resetBtn').disabled = false;
+            document.getElementById('status').textContent = 'Ready to record. Choose an aspect ratio above.';
+            document.getElementById('downloadSection').style.display = 'none';
+            
+            // Create default canvas
+            p5Instance = new p5(createSketch(800, 600), 'canvas-container');
+        }
+        
+        function downloadFrames() {
+            if (frames.length === 0) {
+                alert('No frames to download!');
+                return;
+            }
+            
+            // Create ZIP file with all frames
+            const zip = new JSZip();
+            
+            frames.forEach((frameData, index) => {
+                const filename = `frame_${String(index + 1).padStart(4, '0')}.png`;
+                zip.file(filename, frameData, { base64: true });
+            });
+            
+            zip.generateAsync({ type: 'blob' }).then(function(content) {
+                const url = URL.createObjectURL(content);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `fold-${currentAspectRatio}-frames.zip`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+        
+        // Create the p5 sketch function
+        function createSketch(canvasWidth, canvasHeight) {
+            return function(p) {
+                // Animation variables
+                let startTime = 0;
+                let phaseStartTime = 0;
+                let introPhase = 0;
+                let currentTime = 0;
+                
+                // Character grid
+                let charWidth = 12;
+                let charHeight = 16;
+                let cols, rows;
+                let fontSize = 18;
+                
+                // Typing animation
+                let titleTypingIndex = 0;
+                let infoTypingIndex = 0;
+                let infoLines = [];
+                let titleX, titleY, infoX, infoStartY;
+                
+                // ASCII art
+                let titleAsciiArt = [
+                    "                                ▒▓▓▓▓▓▓▒   ▓▓   ▓█▓  ▓▓▓▓▓▓▓▒    ▓█▓  ▓█▓  ▓██                                               ",
+                    "                                   ██      ██   ██▓  ██          ███  ███  ███                                               ",
+                    "                                   █▓      ██▓▓▓██▓  ██▓▓▓▓▓▒    ███  ███  ███                                               ",
+                    "                                   █▓      ██   ██▓  ██          ██▓  ██▓  ███                                               ",
+                    "                                   ▓▓      ▓▓   ▓█▓  ▓▓▓▓▓▓▓▒    ███  ███  ███                                               ",
+                    "                                                                 ███  ███  ███                                               ",
+                    "▓██████████████████████████▓    ▓███████████████████████████▓    ██▓  ██▓  ███                   ▓██████████████████████████▓",
+                    "▓███▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█▓    ▓████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█████    ███  ███  ███                   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█████",
+                    "███                             ████                     ████    ███  ███  ███                                            ███",
+                    "███  ██████████████████████▓    ███▓ ▓█████████████████▓ ████    ██▓  ██▓  ███                   ▓████████████████████▓▓  ███",
+                    "███  ██████████████████████▓    ███▓ ▓█████████████████▓ ████    ███  ███  ███                   ▓████████████████████▓▓  ███",
+                    "███                             ████                     ████    ███  ███  ███                                            ███",
+                    "███  ██████████████████████▓    ███▓ ▓█████████████████▓ ████    ██▓  ██▓  ███                   ▓████████████████████▓▓  ███",
+                    "███  ██████████████████████▓    ███▓ ▓█████████████████▓ ████    ███  ███  ███                   ▓████████████████████▓▓  ███",
+                    "███                             ████                     ████    ███  ███  ███                                            ███",
+                    "▓███▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█▓    ▓████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█████    ██▓  ██▓  ███                   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█████",
+                    "▓██████████████████████████▓    ▓███████████████████████████▓    ███  ███  ███                   ▓██████████████████████████▓"
+                ];
+                
+                // Background code
+                let backgroundChars = [];
+                let backgroundTypingIndex = 0;
+                let backgroundPhase = 0;
+                let backgroundStartTime = 0;
+                
+                p.setup = function() {
+                    p.createCanvas(canvasWidth, canvasHeight);
+                    p.pixelDensity(1);
+                    p.frameRate(30);
+                    
+                    // Calculate character grid
+                    charWidth = 12;
+                    charHeight = 16;
+                    cols = p.floor(p.width / charWidth);
+                    rows = p.floor(p.height / charHeight);
+                    
+                    // Initialize timing
+                    startTime = p.millis();
+                    phaseStartTime = p.millis();
+                    
+                    // Initialize text
+                    p.textFont('Courier New', fontSize);
+                    p.textAlign(p.LEFT, p.TOP);
+                    
+                    // Initialize info lines for Friday page
+                    infoLines = [
+                        CONFIG.text.subtitle,
+                        CONFIG.text.date,
+                        CONFIG.text.address
+                    ];
+                    
+                    // Calculate positions
+                    titleX = 2;
+                    titleY = p.floor(p.height * 0.07) / charHeight;
+                    
+                    let maxLineLength = 0;
+                    for (let line of infoLines) {
+                        maxLineLength = Math.max(maxLineLength, line.length);
+                    }
+                    infoX = p.floor((cols - maxLineLength) / 2);
+                    infoStartY = p.floor(p.height * 0.6) / charHeight;
+                    
+                    // Initialize background
+                    initializeBackground();
+                };
+                
+                p.draw = function() {
+                    currentTime = p.millis();
+                    let elapsed = currentTime - phaseStartTime;
+                    
+                    // Clear background
+                    p.background(CONFIG.colors.background);
+                    
+                    // Draw background code
+                    drawBackground();
+                    
+                    // Handle intro sequence
+                    handleIntroSequence(elapsed);
+                    
+                    // Draw title ASCII art
+                    drawTitleAsciiArt();
+                    
+                    // Draw info text
+                    drawInfoText();
+                    
+                    // Capture frame if recording
+                    if (isRecording) {
+                        captureFrame();
+                    }
+                };
+                
+                function initializeBackground() {
+                    backgroundChars = [];
+                    for (let i = 0; i < cols * rows; i++) {
+                        backgroundChars.push({
+                            char: ' ',
+                            typed: false,
+                            x: i % cols,
+                            y: p.floor(i / cols)
+                        });
+                    }
+                }
+                
+                function drawBackground() {
+                    p.fill(CONFIG.colors.grey);
+                    p.textSize(12);
+                    
+                    // Type background characters
+                    if (currentTime - backgroundStartTime > 50) { // Every 50ms
+                        let charsToType = 50;
+                        for (let i = 0; i < charsToType && backgroundTypingIndex < backgroundChars.length; i++) {
+                            let charIndex = backgroundTypingIndex;
+                            backgroundChars[charIndex].char = getRandomCodeChar();
+                            backgroundChars[charIndex].typed = true;
+                            backgroundTypingIndex++;
+                        }
+                        backgroundStartTime = currentTime;
+                    }
+                    
+                    // Draw typed characters
+                    for (let char of backgroundChars) {
+                        if (char.typed) {
+                            p.text(char.char, char.x * charWidth, char.y * charHeight);
+                        }
+                    }
+                }
+                
+                function getRandomCodeChar() {
+                    const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz(){}[];,.=+-*/<>!@#$%^&|\\';
+                    return chars[p.floor(p.random(chars.length))];
+                }
+                
+                function handleIntroSequence(elapsed) {
+                    if (introPhase === 0 && elapsed > 5000) {
+                        introPhase = 1;
+                        phaseStartTime = currentTime;
+                    } else if (introPhase === 1) {
+                        if (titleTypingIndex >= CONFIG.text.title.length) {
+                            introPhase = 2;
+                            phaseStartTime = currentTime;
+                        }
+                    } else if (introPhase === 2) {
+                        let totalInfoChars = infoLines.reduce((sum, line) => sum + line.length + 1, 0);
+                        if (infoTypingIndex >= totalInfoChars) {
+                            introPhase = 3;
+                            phaseStartTime = currentTime;
+                        }
+                    }
+                }
+                
+                function drawTitleAsciiArt() {
+                    if (introPhase >= 1) {
+                        p.fill(CONFIG.colors.pureRed);
+                        p.textSize(12);
+                        
+                        let startY = titleY * charHeight;
+                        for (let i = 0; i < titleAsciiArt.length; i++) {
+                            p.text(titleAsciiArt[i], titleX * charWidth, startY + i * charHeight);
+                        }
+                    }
+                }
+                
+                function drawInfoText() {
+                    if (introPhase >= 2) {
+                        p.fill(CONFIG.colors.pureRed);
+                        p.textSize(16);
+                        
+                        let currentChar = 0;
+                        let y = infoStartY * charHeight;
+                        
+                        for (let line of infoLines) {
+                            let x = infoX * charWidth;
+                            let lineChars = Math.min(infoTypingIndex - currentChar, line.length);
+                            
+                            if (lineChars > 0) {
+                                p.text(line.substring(0, lineChars), x, y);
+                            }
+                            
+                            currentChar += line.length + 1; // +1 for newline
+                            y += charHeight;
+                        }
+                        
+                        // Update typing index
+                        if (introPhase === 2 && currentTime - phaseStartTime > 50) {
+                            infoTypingIndex++;
+                        }
+                    }
+                }
+                
+                function captureFrame() {
+                    // Capture frame every 33ms (30fps)
+                    if (currentTime - recordingStartTime > frameCount * 33) {
+                        const canvas = p.canvas;
+                        const dataURL = canvas.toDataURL('image/png');
+                        const base64Data = dataURL.split(',')[1];
+                        frames.push(base64Data);
+                        frameCount++;
+                        
+                        if (frameCount % 30 === 0) {
+                            console.log(`Captured ${frameCount} frames...`);
+                        }
+                    }
+                }
+            };
+        }
+        
+        // Initialize with default canvas
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                p5Instance = new p5(createSketch(800, 600), 'canvas-container');
+            }, 100);
+        });
+    </script>
+    
+    <!-- Include JSZip for creating ZIP files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</body>
+</html>
