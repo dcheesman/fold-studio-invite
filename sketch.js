@@ -371,7 +371,11 @@ function sketch(p) {
         p.frameRate(RECORDING.enabled ? RECORDING.frameRate : targetFrameRate);
         
         // Calculate grid system
-        fontSize = isMobile ? 16 : 18;
+        if (isFridayPage) {
+            fontSize = isMobile ? 20 : 24; // Larger font for Friday page
+        } else {
+            fontSize = isMobile ? 16 : 18; // Normal font for main page
+        }
         charWidth = fontSize * 0.6; // Monospace character width
         charHeight = fontSize; // Line height
         cols = p.floor(p.width / charWidth);
@@ -1342,7 +1346,11 @@ function sketch(p) {
         p.resizeCanvas(p.windowWidth, p.windowHeight);
         
         // Recalculate character dimensions
-        fontSize = Math.max(12, Math.min(16, p.width / 80)); // Responsive font size
+        if (isFridayPage) {
+            fontSize = Math.max(16, Math.min(24, p.width / 60)); // Larger responsive font size for Friday page
+        } else {
+            fontSize = Math.max(12, Math.min(16, p.width / 80)); // Normal responsive font size
+        }
         charWidth = fontSize * 0.6; // Monospace character width
         charHeight = fontSize; // Line height
         
