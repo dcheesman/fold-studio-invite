@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Local Video Recorder - The Fold</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <title>Simple Video Recorder - The Fold</title>
     <style>
         body {
             background: #000000;
@@ -59,10 +58,16 @@
             font-size: 16px;
         }
         
-        #canvas-container {
+        #preview-container {
             border: 3px solid #ffaa00;
             border-radius: 5px;
             margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        #preview-iframe {
+            border: none;
+            display: block;
         }
         
         .download-section {
@@ -77,19 +82,30 @@
             color: #ff0033;
             margin-top: 0;
         }
+        
+        .instructions {
+            background: #1a1a1a;
+            border: 2px solid #4a4a4a;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
-    <h1>THE FOLD - Local Video Recorder</h1>
+    <h1>THE FOLD - Simple Video Recorder</h1>
     
     <div class="controls">
         <button onclick="startSquareRecording()" id="squareBtn">Record Square (1080x1080)</button>
         <button onclick="startVerticalRecording()" id="verticalBtn">Record Vertical (1080x1920)</button>
         <button onclick="stopRecording()" id="stopBtn" disabled>Stop Recording</button>
-        <button onclick="resetCanvas()" id="resetBtn">Reset</button>
+        <button onclick="resetPreview()" id="resetBtn">Reset</button>
     </div>
     
-    <div id="canvas-container"></div>
+    <div id="preview-container">
+        <iframe id="preview-iframe" src="friday.html" width="800" height="600"></iframe>
+    </div>
     
     <div class="status" id="status">
         Ready to record. Choose an aspect ratio above.
@@ -102,13 +118,15 @@
         <p><strong>Note:</strong> You'll need to convert these frames to video using software like FFmpeg, After Effects, or online converters.</p>
     </div>
 
-    <div class="info">
+    <div class="instructions">
         <h3>Instructions:</h3>
-        <p>1. Click "Record Square" or "Record Vertical" to start</p>
-        <p>2. Wait for the animation to complete (about 12 seconds)</p>
-        <p>3. Click "Stop Recording" when done</p>
-        <p>4. Download the ZIP file with all frames</p>
-        <p>5. Convert frames to video using your preferred software</p>
+        <ol>
+            <li>Click "Record Square" or "Record Vertical" to start</li>
+            <li>Wait for the animation to complete (about 12 seconds)</li>
+            <li>Click "Stop Recording" when done</li>
+            <li>Download the ZIP file with all frames</li>
+            <li>Convert frames to video using your preferred software</li>
+        </ol>
         
         <h3>Frame Conversion Commands:</h3>
         <p><strong>FFmpeg (recommended):</strong></p>
@@ -119,15 +137,24 @@
         
         <p><strong>For Vertical (1080x1920):</strong></p>
         <p><code>ffmpeg -framerate 30 -i frame_%04d.png -c:v libx264 -pix_fmt yuv420p -s 1080x1920 fold-vertical.mp4</code></p>
+        
+        <h3>Alternative: Use Screen Recording Software</h3>
+        <p>If frame capture doesn't work well, you can also:</p>
+        <ol>
+            <li>Use OBS Studio (free) to record your screen</li>
+            <li>Set the recording area to the iframe above</li>
+            <li>Record in the desired resolution</li>
+            <li>Export as MP4</li>
+        </ol>
     </div>
 
     <script>
-        let p5Instance;
         let isRecording = false;
         let currentAspectRatio = '';
         let frameCount = 0;
         let frames = [];
         let recordingStartTime = 0;
+        let recordingInterval;
         
         function startSquareRecording() {
             startRecording('square', 1080, 1080);
@@ -144,6 +171,22 @@
             frames = [];
             recordingStartTime = Date.now();
             
+            // Update iframe size
+            const iframe = document.getElementById('preview-iframe');
+            const container = document.getElementById('preview-container');
+            
+            if (aspectRatio === 'square') {
+                iframe.width = '600';
+                iframe.height = '600';
+                container.style.width = '600px';
+                container.style.height = '600px';
+            } else {
+                iframe.width = '400';
+                iframe.height = '711';
+                container.style.width = '400px';
+                container.style.height = '711px';
+            }
+            
             // Update UI
             document.getElementById('squareBtn').disabled = true;
             document.getElementById('verticalBtn').disabled = true;
@@ -152,19 +195,18 @@
             document.getElementById('status').textContent = `Recording ${aspectRatio} video (${width}x${height})...`;
             document.getElementById('downloadSection').style.display = 'none';
             
-            // Recreate p5 instance with new dimensions
-            if (p5Instance) {
-                p5Instance.remove();
-            }
-            
-            // Create new p5 instance with recording dimensions
-            p5Instance = new p5(createRecordingSketch(width, height), 'canvas-container');
+            // Start capturing frames
+            recordingInterval = setInterval(captureFrame, 33); // 30fps
             
             console.log(`Started recording ${aspectRatio} video (${width}x${height})`);
         }
         
         function stopRecording() {
             isRecording = false;
+            
+            if (recordingInterval) {
+                clearInterval(recordingInterval);
+            }
             
             // Update UI
             document.getElementById('squareBtn').disabled = false;
@@ -177,10 +219,19 @@
             console.log(`Recording stopped. Captured ${frameCount} frames.`);
         }
         
-        function resetCanvas() {
-            if (p5Instance) {
-                p5Instance.remove();
+        function resetPreview() {
+            if (isRecording) {
+                stopRecording();
             }
+            
+            // Reset iframe size
+            const iframe = document.getElementById('preview-iframe');
+            const container = document.getElementById('preview-container');
+            
+            iframe.width = '800';
+            iframe.height = '600';
+            container.style.width = '800px';
+            container.style.height = '600px';
             
             // Reset UI
             document.getElementById('squareBtn').disabled = false;
@@ -189,9 +240,50 @@
             document.getElementById('resetBtn').disabled = false;
             document.getElementById('status').textContent = 'Ready to record. Choose an aspect ratio above.';
             document.getElementById('downloadSection').style.display = 'none';
+        }
+        
+        function captureFrame() {
+            if (!isRecording) return;
             
-            // Create default canvas
-            p5Instance = new p5(createSketch(800, 600), 'canvas-container');
+            try {
+                const iframe = document.getElementById('preview-iframe');
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas size to match iframe
+                canvas.width = parseInt(iframe.width);
+                canvas.height = parseInt(iframe.height);
+                
+                // Try to capture from iframe (this might not work due to CORS)
+                try {
+                    ctx.drawImage(iframe, 0, 0);
+                    const dataURL = canvas.toDataURL('image/png');
+                    const base64Data = dataURL.split(',')[1];
+                    frames.push(base64Data);
+                    frameCount++;
+                    
+                    if (frameCount % 30 === 0) {
+                        console.log(`Captured ${frameCount} frames...`);
+                    }
+                } catch (e) {
+                    console.log('Cannot capture from iframe due to CORS restrictions');
+                    // Fallback: create a placeholder frame
+                    ctx.fillStyle = '#000000';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#ff0033';
+                    ctx.font = '24px Courier New';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('CORS BLOCKED', canvas.width/2, canvas.height/2);
+                    ctx.fillText('Use screen recording instead', canvas.width/2, canvas.height/2 + 30);
+                    
+                    const dataURL = canvas.toDataURL('image/png');
+                    const base64Data = dataURL.split(',')[1];
+                    frames.push(base64Data);
+                    frameCount++;
+                }
+            } catch (e) {
+                console.error('Error capturing frame:', e);
+            }
         }
         
         function downloadFrames() {
@@ -217,74 +309,9 @@
                 URL.revokeObjectURL(url);
             });
         }
-        
-        // Modified sketch function that uses the actual sketch.js but with recording capabilities
-        function createRecordingSketch(canvasWidth, canvasHeight) {
-            // Force Friday page mode
-            window.location = { pathname: '/friday.html' };
-            
-            return function(p) {
-                // Use the actual sketch function but modify setup for recording
-                const originalSketch = sketch(p);
-                
-                // Override setup to use recording dimensions
-                const originalSetup = p.setup;
-                p.setup = function() {
-                    // Set recording dimensions
-                    p.createCanvas(canvasWidth, canvasHeight);
-                    p.pixelDensity(1);
-                    p.frameRate(30);
-                    
-                    // Call original setup logic but with our dimensions
-                    if (originalSetup) {
-                        originalSetup.call(this);
-                    }
-                };
-                
-                // Override draw to add frame capture
-                const originalDraw = p.draw;
-                p.draw = function() {
-                    if (originalDraw) {
-                        originalDraw.call(this);
-                    }
-                    
-                    // Capture frame if recording
-                    if (isRecording) {
-                        captureFrame();
-                    }
-                };
-                
-                function captureFrame() {
-                    // Capture frame every 33ms (30fps)
-                    if (Date.now() - recordingStartTime > frameCount * 33) {
-                        const canvas = p.canvas;
-                        const dataURL = canvas.toDataURL('image/png');
-                        const base64Data = dataURL.split(',')[1];
-                        frames.push(base64Data);
-                        frameCount++;
-                        
-                        if (frameCount % 30 === 0) {
-                            console.log(`Captured ${frameCount} frames...`);
-                        }
-                    }
-                }
-                
-                return originalSketch;
-            };
-        }
-        
-        // Initialize with default canvas
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                p5Instance = new p5(createRecordingSketch(800, 600), 'canvas-container');
-            }, 100);
-        });
     </script>
     
     <!-- Include JSZip for creating ZIP files -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    
-    <!-- Include the actual sketch.js -->
-    <script src="sketch.js"></script>
 </body>
 </html>
