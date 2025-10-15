@@ -2,6 +2,7 @@
 // Retro-future 70s terminal computer aesthetic
 
 function sketch(p) {
+    console.log('Sketch function called!'); // Debug log
     // Detect which page we're on
     const isFridayPage = window.location.pathname.includes('friday.html');
     console.log('Friday page detected:', isFridayPage); // Debug log
