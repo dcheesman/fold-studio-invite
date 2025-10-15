@@ -612,17 +612,17 @@ function sketch(p) {
         titleY = p.floor(p.height * 0.07) / charHeight; // Higher up in top quarter
         
         infoLines = [
-            CONFIG.text.subtitle,
-            CONFIG.text.date,
-            CONFIG.text.address,
-            CONFIG.text.description,
+            CONFIG.text.subtitle || "",
+            CONFIG.text.date || "",
+            CONFIG.text.address || "",
+            CONFIG.text.description || "",
             "", // Empty line before location
-            CONFIG.text.location,
-            CONFIG.text.time,
-            CONFIG.text.refreshments,
-            CONFIG.text.rsvpRequest,
+            CONFIG.text.location || "",
+            CONFIG.text.time || "",
+            CONFIG.text.refreshments || "",
+            CONFIG.text.rsvpRequest || "",
             "", // Empty line before closing
-            CONFIG.text.closing
+            CONFIG.text.closing || ""
         ];
         
         // Calculate center position for info text
