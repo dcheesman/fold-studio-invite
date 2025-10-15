@@ -35,6 +35,11 @@ function sketch(p) {
                 date: "FRIDAY, OCT 24TH",
                 address: "40 W 100 N PROVO",
                 description: "A night for the true believers.",
+                location: "40 W 100 N PROVO",
+                time: "FRIDAY, OCT 24TH",
+                refreshments: "drinks and refreshments provided",
+                rsvpRequest: "please rsvp",
+                closing: "we're looking forward to your initiation",
                 rsvpText: "→ RSVP"
             } : {
                 // Main page content
