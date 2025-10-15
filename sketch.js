@@ -1061,7 +1061,7 @@ function sketch(p) {
                 // Center the text horizontally while keeping it left-justified
                 let textWidth = lines[i].length * charWidth * 2.5;
                 x = (p.width - textWidth) / 2; // Center horizontally
-                y = (startY + i) * charHeight; // Keep original vertical positioning
+                y = (startY + i) * charHeight * 1.5; // Add some vertical spacing for larger font
                 console.log('Friday page event info positioning:', { 
                     line: lines[i], 
                     textWidth, 
