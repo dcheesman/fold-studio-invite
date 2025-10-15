@@ -1001,6 +1001,7 @@ function sketch(p) {
         if (introPhase >= 3) {
             // Show and position HTML RSVP element instead of drawing to buffer (only on main page)
             if (rsvpElement && !isFridayPage) {
+                console.log('Showing RSVP on main page');
                 let rsvpX = infoX * charWidth; // Use same X as info text (centered)
                 let rsvpY = (infoStartY + infoLines.length + 1) * charHeight; // Position below all info text
                 
@@ -1011,6 +1012,7 @@ function sketch(p) {
                 rsvpElement.style.zIndex = '1000'; // Ensure it's on top
             } else if (rsvpElement && isFridayPage) {
                 // Hide RSVP on Friday page
+                console.log('Hiding RSVP on Friday page');
                 rsvpElement.style.display = 'none';
             }
         } else {
