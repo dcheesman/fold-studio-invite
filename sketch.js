@@ -1072,6 +1072,18 @@ function sketch(p) {
                 // Position each line within the centered block
                 x = blockStartX; // All lines start at the same x position (left-justified within block)
                 y = (startY + i - 5) * charHeight * 2.5; // Move up by 5 lines and match 2.5x font size
+                
+                console.log('Friday page positioning:', { 
+                    line: lines[i], 
+                    maxLineLength, 
+                    blockWidth, 
+                    blockStartX, 
+                    x, 
+                    y, 
+                    pWidth: p.width,
+                    startY,
+                    i
+                });
             }
             
             mainTextBuffer.push();
