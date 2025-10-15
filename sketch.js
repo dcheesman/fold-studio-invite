@@ -1050,6 +1050,7 @@ function sketch(p) {
         let textFontSize = fontSize;
         if (isFridayPage && backgroundColor) {
             textFontSize = fontSize * 2.5; // 2.5x bigger for Friday page event info
+            console.log('Friday page event info detected, using larger font:', textFontSize);
         }
         
         for (let i = 0; i < lines.length; i++) {
