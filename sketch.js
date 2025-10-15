@@ -1064,8 +1064,13 @@ function sketch(p) {
             
             // Adjust positioning for larger text on Friday page
             if (isFridayPage && backgroundColor) {
-                // Find the longest line to center the entire text block
-                let maxLineLength = Math.max(...lines.map(line => line.length));
+                // Use the complete Friday page text to calculate block width (not the current typing progress)
+                let completeLines = [
+                    "OPENHOUSE",
+                    "FRIDAY, OCT 24TH", 
+                    "40 W 100 N PROVO"
+                ];
+                let maxLineLength = Math.max(...completeLines.map(line => line.length)); // 16 characters
                 let blockWidth = maxLineLength * charWidth * 2.5;
                 let blockStartX = (p.width - blockWidth) / 2;
                 
