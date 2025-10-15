@@ -1062,31 +1062,14 @@ function sketch(p) {
             
             // Adjust positioning for larger text on Friday page
             if (isFridayPage && backgroundColor) {
-                // Use the complete Friday page text to calculate block width (not the current typing progress)
-                let completeLines = [
-                    "OPENHOUSE",
-                    "FRIDAY, OCT 24TH", 
-                    "40 W 100 N PROVO"
-                ];
-                let maxLineLength = Math.max(...completeLines.map(line => line.length)); // 16 characters
+                // Simple approach: center the text block horizontally, left-justify within block
+                let maxLineLength = 16; // "FRIDAY, OCT 24TH" is the longest line
                 let blockWidth = maxLineLength * charWidth * 2.5;
                 let blockStartX = (p.width - blockWidth) / 2;
                 
                 // Position each line within the centered block
                 x = blockStartX; // All lines start at the same x position (left-justified within block)
-                y = (startY + i - 5) * charHeight * 2.5; // Move up by 5 lines and match 2.5x font size
-                
-                // CRITICAL DEBUG: Log only when we have the complete text
-                if (lines[i] === "OPENHOUSE" || lines[i] === "FRIDAY, OCT 24TH" || lines[i] === "40 W 100 N PROVO") {
-                    console.log('COMPLETE LINE DETECTED:', { 
-                        line: lines[i], 
-                        x, 
-                        y, 
-                        blockStartX,
-                        backgroundColor,
-                        textFontSize
-                    });
-                }
+                y = (startY + i) * charHeight * 2.5; // Scale vertical spacing to match larger font
             }
             
             mainTextBuffer.push();
@@ -1108,14 +1091,8 @@ function sketch(p) {
             if (isFridayPage && backgroundColor) {
                 rectWidth = lines[i].length * charWidth * 2.5 + 4;
                 rectHeight = charHeight * 2.5 + 4;
-                
-                // DEBUG: Draw a bright green rectangle to see if positioning is working
-                mainTextBuffer.fill(0, 255, 0); // Bright green for debugging
-                mainTextBuffer.rect(x - 2, y - 2, rectWidth, rectHeight);
-                mainTextBuffer.fill(p.color(backgroundColor)); // Back to red
-            } else {
-                mainTextBuffer.rect(x - 2, y - 2, rectWidth, rectHeight);
             }
+            mainTextBuffer.rect(x - 2, y - 2, rectWidth, rectHeight);
             
             // Draw text (centered vertically in the rectangle)
             mainTextBuffer.fill(p.color(color));
