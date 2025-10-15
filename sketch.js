@@ -1048,7 +1048,7 @@ function sketch(p) {
         
         // Use larger font size for Friday page event info
         let textFontSize = fontSize;
-        if (isFridayPage && backgroundColor === CONFIG.colors.pureRed) {
+        if (isFridayPage && backgroundColor) {
             textFontSize = fontSize * 2.5; // 2.5x bigger for Friday page event info
         }
         
@@ -1057,7 +1057,7 @@ function sketch(p) {
             let y = (startY + i) * charHeight;
             
             // Adjust positioning for larger text on Friday page
-            if (isFridayPage && backgroundColor === CONFIG.colors.pureRed) {
+            if (isFridayPage && backgroundColor) {
                 // Use the original grid positioning but with larger spacing
                 x = startX * charWidth;
                 y = (startY + i) * charHeight * 2.5; // Scale vertical spacing
@@ -1079,7 +1079,7 @@ function sketch(p) {
             // Adjust rectangle size for larger text
             let rectWidth = lines[i].length * charWidth + 4;
             let rectHeight = charHeight + 4;
-            if (isFridayPage && backgroundColor === CONFIG.colors.pureRed) {
+            if (isFridayPage && backgroundColor) {
                 rectWidth = lines[i].length * charWidth * 2.5 + 4;
                 rectHeight = charHeight * 2.5 + 4;
             }
@@ -1088,7 +1088,7 @@ function sketch(p) {
             // Draw text (centered vertically in the rectangle)
             mainTextBuffer.fill(p.color(color));
             mainTextBuffer.noStroke();
-            mainTextBuffer.text(lines[i], x, y + (isFridayPage && backgroundColor === CONFIG.colors.pureRed ? charHeight * 2.5 / 2 : charHeight / 2));
+            mainTextBuffer.text(lines[i], x, y + (isFridayPage && backgroundColor ? charHeight * 2.5 / 2 : charHeight / 2));
             
             mainTextBuffer.pop();
         }
