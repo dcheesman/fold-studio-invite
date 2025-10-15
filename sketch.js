@@ -1046,10 +1046,16 @@ function sketch(p) {
         // Draw text with background
         let lines = text.split('\n');
         
+        // Debug logging
+        if (isFridayPage && backgroundColor) {
+            console.log('Friday page drawSimpleText called:', { text, startX, startY, color, backgroundColor, lines });
+        }
+        
         // Use larger font size for Friday page event info
         let textFontSize = fontSize;
         if (isFridayPage && backgroundColor) {
             textFontSize = fontSize * 2.5; // 2.5x bigger for Friday page event info
+            console.log('Using larger font size:', textFontSize);
         }
         
         for (let i = 0; i < lines.length; i++) {
