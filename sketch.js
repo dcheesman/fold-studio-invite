@@ -1072,6 +1072,17 @@ function sketch(p) {
                 x = blockStartX; // All lines start at the same x position (left-justified within block)
                 y = (startY + i - 5) * charHeight * 2.5; // Move up by 5 lines and match 2.5x font size
                 
+                // CRITICAL DEBUG: Log only when we have the complete text
+                if (lines[i] === "OPENHOUSE" || lines[i] === "FRIDAY, OCT 24TH" || lines[i] === "40 W 100 N PROVO") {
+                    console.log('COMPLETE LINE DETECTED:', { 
+                        line: lines[i], 
+                        x, 
+                        y, 
+                        blockStartX,
+                        backgroundColor,
+                        textFontSize
+                    });
+                }
             }
             
             mainTextBuffer.push();
