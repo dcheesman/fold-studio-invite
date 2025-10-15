@@ -1104,8 +1104,14 @@ function sketch(p) {
             if (isFridayPage && backgroundColor) {
                 rectWidth = lines[i].length * charWidth * 2.5 + 4;
                 rectHeight = charHeight * 2.5 + 4;
+                
+                // DEBUG: Draw a bright green rectangle to see if positioning is working
+                mainTextBuffer.fill(0, 255, 0); // Bright green for debugging
+                mainTextBuffer.rect(x - 2, y - 2, rectWidth, rectHeight);
+                mainTextBuffer.fill(p.color(backgroundColor)); // Back to red
+            } else {
+                mainTextBuffer.rect(x - 2, y - 2, rectWidth, rectHeight);
             }
-            mainTextBuffer.rect(x - 2, y - 2, rectWidth, rectHeight);
             
             // Draw text (centered vertically in the rectangle)
             mainTextBuffer.fill(p.color(color));
