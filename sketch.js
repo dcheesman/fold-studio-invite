@@ -1016,10 +1016,18 @@ function sketch(p) {
             // In phase 3, use the full info text from CONFIG
             if (introPhase >= 3) {
                 let fullInfoText = infoLines.join('\n');
+                if (isFridayPage) {
+                    console.log('Friday page drawing full info text:', { introPhase, fullInfoText, infoLines });
+                }
                 drawSimpleText(fullInfoText, infoX, infoStartY, CONFIG.colors.background, 1, CONFIG.colors.pureRed);
             } else if (infoText.length > 0) {
+                if (isFridayPage) {
+                    console.log('Friday page drawing partial info text:', { introPhase, infoText });
+                }
                 drawSimpleText(infoText, infoX, infoStartY, CONFIG.colors.background, 1, CONFIG.colors.pureRed);
             }
+        } else if (isFridayPage) {
+            console.log('Friday page not drawing text yet:', { introPhase });
         }
         
         // Draw RSVP text
@@ -1050,10 +1058,15 @@ function sketch(p) {
         // Draw text with background
         let lines = text.split('\n');
         
+        if (isFridayPage && backgroundColor) {
+            console.log('Friday page drawSimpleText called:', { text, startX, startY, color, backgroundColor, lines });
+        }
+        
         // Use larger font size for Friday page event info
         let textFontSize = fontSize;
         if (isFridayPage && backgroundColor) {
             textFontSize = fontSize * 2.5; // 2.5x bigger for Friday page event info
+            console.log('Using larger font size:', textFontSize);
         }
         
         for (let i = 0; i < lines.length; i++) {
