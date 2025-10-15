@@ -28,18 +28,18 @@ function sketch(p) {
         },
         text: (() => {
             const textConfig = isFridayPage ? {
-                // Friday page content
+                // Friday page content - simplified
                 title: "THE FOLD",
                 subtitle: "OPENHOUSE",
                 date: "FRIDAY, OCT 24TH",
                 address: "40 W 100 N PROVO",
-                description: "A night for the true believers.",
-                location: "40 W 100 N PROVO",
-                time: "FRIDAY, OCT 24TH",
-                refreshments: "drinks and refreshments provided",
-                rsvpRequest: "please rsvp",
-                closing: "we're looking forward to your initiation",
-                rsvpText: "→ RSVP"
+                description: "",
+                location: "",
+                time: "",
+                refreshments: "",
+                rsvpRequest: "",
+                closing: "",
+                rsvpText: ""
             } : {
                 // Main page content
                 title: "THE FOLD",
@@ -609,19 +609,29 @@ function sketch(p) {
         titleX = 2; // Start at column 2 (very close to left edge)
         titleY = p.floor(p.height * 0.07) / charHeight; // Higher up in top quarter
         
-        infoLines = [
-            CONFIG.text.subtitle || "",
-            CONFIG.text.date || "",
-            CONFIG.text.address || "",
-            CONFIG.text.description || "",
-            "", // Empty line before location
-            CONFIG.text.location || "",
-            CONFIG.text.time || "",
-            CONFIG.text.refreshments || "",
-            CONFIG.text.rsvpRequest || "",
-            "", // Empty line before closing
-            CONFIG.text.closing || ""
-        ];
+        if (isFridayPage) {
+            // Friday page - only show the three essential lines
+            infoLines = [
+                CONFIG.text.subtitle || "",
+                CONFIG.text.date || "",
+                CONFIG.text.address || ""
+            ];
+        } else {
+            // Main page - show all content
+            infoLines = [
+                CONFIG.text.subtitle || "",
+                CONFIG.text.date || "",
+                CONFIG.text.address || "",
+                CONFIG.text.description || "",
+                "", // Empty line before location
+                CONFIG.text.location || "",
+                CONFIG.text.time || "",
+                CONFIG.text.refreshments || "",
+                CONFIG.text.rsvpRequest || "",
+                "", // Empty line before closing
+                CONFIG.text.closing || ""
+            ];
+        }
         
         // Calculate center position for info text
         let maxLineLength = 0;
@@ -987,8 +997,8 @@ function sketch(p) {
         
         // Draw RSVP text
         if (introPhase >= 3) {
-            // Show and position HTML RSVP element instead of drawing to buffer
-            if (rsvpElement) {
+            // Show and position HTML RSVP element instead of drawing to buffer (only on main page)
+            if (rsvpElement && !isFridayPage) {
                 let rsvpX = infoX * charWidth; // Use same X as info text (centered)
                 let rsvpY = (infoStartY + infoLines.length + 1) * charHeight; // Position below all info text
                 
@@ -997,6 +1007,9 @@ function sketch(p) {
                 rsvpElement.style.fontSize = fontSize + 'px';
                 rsvpElement.style.display = 'block';
                 rsvpElement.style.zIndex = '1000'; // Ensure it's on top
+            } else if (rsvpElement && isFridayPage) {
+                // Hide RSVP on Friday page
+                rsvpElement.style.display = 'none';
             }
         } else {
             // Hide RSVP during intro phases
@@ -1250,14 +1263,17 @@ function sketch(p) {
         
         mainTextBuffer.pop();
         
-        // Show and position RSVP element
-        if (rsvpElement) {
+        // Show and position RSVP element (only on main page)
+        if (rsvpElement && !isFridayPage) {
             rsvpElement.style.display = 'block';
             // Position RSVP below info text (centered)
             let rsvpX = infoX * charWidth;
             let rsvpY = (infoStartY + infoLines.length + 1) * charHeight;
             rsvpElement.style.left = rsvpX + 'px';
             rsvpElement.style.top = rsvpY + 'px';
+        } else if (rsvpElement && isFridayPage) {
+            // Hide RSVP on Friday page
+            rsvpElement.style.display = 'none';
         }
     }
     
