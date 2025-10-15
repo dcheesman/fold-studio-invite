@@ -1062,6 +1062,7 @@ function sketch(p) {
                 // Use the original grid positioning but with larger spacing
                 x = startX * charWidth;
                 y = (startY + i) * charHeight * 2.5; // Scale vertical spacing
+                console.log('Friday page positioning:', { x, y, startX, startY, i, charWidth, charHeight, line: lines[i] });
             }
             
             mainTextBuffer.push();
