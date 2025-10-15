@@ -1058,9 +1058,13 @@ function sketch(p) {
             
             // Adjust positioning for larger text on Friday page
             if (isFridayPage && backgroundColor) {
-                // Center the text horizontally while keeping it left-justified
-                let textWidth = lines[i].length * charWidth * 2.5;
-                x = (p.width - textWidth) / 2; // Center horizontally
+                // Find the longest line to center the entire text block
+                let maxLineLength = Math.max(...lines.map(line => line.length));
+                let blockWidth = maxLineLength * charWidth * 2.5;
+                let blockStartX = (p.width - blockWidth) / 2;
+                
+                // Position each line within the centered block
+                x = blockStartX; // All lines start at the same x position (left-justified within block)
                 y = (startY + i - 5) * charHeight * 2.5; // Move up by 5 lines and match 2.5x font size
             }
             
